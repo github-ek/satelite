@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+	<div>
+		<h3>Notificación de Ingreso de Mercancía.</h3>
+	</div>
+	<table>
+		<tr>
+			<td>Cliente</td>
+			<td>:</td>
+			<td>${orden.cliente}</td>
+		</tr>
+		<tr>
+			<td>Número de Documento de Soporte la Entrega</td>
+			<td>:</td>
+			<td>${orden.numeroDocumentoCliente}</td>
+		</tr>
+		<tr>
+			<td>Recibida</td>
+			<td>:</td>
+			<td>${orden.fechaRecepcion}</td>
+		</tr>
+		<tr>
+			<td>Recibida Por</td>
+			<td>:</td>
+			<td>${supervisor.apellidos}, ${supervisor.nombres}</td>
+		</tr>
+		<tr>
+			<td>Origen</td>
+			<td>:</td>
+			<td>${orden.ciudadOrigen}</td>
+		</tr>
+		<tr>
+			<td>Bodega</td>
+			<td>:</td>
+			<td>${bodega.codigo}<br>${bodega.nombre}
+			</td>
+		</tr>
+		<tr>
+			<td>Ubicación</td>
+			<td>:</td>
+			<td>${bodega.direccion}<br>${bodegaCiudad.nombreAlterno}
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
+	#set( $i = 1 )
+	<table>
+		<thead>
+			<tr>
+				<th>Linea</th>
+				<th>Producto</th>
+				<th>Cantidad</th>
+				<th>Unidad</th>
+				<th>Lote Sugerido</th>
+				<th>Novedades</th>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach( ${lo} in ${lineasOrden} )
+			<tr>
+				<td>${i}</td>
+				<td>${lo.producto}</td>
+				<td>${lo.cantidad}</td>
+				<td>${lo.unidadMedida}</td>
+				<td>${lo.loteSugerido}</td>
+				<td>${lo.estadoInventario}</td>
+				<td>${lo.novedades}</td>
+			</tr>
+			#set( $i = $i + 1 ) #end
+		</tbody>
+	</table>
+	<br>
+	<div>
+		Consulte el detalle y las evidencias de esta entrega <a
+			href="http://192.170.112.211:8080/index.html#/tab/reporte?id=${orden.id}&token=${orden.hash}">aqui</a>.
+	</div>
+</body>
+</html>
