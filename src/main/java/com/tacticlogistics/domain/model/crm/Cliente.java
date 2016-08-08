@@ -88,7 +88,7 @@ public class Cliente implements Serializable {
     private Set<ClienteRequerimientoDistribucionAssociation> clienteRequerimientoDistribucionAssociation = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "clienteId")
-    private Set<ClienteRequerimientoMaquilaAssociation> clienteRequerimientoMaquilaAssociation = new HashSet<>();
+    private Set<ClienteRequerimientoAlistamientoAssociation> clienteRequerimientoAlistamientoAssociation = new HashSet<>();
 
     // ---------------------------------------------------------------------------------------------------------
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente")
@@ -170,8 +170,8 @@ public class Cliente implements Serializable {
         return clienteRequerimientoDistribucionAssociation;
     }
 
-    public Set<ClienteRequerimientoMaquilaAssociation> getClienteRequerimientoMaquilaAssociation() {
-        return clienteRequerimientoMaquilaAssociation;
+    public Set<ClienteRequerimientoAlistamientoAssociation> getClienteRequerimientoAlistamientoAssociation() {
+        return clienteRequerimientoAlistamientoAssociation;
     }
 
     public Set<Suscriptor> getSuscriptores() {
@@ -203,7 +203,7 @@ public class Cliente implements Serializable {
         this.setClienteBodegaAssociation(new HashSet<>());
         this.setClienteUnidadAssociation(new HashSet<>());
         this.setClienteRequerimientoDistribucionAssociation(new HashSet<>());
-        this.setClienteRequerimientoMaquilaAssociation(new HashSet<>());
+        this.setClienteRequerimientoAlistamientoAssociation(new HashSet<>());
         this.setSuscriptores(new HashSet<>());
         this.setRequerimientoClienteAssociation(new HashSet<>());
     }
@@ -303,11 +303,11 @@ public class Cliente implements Serializable {
         this.clienteRequerimientoDistribucionAssociation = set;
     }
 
-    protected void setClienteRequerimientoMaquilaAssociation(Set<ClienteRequerimientoMaquilaAssociation> set) {
+    protected void setClienteRequerimientoAlistamientoAssociation(Set<ClienteRequerimientoAlistamientoAssociation> set) {
         if (set == null) {
             set = new HashSet<>();
         }
-        this.clienteRequerimientoMaquilaAssociation = set;
+        this.clienteRequerimientoAlistamientoAssociation = set;
     }
 
     protected void setSuscriptores(Set<Suscriptor> set) {
