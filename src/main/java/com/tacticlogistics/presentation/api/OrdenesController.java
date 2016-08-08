@@ -1,12 +1,14 @@
 package com.tacticlogistics.presentation.api;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -76,6 +78,21 @@ public class OrdenesController {
         return list;
     }
 
+    @RequestMapping(path = "/ordenes-x-fecha_confirmacion", method = RequestMethod.GET)
+    public Map<String,Object> getAllOrdenPorUsuarioPorTipoServicioPorEstadoOrdenPorCliente(
+            @RequestParam(value = "id_usuario", required = true) Integer usuarioId,
+            @RequestParam(value = "fecha_desde", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
+            @RequestParam(value = "fecha_hasta", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta) {
+        Map<String,Object> list = new HashMap<>();
+
+        try {
+            list = ordenesService.findAllOrdenPorFechaConfirmacion(usuarioId, fechaDesde, fechaHasta);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
     @RequestMapping(path = "/ordenes-x-tipo_servicio-x-estado-x-usuario", method = RequestMethod.GET)
     public List<OrdenDto> getAllOrdenPorUsuarioPorTipoServicioPorEstadoOrdenPorCliente(
             @RequestParam(value = "id_usuario", required = true) Integer usuarioId,

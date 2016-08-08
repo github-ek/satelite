@@ -51,7 +51,7 @@ public class RemisionesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                             case 2:
                                 values[j] = values[j].trim();
                                 
-                                sb.append(OrdenDtoAtributos.USUARIO_APROBACION_CLIENTE.toString()).append("\t")
+                                sb.append("USUARIO_CONFIRMACION_CLIENTE").append("\t")
                                         .append(values[j].trim()).append("\n");
                                 break;
                             default:
@@ -94,7 +94,7 @@ public class RemisionesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                                 if (lineas[i].startsWith("RECIBIOENTREGO")) {
                                     encontradoFinLineas = true;
                                 } else {
-                                    sb.append(OrdenDtoAtributos.LINEAS.toString()).append("\t").append(lineas[i])
+                                    sb.append("LINEAS").append("\t").append(lineas[i])
                                             .append("\n");
                                 }
                             }else{
@@ -103,7 +103,7 @@ public class RemisionesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                                         encontradoObservaciones= true;
                                         
                                         String value = lineas[i].replaceAll("OBSERVACIONES :", "").trim();
-                                        sb.append(OrdenDtoAtributos.NOTAS_APROBACION_CLIENTE.toString()).append("\t").append(value).append("\n");
+                                        sb.append(OrdenDtoAtributos.NOTAS.toString()).append("\t").append(value).append("\n");
                                         
                                         break;
                                     }

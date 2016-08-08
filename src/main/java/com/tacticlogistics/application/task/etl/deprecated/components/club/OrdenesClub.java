@@ -89,12 +89,12 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                             value[j] = value[j].trim();
                             switch (j) {
                             case 0:
-                                sb.append(OrdenDtoAtributos.DESTINATARIO_NUMERO_IDENTIFICACION.toString()).append("\t")
+                                sb.append(OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION.toString()).append("\t")
                                         .append(value[j]).append("\n");
                                 break;
                             case 1:
-                                sb.append(OrdenDtoAtributos.DESTINATARIO_DIGITO_VERIFICACION.toString()).append("\t")
-                                        .append(value[j]).append("\n");
+//                                sb.append(OrdenDtoAtributos.DESTINATARIO_DIGITO_VERIFICACION.toString()).append("\t")
+//                                        .append(value[j]).append("\n");
                                 break;
                             default:
                                 break;
@@ -154,7 +154,7 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                                                 if (lineas[i].startsWith("OBSERVACIONES")) {
                                                     encontradoTokenObservaciones = true;
                                                     String value = lineas[i].substring("OBSERVACIONES".length()).trim();
-                                                    sb.append(OrdenDtoAtributos.NOTAS_APROBACION_CLIENTE.toString())
+                                                    sb.append(OrdenDtoAtributos.NOTAS.toString())
                                                             .append("\t").append(value).append("\n");
                                                     break;
                                                 }
@@ -207,7 +207,7 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                 String key = keyValue[0];
                 String value = (keyValue.length == 2) ? keyValue[1] : "";
 
-                if (!key.equals(OrdenDtoAtributos.LINEAS.toString())) {
+                if (!key.equals("LINEAS")) {
                     orden.put(key, value);
                 } else {
                     lineas.add(value);
@@ -262,13 +262,13 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
             dto.setDestinoDireccion(orden.get(OrdenDtoAtributos.DESTINO_DIRECCION.toString()));
             dto.setDestinoContactoTelefonos(orden.get(OrdenDtoAtributos.DESTINO_CONTACTO_TELEFONOS.toString()));
             dto.setDestinatarioNumeroIdentificacion(
-                    orden.get(OrdenDtoAtributos.DESTINATARIO_NUMERO_IDENTIFICACION.toString()));
+                    orden.get(OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION.toString()));
 //            dto.setDestinatarioDigitoVerificacion(
 //                    orden.get(OrdenDtoAtributos.DESTINATARIO_DIGITO_VERIFICACION.toString()));
             dto.getRequerimientosDistribucion().add(orden.get("REQUERIMIENTO_ENTREGA"));
             dto.setNumeroOrden(orden.get(OrdenDtoAtributos.NUMERO_ORDEN.toString()));
             // DESTINO_DIRECCION_ALTERNA
-            dto.setNotasConfirmacion(orden.get(OrdenDtoAtributos.NOTAS_APROBACION_CLIENTE.toString()));
+            dto.setNotasConfirmacion(orden.get(OrdenDtoAtributos.NOTAS.toString()));
             dto.setUsuarioConfirmacion(getClienteCodigoAlterno());
 
             for (String linea : lineas) {

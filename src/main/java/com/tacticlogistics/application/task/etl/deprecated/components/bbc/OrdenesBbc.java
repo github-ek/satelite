@@ -21,15 +21,15 @@ public class OrdenesBbc extends ETLPDFFileStrategy<ETLOrdenDto> {
 
     private final static String _NUMERO_DOCUMENTO_ORDEN_CLIENTE = OrdenDtoAtributos.NUMERO_ORDEN
             .toString();
-    private final static String _DESTINATARIO_NUMERO_IDENTIFICACION = OrdenDtoAtributos.DESTINATARIO_NUMERO_IDENTIFICACION
+    private final static String _DESTINATARIO_NUMERO_IDENTIFICACION = OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION
             .toString();
-    private final static String _DESTINO_CODIGO = OrdenDtoAtributos.DESTINO_CODIGO.toString();
+    private final static String _DESTINO_CODIGO = "DESTINO_CODIGO";
     private final static String _DESTINO_NOMBRE = OrdenDtoAtributos.DESTINO_NOMBRE.toString();
-    private final static String _LINEA_ORIGEN_CODIGO = OrdenDtoAtributos.LINEA_ORIGEN_CODIGO.toString();
-    private final static String _LINEA_ORIGEN_NOMBRE = OrdenDtoAtributos.LINEA_ORIGEN_NOMBRE.toString();
-    private final static String _NOTAS_APROBACION_CLIENTE = OrdenDtoAtributos.NOTAS_APROBACION_CLIENTE.toString();
-    private final static String _LINEAS = OrdenDtoAtributos.LINEAS.toString();
-    private final static String _USUARIO_APROBACION_CLIENTE = OrdenDtoAtributos.USUARIO_APROBACION_CLIENTE.toString();
+    private final static String _LINEA_ORIGEN_CODIGO = "LINEA_ORIGEN_CODIGO";
+    private final static String _LINEA_ORIGEN_NOMBRE = "LINEA_ORIGEN_NOMBRE";
+    private final static String _NOTAS_APROBACION_CLIENTE = OrdenDtoAtributos.NOTAS.toString();
+    private final static String _LINEAS = "LINEAS";
+    private final static String _USUARIO_APROBACION_CLIENTE = "USUARIO_CONFIRMACION_CLIENTE";
 
     private DecimalFormat cantidadSolicitadaFormat = null;
 

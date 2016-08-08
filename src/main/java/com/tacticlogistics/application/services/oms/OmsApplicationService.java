@@ -21,7 +21,7 @@ import com.tacticlogistics.application.dto.common.CustomPage;
 import com.tacticlogistics.application.dto.common.ItemGenerico;
 import com.tacticlogistics.application.dto.oms.OmsOrdenDto;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
-import com.tacticlogistics.domain.model.crm.ClienteRequerimientoMaquilaAssociation;
+import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
 import com.tacticlogistics.domain.model.oms.CausalSolicitudRevisionCliente;
 import com.tacticlogistics.domain.model.oms.CausalSolicitudRevisionPlaneacionLogistica;
 import com.tacticlogistics.domain.model.oms.OmsCausalAnulacionOrden;
@@ -65,61 +65,62 @@ public class OmsApplicationService {
     public CustomPage<String[]> findOrdenesByUsuarioIdAndTipoServicioIdAndEstadoOrden(Integer usuarioId,
             Integer tipoServicioId, Integer clienteId, EstadoOrdenType estadoOrden, int start, int length)
             throws DataAccessException {
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        List<String[]> list = new ArrayList<>();
-
-        Pageable pageRequest = createPageRequest(start, length);
-        Page<OmsOrden> searchResultPage = ordenRepository.findByUsuarioIdAndTipoServicioIdAndEstadoOrden(usuarioId,
-                tipoServicioId, clienteId, estadoOrden, pageRequest);
-
-        searchResultPage.getContent().forEach(a -> {
-            List<String> map = new ArrayList<>();
-
-            OmsOrdenDto dto = map(a);
-
-            Date fmin = dto.getFechaSugeridaEntregaMinima();
-            Date fmax = dto.getFechaSugeridaEntregaMaxima();
-
-            if ((dto.getFechaPlaneadaEntregaMinima() != null) || (dto.getFechaPlaneadaEntregaMaxima() != null)) {
-                fmin = dto.getFechaPlaneadaEntregaMinima();
-                fmax = dto.getFechaPlaneadaEntregaMaxima();
-            }
-
-            map.add(dto.getId().toString());
-            map.add(dto.getEstadoOrden().toString());
-            map.add(dto.getClienteCodigo());
-            map.add(dto.getNumeroDocumentoOrdenCliente());
-
-            if (!dto.getCanalCodigo().isEmpty()) {
-                map.add(dto.getCanalCodigo());
-            } else {
-                map.add(dto.getCanalCodigoAlterno());
-            }
-            if (!dto.getDestinatarioNombre().isEmpty()) {
-                map.add(dto.getDestinatarioNombre());
-            } else {
-                map.add(dto.getDestinatarioNombreAlterno());
-            }
-            if (!dto.getDestinatarioNumeroIdentificacion().isEmpty()) {
-                map.add(dto.getDestinatarioNumeroIdentificacion());
-            } else {
-                map.add(dto.getDestinatarioNumeroIdentificacionAlterno());
-            }
-            if (!dto.getDestinoCiudadNombre().isEmpty()) {
-                map.add(dto.getDestinoCiudadNombre());
-            } else {
-                map.add(dto.getDestinoCiudadNombreAlterno());
-            }
-            map.add(dto.getDestinoDireccion());
-            map.add((fmin == null) ? "" : sdf.format(fmin));
-            map.add((fmax == null) ? "" : sdf.format(fmax));
-
-            list.add(map.toArray(new String[0]));
-        });
-
-        CustomPage<String[]> page = new CustomPage<>(searchResultPage.getTotalElements(), list);
-
-        return page;
+//        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        List<String[]> list = new ArrayList<>();
+//
+//        Pageable pageRequest = createPageRequest(start, length);
+//        Page<OmsOrden> searchResultPage = ordenRepository.findByUsuarioIdAndTipoServicioIdAndEstadoOrden(usuarioId,
+//                tipoServicioId, clienteId, estadoOrden, pageRequest);
+//
+//        searchResultPage.getContent().forEach(a -> {
+//            List<String> map = new ArrayList<>();
+//
+//            OmsOrdenDto dto = map(a);
+//
+//            Date fmin = dto.getFechaSugeridaEntregaMinima();
+//            Date fmax = dto.getFechaSugeridaEntregaMaxima();
+//
+//            if ((dto.getFechaPlaneadaEntregaMinima() != null) || (dto.getFechaPlaneadaEntregaMaxima() != null)) {
+//                fmin = dto.getFechaPlaneadaEntregaMinima();
+//                fmax = dto.getFechaPlaneadaEntregaMaxima();
+//            }
+//
+//            map.add(dto.getId().toString());
+//            map.add(dto.getEstadoOrden().toString());
+//            map.add(dto.getClienteCodigo());
+//            map.add(dto.getNumeroDocumentoOrdenCliente());
+//
+//            if (!dto.getCanalCodigo().isEmpty()) {
+//                map.add(dto.getCanalCodigo());
+//            } else {
+//                map.add(dto.getCanalCodigoAlterno());
+//            }
+//            if (!dto.getDestinatarioNombre().isEmpty()) {
+//                map.add(dto.getDestinatarioNombre());
+//            } else {
+//                map.add(dto.getDestinatarioNombreAlterno());
+//            }
+//            if (!dto.getDestinatarioNumeroIdentificacion().isEmpty()) {
+//                map.add(dto.getDestinatarioNumeroIdentificacion());
+//            } else {
+//                map.add(dto.getDestinatarioNumeroIdentificacionAlterno());
+//            }
+//            if (!dto.getDestinoCiudadNombre().isEmpty()) {
+//                map.add(dto.getDestinoCiudadNombre());
+//            } else {
+//                map.add(dto.getDestinoCiudadNombreAlterno());
+//            }
+//            map.add(dto.getDestinoDireccion());
+//            map.add((fmin == null) ? "" : sdf.format(fmin));
+//            map.add((fmax == null) ? "" : sdf.format(fmax));
+//
+//            list.add(map.toArray(new String[0]));
+//        });
+//
+//        CustomPage<String[]> page = new CustomPage<>(searchResultPage.getTotalElements(), list);
+//
+//        return page;
+    	return null;
     }
 
     private Pageable createPageRequest(int start, int length) {
@@ -144,16 +145,16 @@ public class OmsApplicationService {
         return list;
     }
 
-    public List<Map<String, Object>> findRequerimientosMaquilaPorClientePorTipoServicioDestinatarioRemitente(
+    public List<Map<String, Object>> findRequerimientosAlistamientoPorClientePorTipoServicioDestinatarioRemitente(
             Integer clienteId, Integer tipoServicioId, Integer destinatarioRemitenteId) throws DataAccessException {
-        List<ClienteRequerimientoMaquilaAssociation> entityList = clienteRepository
-                .findClienteRequerimientoMaquilaAssociationByClienteIdAndTipoServicioId(clienteId, tipoServicioId);
+        List<ClienteRequerimientoAlistamientoAssociation> entityList = clienteRepository
+                .findClienteRequerimientoAlistamientoAssociationByClienteIdAndTipoServicioId(clienteId, tipoServicioId);
 
         List<Map<String, Object>> list = new ArrayList<>();
         entityList.forEach(a -> {
             Map<String, Object> map = new HashMap<>();
             map.put("codigoAlterno", a.getCodigoAlterno());
-            map.put("requerimientoMaquilaId", a.getRequerimientoMaquilaId());
+            map.put("requerimientoAlistamientoId", a.getRequerimientoAlistamientoId());
             map.put("descripcion", a.getDescripcion());
             list.add(map);
         });
@@ -207,8 +208,8 @@ public class OmsApplicationService {
             dto.setClienteNombre(orden.getCliente().getNombre());
         }
 
-        if (orden.getConsolidado() != null) {
-            dto.setNumeroDocumentoConsolidadoCliente(orden.getConsolidado().getNumeroDocumentoConsolidadoCliente());
+        if (orden.getNumeroConsolidado() != null) {
+            dto.setNumeroDocumentoConsolidadoCliente(orden.getNumeroConsolidado());
         }
 
         if (orden.getCiudadDestino() != null) {

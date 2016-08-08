@@ -13,13 +13,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "RequerimientosMaquila", catalog = "oms")
-public class RequerimientoMaquila implements Serializable {
+@Table(name = "RequerimientosAlistamiento", catalog = "oms")
+public class RequerimientoAlistamiento implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_requerimiento_maquila", nullable = false, unique = true)
+    @Column(name = "id_requerimiento_alistamiento", nullable = false, unique = true)
     private Integer id;
 
     @Column(nullable = false, length = 50, unique = true)
@@ -42,7 +42,7 @@ public class RequerimientoMaquila implements Serializable {
     @Column(nullable = false, length = 50)
     private String usuarioActualizacion;
 
-    protected RequerimientoMaquila() {
+    protected RequerimientoAlistamiento() {
 
     }
 
@@ -111,29 +111,11 @@ public class RequerimientoMaquila implements Serializable {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("RequerimientoMaquila [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (codigo != null) {
-            builder.append("codigo=").append(codigo).append(", ");
-        }
-        if (nombre != null) {
-            builder.append("nombre=").append(nombre).append(", ");
-        }
-        if (descripcion != null) {
-            builder.append("descripcion=").append(descripcion).append(", ");
-        }
-        builder.append("ordinal=").append(ordinal).append(", activo=").append(activo).append(", ");
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "RequerimientoAlistamiento [" + (id != null ? "id=" + id + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "") + (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (descripcion != null ? "descripcion=" + descripcion + ", " : "") + "ordinal=" + ordinal + ", activo="
+				+ activo + ", " + (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
+	}
 }

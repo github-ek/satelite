@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteCanalAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
-import com.tacticlogistics.domain.model.crm.ClienteRequerimientoMaquilaAssociation;
+import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     Cliente findByCodigoIgnoringCase(String codigo);
@@ -48,12 +48,12 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 
    @Query(""
            + " SELECT a"
-           + " FROM ClienteRequerimientoMaquilaAssociation a"
+           + " FROM ClienteRequerimientoAlistamientoAssociation a"
            + " WHERE a.clienteId = :clienteId"
            + " AND a.tipoServicioId = :tipoServicioId"
            + " ORDER BY a.codigoAlterno"
           )
-   List<ClienteRequerimientoMaquilaAssociation> findClienteRequerimientoMaquilaAssociationByClienteIdAndTipoServicioId(
+   List<ClienteRequerimientoAlistamientoAssociation> findClienteRequerimientoAlistamientoAssociationByClienteIdAndTipoServicioId(
            @Param("clienteId") Integer clienteId,
            @Param("tipoServicioId") Integer tipoServicioId);
 }

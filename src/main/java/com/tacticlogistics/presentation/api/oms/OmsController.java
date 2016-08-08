@@ -262,16 +262,16 @@ public class OmsController {
         return list;
     }
 
-    // Requerimientos de Maquila x cliente x tipo de servicio x destinatario
+    // Requerimientos de Alistamiento x cliente x tipo de servicio x destinatario
     // remitente
-    @RequestMapping("/requerimientos_maquila-x-cliente-x-tipo_servicio-x-destinatario_remitente")
-    public List<Map<String, Object>> getRequerimientosMaquilaPorClientePorTipoServicioDestinatarioRemitente(
+    @RequestMapping("/requerimientos_alistamiento-x-cliente-x-tipo_servicio-x-destinatario_remitente")
+    public List<Map<String, Object>> getRequerimientosAlistamientoPorClientePorTipoServicioDestinatarioRemitente(
             @RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
             @RequestParam(required = true) Integer destinatarioRemitenteId) {
 
         List<Map<String, Object>> list = new ArrayList<>();
         try {
-            list = omsService.findRequerimientosMaquilaPorClientePorTipoServicioDestinatarioRemitente(clienteId,
+            list = omsService.findRequerimientosAlistamientoPorClientePorTipoServicioDestinatarioRemitente(clienteId,
                     tipoServicioId, destinatarioRemitenteId);
         } catch (Exception e) {
             // TODO e.printStackTrace()
@@ -417,7 +417,7 @@ public class OmsController {
     // hora_sugerida_entrega (minima,maxima,minima_adicional,maxima_adicional)
 
     // requerimientos_distribucion, notas_requerimientos_distribucion
-    // requerimientos_maquila, notas_requerimientos_maquila
+    // requerimientos_alistamiento, notas_requerimientos_alistamiento
 
     // TODO Add Linea
     // id_orden,id_linea_orden(null)

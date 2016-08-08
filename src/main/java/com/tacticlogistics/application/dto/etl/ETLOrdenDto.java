@@ -75,9 +75,6 @@ public class ETLOrdenDto {
 
     private Set<ETLLineaOrdenDto> lineas;
 
-    private String bodegaDestinoCodigo;
-    private String bodegaDestinoCodigoAlterno;
-
     public ETLOrdenDto() {
         super();
 
@@ -136,8 +133,8 @@ public class ETLOrdenDto {
         setCodigosAlternosRequerimientosDistribucion("");
         setNotasRequerimientosDistribucion("");
 
-        setRequerimientosMaquila(new HashSet<>());
-        setCodigosAlternosRequerimientosMaquila("");
+        setRequerimientosAlistamiento(new HashSet<>());
+        setCodigosAlternosRequerimientosAlistamiento("");
         setNotasRequerimientosAlistamiento("");
 
         setValorRecaudo(null);
@@ -147,9 +144,6 @@ public class ETLOrdenDto {
         setFechaConfirmacion(null);
 
         setLineas(new HashSet<>());
-
-        setBodegaDestinoCodigo("");
-        setBodegaDestinoCodigoAlterno("");
     }
 
     public String getNumeroOrden() {
@@ -344,14 +338,6 @@ public class ETLOrdenDto {
         return lineas;
     }
 
-    public String getBodegaDestinoCodigo() {
-        return bodegaDestinoCodigo;
-    }
-
-    public String getBodegaDestinoCodigoAlterno() {
-        return bodegaDestinoCodigoAlterno;
-    }
-
     public void setNumeroOrden(String value) {
         this.numeroOrden = substringSafe(coalesce(value, "").trim(), 0, 30);
     }
@@ -515,7 +501,7 @@ public class ETLOrdenDto {
         }
     }
 
-    public void setCodigosAlternosRequerimientosMaquila(String codigos) {
+    public void setCodigosAlternosRequerimientosAlistamiento(String codigos) {
         this.requerimientosAlistamiento.clear();
         for (String codigo : coalesce(codigos, "").split(",")) {
             this.requerimientosAlistamiento.add(codigo);
@@ -530,8 +516,8 @@ public class ETLOrdenDto {
         this.notasRequerimientosDistribucion = notasRequerimientosDistribucion;
     }
 
-    protected void setRequerimientosMaquila(Set<String> requerimientosMaquila) {
-        this.requerimientosAlistamiento = requerimientosMaquila;
+    protected void setRequerimientosAlistamiento(Set<String> requerimientosAlistamiento) {
+        this.requerimientosAlistamiento = requerimientosAlistamiento;
     }
 
     protected void setNotasRequerimientosAlistamiento(String notasRequerimientosAlistamiento) {
@@ -561,14 +547,6 @@ public class ETLOrdenDto {
 
     protected void setLineas(Set<ETLLineaOrdenDto> lineas) {
         this.lineas = lineas;
-    }
-
-    public void setBodegaDestinoCodigo(String value) {
-        this.bodegaDestinoCodigo = substringSafe(coalesce(value, ""), 0, 20);
-    }
-
-    public void setBodegaDestinoCodigoAlterno(String value) {
-        this.bodegaDestinoCodigoAlterno = substringSafe(coalesce(value, ""), 0, 50);
     }
 
     @Override

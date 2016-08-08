@@ -75,27 +75,35 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 
             String campos[] = registros[i].split(regExpSeparadorCampos);
 
-            if (!seHaEncontradoElPrimerRegistro) {
-                seHaEncontradoElPrimerRegistro = true;
-                configurarMapping(campos, mapNameToIndex, mapIndexToName);
-            } else {
-                if (ignorarRegistroDespuesDeSerSeparadoPorCampos(campos, mapNameToIndex)) {
-                    continue;
+            try {
+                if (!seHaEncontradoElPrimerRegistro) {
+                    seHaEncontradoElPrimerRegistro = true;
+                    configurarMapping(campos, mapNameToIndex, mapIndexToName);
+                } else {
+                    if (!checkNumeroCamposEsperados(i, campos, mapIndexToName)) {
+                    	System.out.println("IGNORADO:"+registros[i]);
+                    	System.out.println("IGNORADO:("+campos.length+","+mapIndexToName.size()+")");
+                        continue;
+                    }
+
+                	if (ignorarRegistroDespuesDeSerSeparadoPorCampos(campos, mapNameToIndex)) {
+                    	System.out.println("IGNORADO:"+registros[i]);
+                        continue;
+                    }
+
+                    limpiarCampos(campos, mapNameToIndex);
+
+                    String key = generarIdentificadorRegistro(campos, mapNameToIndex);
+
+                    if (!map.containsKey(key)) {
+                        adicionar(key, map, campos, mapNameToIndex, mapIndexToName);
+                    }
+                    modificar(key, map, campos, mapNameToIndex, mapIndexToName);
                 }
-
-                if (!checkNumeroCamposEsperados(i, campos, mapIndexToName)) {
-                    continue;
-                }
-
-                limpiarCampos(campos, mapNameToIndex);
-
-                String key = generarIdentificadorRegistro(campos, mapNameToIndex);
-
-                if (!map.containsKey(key)) {
-                    adicionar(key, map, campos, mapNameToIndex, mapIndexToName);
-                }
-                modificar(key, map, campos, mapNameToIndex, mapIndexToName);
-            }
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
         }
 
         return map;

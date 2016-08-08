@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,14 +31,14 @@ import javax.validation.constraints.NotNull;
 import com.tacticlogistics.domain.model.common.TipoContenido;
 import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
 import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
+import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.domain.model.wms.Unidad;
 
 @Entity
 @Table(name = "LineasOrden", catalog = "oms", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "id_orden", "numeroItem" }) })
-
+		@UniqueConstraint(columnNames = { "id_orden", "numeroItem" }) })
 public class OmsLineaOrden implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -46,9 +47,9 @@ public class OmsLineaOrden implements Serializable {
     @Column(name = "id_linea_orden", unique = true, nullable = false)
     private Integer id;
 
-    @Column(name = "id_orden", nullable = false, insertable = true, updatable = false)
-    @NotNull
-    private Integer ordenId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_orden", nullable = false)
+    private OmsOrden orden;
 
     // ---------------------------------------------------------------------------------------------------------
     private int numeroItem;
@@ -250,7 +251,6 @@ public class OmsLineaOrden implements Serializable {
     public OmsLineaOrden() {
         super();
         this.setId(null);
-        this.setOrdenId(null);
         this.setNumeroItem(0);
         this.setDescripcion("");
         this.setCantidadSolicitada(0);
@@ -311,8 +311,8 @@ public class OmsLineaOrden implements Serializable {
         return id;
     }
 
-    public Integer getOrdenId() {
-        return ordenId;
+    public OmsOrden getOrden() {
+        return orden;
     }
 
     public int getNumeroItem() {
@@ -563,8 +563,8 @@ public class OmsLineaOrden implements Serializable {
         this.id = id;
     }
 
-    protected void setOrdenId(Integer ordenId) {
-        this.ordenId = ordenId;
+    public void setOrden(OmsOrden orden) {
+        this.orden = orden;
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -795,178 +795,77 @@ public class OmsLineaOrden implements Serializable {
         this.setDimensiones(new Dimensiones(largoPorUnidad, anchoPorUnidad, altoPorUnidad, pesoBrutoPorUnidad));
     }
 
-    // ---------------------------------------------------------------------------------------------------------
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + numeroItem;
-        result = prime * result + ((ordenId == null) ? 0 : ordenId.hashCode());
-        return result;
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + numeroItem;
+		return result;
+	}
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        OmsLineaOrden other = (OmsLineaOrden) obj;
-        if (numeroItem != other.numeroItem)
-            return false;
-        if (ordenId == null) {
-            if (other.ordenId != null)
-                return false;
-        } else if (!ordenId.equals(other.ordenId))
-            return false;
-        return true;
-    }
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OmsLineaOrden other = (OmsLineaOrden) obj;
+		if (numeroItem != other.numeroItem)
+			return false;
+		return true;
+	}
 
     @Override
-    public String toString() {
-        final int maxLen = 3;
-        StringBuilder builder = new StringBuilder();
-        builder.append("OmsLineaOrden [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (ordenId != null) {
-            builder.append("ordenId=").append(ordenId).append(", ");
-        }
-        builder.append("numeroItem=").append(numeroItem).append(", ");
-        if (descripcion != null) {
-            builder.append("descripcion=").append(descripcion).append(", ");
-        }
-        builder.append("cantidadSolicitada=").append(cantidadSolicitada).append(", cantidadEntregada=")
-                .append(cantidadEntregada).append(", ");
-        if (producto != null) {
-            builder.append("producto=").append(producto).append(", ");
-        }
-        if (productoCodigo != null) {
-            builder.append("productoCodigo=").append(productoCodigo).append(", ");
-        }
-        if (productoCodigoAlterno != null) {
-            builder.append("productoCodigoAlterno=").append(productoCodigoAlterno).append(", ");
-        }
-        if (unidad != null) {
-            builder.append("unidad=").append(unidad).append(", ");
-        }
-        if (unidadCodigo != null) {
-            builder.append("unidadCodigo=").append(unidadCodigo).append(", ");
-        }
-        if (unidadCodigoAlterno != null) {
-            builder.append("unidadCodigoAlterno=").append(unidadCodigoAlterno).append(", ");
-        }
-        if (tipoContenido != null) {
-            builder.append("tipoContenido=").append(tipoContenido).append(", ");
-        }
-        if (tipoContenidoCodigo != null) {
-            builder.append("tipoContenidoCodigo=").append(tipoContenidoCodigo).append(", ");
-        }
-        if (tipoContenidoCodigoAlterno != null) {
-            builder.append("tipoContenidoCodigoAlterno=").append(tipoContenidoCodigoAlterno).append(", ");
-        }
-        if (bodegaOrigen != null) {
-            builder.append("bodegaOrigen=").append(bodegaOrigen).append(", ");
-        }
-        if (bodegaOrigenCodigo != null) {
-            builder.append("bodegaOrigenCodigo=").append(bodegaOrigenCodigo).append(", ");
-        }
-        if (bodegaOrigenCodigoAlterno != null) {
-            builder.append("bodegaOrigenCodigoAlterno=").append(bodegaOrigenCodigoAlterno).append(", ");
-        }
-        if (estadoInventarioOrigenId != null) {
-            builder.append("estadoInventarioOrigenId=").append(estadoInventarioOrigenId).append(", ");
-        }
-        if (numeroOrdenWmsOrigen != null) {
-            builder.append("numeroOrdenWmsOrigen=").append(numeroOrdenWmsOrigen).append(", ");
-        }
-        if (bodegaDestino != null) {
-            builder.append("bodegaDestino=").append(bodegaDestino).append(", ");
-        }
-        if (bodegaDestinoCodigo != null) {
-            builder.append("bodegaDestinoCodigo=").append(bodegaDestinoCodigo).append(", ");
-        }
-        if (bodegaDestinoCodigoAlterno != null) {
-            builder.append("bodegaDestinoCodigoAlterno=").append(bodegaDestinoCodigoAlterno).append(", ");
-        }
-        if (estadoInventarioDestinoId != null) {
-            builder.append("estadoInventarioDestinoId=").append(estadoInventarioDestinoId).append(", ");
-        }
-        if (numeroOrdenWmsDestino != null) {
-            builder.append("numeroOrdenWmsDestino=").append(numeroOrdenWmsDestino).append(", ");
-        }
-        if (lote != null) {
-            builder.append("lote=").append(lote).append(", ");
-        }
-        if (serial != null) {
-            builder.append("serial=").append(serial).append(", ");
-        }
-        if (cosecha != null) {
-            builder.append("cosecha=").append(cosecha).append(", ");
-        }
-        if (requerimientoEstampillado != null) {
-            builder.append("requerimientoEstampillado=").append(requerimientoEstampillado).append(", ");
-        }
-        if (requerimientoSalud != null) {
-            builder.append("requerimientoSalud=").append(requerimientoSalud).append(", ");
-        }
-        if (requerimientoImporte != null) {
-            builder.append("requerimientoImporte=").append(requerimientoImporte).append(", ");
-        }
-        if (requerimientoDistribuido != null) {
-            builder.append("requerimientoDistribuido=").append(requerimientoDistribuido).append(", ");
-        }
-        if (requerimientoNutricional != null) {
-            builder.append("requerimientoNutricional=").append(requerimientoNutricional).append(", ");
-        }
-        if (requerimientoBl != null) {
-            builder.append("requerimientoBl=").append(requerimientoBl).append(", ");
-        }
-        if (requerimientoFondoCuenta != null) {
-            builder.append("requerimientoFondoCuenta=").append(requerimientoFondoCuenta).append(", ");
-        }
-        if (requerimientoOrigen != null) {
-            builder.append("requerimientoOrigen=").append(requerimientoOrigen).append(", ");
-        }
-        if (numeroOrdenTms != null) {
-            builder.append("numeroOrdenTms=").append(numeroOrdenTms).append(", ");
-        }
-        if (fechaOrdenTms != null) {
-            builder.append("fechaOrdenTms=").append(fechaOrdenTms).append(", ");
-        }
-        if (predistribucionDestinoFinal != null) {
-            builder.append("predistribucionDestinoFinal=").append(predistribucionDestinoFinal).append(", ");
-        }
-        if (predistribucionRotulo != null) {
-            builder.append("predistribucionRotulo=").append(predistribucionRotulo).append(", ");
-        }
-        if (valorDeclaradoPorUnidad != null) {
-            builder.append("valorDeclaradoPorUnidad=").append(valorDeclaradoPorUnidad).append(", ");
-        }
-        if (notas != null) {
-            builder.append("notas=").append(notas).append(", ");
-        }
-        if (fechaCreacion != null) {
-            builder.append("fechaCreacion=").append(fechaCreacion).append(", ");
-        }
-        if (usuarioCreacion != null) {
-            builder.append("usuarioCreacion=").append(usuarioCreacion).append(", ");
-        }
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion).append(", ");
-        }
-        if (mensajes != null) {
-            builder.append("mensajes=").append(toString(mensajes, maxLen));
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "OmsLineaOrden [" + (id != null ? "id=" + id + ", " : "") + "numeroItem=" + numeroItem + ", "
+				+ (descripcion != null ? "descripcion=" + descripcion + ", " : "") + "cantidadSolicitada="
+				+ cantidadSolicitada + ", cantidadPlanificada=" + cantidadPlanificada + ", cantidadAlistada="
+				+ cantidadAlistada + ", cantidadEntregada=" + cantidadEntregada + ", cantidadNoEntregada="
+				+ cantidadNoEntregada + ", cantidadNoEntregadaLegalizada=" + cantidadNoEntregadaLegalizada
+				+ ", cantidadSobrante=" + cantidadSobrante + ", cantidadSobranteLegalizada="
+				+ cantidadSobranteLegalizada + ", "
+				+ (productoCodigo != null ? "productoCodigo=" + productoCodigo + ", " : "")
+				+ (productoCodigoAlterno != null ? "productoCodigoAlterno=" + productoCodigoAlterno + ", " : "")
+				+ (unidadCodigo != null ? "unidadCodigo=" + unidadCodigo + ", " : "")
+				+ (unidadCodigoAlterno != null ? "unidadCodigoAlterno=" + unidadCodigoAlterno + ", " : "")
+				+ (tipoContenidoCodigo != null ? "tipoContenidoCodigo=" + tipoContenidoCodigo + ", " : "")
+				+ (tipoContenidoCodigoAlterno != null
+						? "tipoContenidoCodigoAlterno=" + tipoContenidoCodigoAlterno + ", " : "")
+				+ (bodegaOrigenCodigo != null ? "bodegaOrigenCodigo=" + bodegaOrigenCodigo + ", " : "")
+				+ (bodegaOrigenCodigoAlterno != null ? "bodegaOrigenCodigoAlterno=" + bodegaOrigenCodigoAlterno + ", "
+						: "")
+				+ (estadoInventarioOrigenId != null ? "estadoInventarioOrigenId=" + estadoInventarioOrigenId + ", "
+						: "")
+				+ (numeroOrdenWmsOrigen != null ? "numeroOrdenWmsOrigen=" + numeroOrdenWmsOrigen + ", " : "")
+				+ (bodegaDestinoCodigo != null ? "bodegaDestinoCodigo=" + bodegaDestinoCodigo + ", " : "")
+				+ (bodegaDestinoCodigoAlterno != null
+						? "bodegaDestinoCodigoAlterno=" + bodegaDestinoCodigoAlterno + ", " : "")
+				+ (estadoInventarioDestinoId != null ? "estadoInventarioDestinoId=" + estadoInventarioDestinoId + ", "
+						: "")
+				+ (numeroOrdenWmsDestino != null ? "numeroOrdenWmsDestino=" + numeroOrdenWmsDestino + ", " : "")
+				+ (lote != null ? "lote=" + lote + ", " : "") + (serial != null ? "serial=" + serial + ", " : "")
+				+ (cosecha != null ? "cosecha=" + cosecha + ", " : "")
+				+ (requerimientoEstampillado != null ? "requerimientoEstampillado=" + requerimientoEstampillado + ", "
+						: "")
+				+ (requerimientoSalud != null ? "requerimientoSalud=" + requerimientoSalud + ", " : "")
+				+ (requerimientoImporte != null ? "requerimientoImporte=" + requerimientoImporte + ", " : "")
+				+ (requerimientoDistribuido != null ? "requerimientoDistribuido=" + requerimientoDistribuido + ", "
+						: "")
+				+ (requerimientoNutricional != null ? "requerimientoNutricional=" + requerimientoNutricional + ", "
+						: "")
+				+ (requerimientoBl != null ? "requerimientoBl=" + requerimientoBl + ", " : "")
+				+ (requerimientoFondoCuenta != null ? "requerimientoFondoCuenta=" + requerimientoFondoCuenta + ", "
+						: "")
+				+ (requerimientoOrigen != null ? "requerimientoOrigen=" + requerimientoOrigen + ", " : "")
+				+ (numeroOrdenTms != null ? "numeroOrdenTms=" + numeroOrdenTms + ", " : "")
+				+ (fechaOrdenTms != null ? "fechaOrdenTms=" + fechaOrdenTms + ", " : "")
+				+ (predistribucionDestinoFinal != null
+						? "predistribucionDestinoFinal=" + predistribucionDestinoFinal + ", " : "")
+				+ (predistribucionRotulo != null ? "predistribucionRotulo=" + predistribucionRotulo + ", " : "")
+				+ (valorDeclaradoPorUnidad != null ? "valorDeclaradoPorUnidad=" + valorDeclaradoPorUnidad : "") + "]";
+	}
 
     private String toString(Collection<?> collection, int maxLen) {
         StringBuilder builder = new StringBuilder();

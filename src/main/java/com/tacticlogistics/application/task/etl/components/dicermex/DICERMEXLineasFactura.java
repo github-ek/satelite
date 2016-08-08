@@ -99,7 +99,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
         list.add(LINEA_PRODUCTO_CODIGO.toString());
         list.add(LINEA_CANTIDAD_SOLICITADA.toString());
-        list.add(LINEA_UNIDAD_CODIGO_ALTERNO.toString());
+        //list.add(LINEA_UNIDAD_CODIGO_ALTERNO.toString());
         list.add(LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO.toString());
         list.add(LINEA_BODEGA_DESTINO_CODIGO_ALTERNO.toString());
 
@@ -152,14 +152,9 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
             }
             dto.setCantidadSolicitada(integerValue);
 
+            dto.setUnidadCodigo("UN");
             value = getValorCampo(LINEA_UNIDAD_CODIGO_ALTERNO, campos, mapNameToIndex);
-            if (value.equals("UND")) {
-                dto.setUnidadCodigo("UN");
-                dto.setUnidadCodigoAlterno("");
-            } else {
-                dto.setUnidadCodigo("");
-                dto.setUnidadCodigoAlterno(value);
-            }
+            dto.setUnidadCodigoAlterno(value);
 
             value = getValorCampo(LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO, campos, mapNameToIndex);
             dto.setBodegaOrigenCodigoAlterno(value);

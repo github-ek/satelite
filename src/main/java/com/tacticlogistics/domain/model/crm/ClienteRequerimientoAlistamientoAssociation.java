@@ -10,8 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "clientes_requerimientos_maquila", catalog = "crm")
-public class ClienteRequerimientoMaquilaAssociation implements Serializable {
+@Table(name = "clientes_requerimientos_alistamiento", catalog = "crm")
+public class ClienteRequerimientoAlistamientoAssociation implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -26,20 +26,20 @@ public class ClienteRequerimientoMaquilaAssociation implements Serializable {
     @Column(nullable = false, length = 50)
     private String codigoAlterno;
 
-    @Column(name = "id_requerimiento_maquila", nullable = false, insertable = true, updatable = false)
-    private int requerimientoMaquilaId;
+    @Column(name = "id_requerimiento_alistamiento", nullable = false, insertable = true, updatable = false)
+    private int requerimientoAlistamientoId;
 
     @Column(nullable = false, length = 200)
     private String descripcion;
 
     // ---------------------------------------------------------------------------------------------------------
-    public ClienteRequerimientoMaquilaAssociation(int clienteId, int tipoServicioId, String codigoAlterno,
-            int requerimientoMaquilaId, String descripcion) {
+    public ClienteRequerimientoAlistamientoAssociation(int clienteId, int tipoServicioId, String codigoAlterno,
+            int requerimientoAlistamientoId, String descripcion) {
         super();
         this.setClienteId(clienteId);
         this.setTipoServicioId(tipoServicioId);
         this.setCodigoAlterno(codigoAlterno);
-        this.setRequerimientoMaquilaId(requerimientoMaquilaId);
+        this.setRequerimientoAlistamientoId(requerimientoAlistamientoId);        
         this.setDescripcion(descripcion);
     }
 
@@ -55,8 +55,8 @@ public class ClienteRequerimientoMaquilaAssociation implements Serializable {
         return codigoAlterno;
     }
 
-    public int getRequerimientoMaquilaId() {
-        return requerimientoMaquilaId;
+    public int getRequerimientoAlistamientoId() {
+        return requerimientoAlistamientoId;
     }
 
     public String getDescripcion() {
@@ -64,7 +64,7 @@ public class ClienteRequerimientoMaquilaAssociation implements Serializable {
     }
 
     // ---------------------------------------------------------------------------------------------------------
-    protected ClienteRequerimientoMaquilaAssociation() {
+    protected ClienteRequerimientoAlistamientoAssociation() {
         super();
         this.setCodigoAlterno("");
         this.setDescripcion("");
@@ -82,8 +82,8 @@ public class ClienteRequerimientoMaquilaAssociation implements Serializable {
         this.codigoAlterno = coalesce(value, "");
     }
 
-    protected void setRequerimientoMaquilaId(int value) {
-        this.requerimientoMaquilaId = value;
+    protected void setRequerimientoAlistamientoId(int value) {
+        this.requerimientoAlistamientoId = value;
     }
 
     protected void setDescripcion(String value) {
@@ -108,7 +108,7 @@ public class ClienteRequerimientoMaquilaAssociation implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ClienteRequerimientoMaquilaAssociation other = (ClienteRequerimientoMaquilaAssociation) obj;
+        ClienteRequerimientoAlistamientoAssociation other = (ClienteRequerimientoAlistamientoAssociation) obj;
         if (clienteId != other.clienteId)
             return false;
         if (codigoAlterno == null) {
@@ -122,18 +122,10 @@ public class ClienteRequerimientoMaquilaAssociation implements Serializable {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ClienteRequerimientoMaquilaAssociation [clienteId=").append(clienteId)
-                .append(", tipoServicioId=").append(tipoServicioId).append(", ");
-        if (codigoAlterno != null) {
-            builder.append("codigoAlterno=").append(codigoAlterno).append(", ");
-        }
-        builder.append("requerimientoMaquilaId=").append(requerimientoMaquilaId).append(", ");
-        if (descripcion != null) {
-            builder.append("descripcion=").append(descripcion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "ClienteRequerimientoAlistamientoAssociation [clienteId=" + clienteId + ", tipoServicioId="
+				+ tipoServicioId + ", " + (codigoAlterno != null ? "codigoAlterno=" + codigoAlterno + ", " : "")
+				+ "requerimientoAlistamientoId=" + requerimientoAlistamientoId + ", "
+				+ (descripcion != null ? "descripcion=" + descripcion : "") + "]";
+	}
 }

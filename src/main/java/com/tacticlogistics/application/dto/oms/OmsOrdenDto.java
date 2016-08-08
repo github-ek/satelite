@@ -136,8 +136,8 @@ public class OmsOrdenDto {
     private Set<ItemGenerico<Integer>> requerimientosDistribucion;
     private String notasRequerimientosDistribucion;
 
-    private Set<ItemGenerico<Integer>> requerimientosMaquila;
-    private String notasRequerimientosMaquila;
+    private Set<ItemGenerico<Integer>> requerimientosAlistamiento;
+    private String notasRequerimientosAlistamiento;
 
     // ---------------------------------------------------------------------------------------------------------
     @DateTimeFormat(pattern = dateFormat)
@@ -475,12 +475,12 @@ public class OmsOrdenDto {
         return notasRequerimientosDistribucion;
     }
 
-    public Set<ItemGenerico<Integer>> getRequerimientosMaquila() {
-        return requerimientosMaquila;
+    public Set<ItemGenerico<Integer>> getRequerimientosAlistamiento() {
+        return requerimientosAlistamiento;
     }
 
-    public String getNotasRequerimientosMaquila() {
-        return notasRequerimientosMaquila;
+    public String getNotasRequerimientosAlistamiento() {
+        return notasRequerimientosAlistamiento;
     }
 
     public Date getFechaConfirmacion() {
@@ -881,12 +881,12 @@ public class OmsOrdenDto {
         this.notasRequerimientosDistribucion = coalesce(value, "");
     }
 
-    public void setRequerimientosMaquila(Set<ItemGenerico<Integer>> value) {
-        this.requerimientosMaquila = value;
+    public void setRequerimientosAlistamiento(Set<ItemGenerico<Integer>> value) {
+        this.requerimientosAlistamiento = value;
     }
 
-    public void setNotasRequerimientosMaquila(String value) {
-        this.notasRequerimientosMaquila = coalesce(value, "");
+    public void setNotasRequerimientosAlistamiento(String value) {
+        this.notasRequerimientosAlistamiento = coalesce(value, "");
     }
 
     public void setFechaConfirmacion(Date value) {
@@ -1070,8 +1070,8 @@ public class OmsOrdenDto {
         this.setRequerimientosDistribucion(new HashSet<>());
         this.setNotasRequerimientosDistribucion("");
 
-        this.setRequerimientosMaquila(new HashSet<>());
-        this.setNotasRequerimientosMaquila("");
+        this.setRequerimientosAlistamiento(new HashSet<>());
+        this.setNotasRequerimientosAlistamiento("");
 
         this.setUsuarioConfirmacion("");
         this.setNotasConfirmacion("");
@@ -1127,329 +1127,173 @@ public class OmsOrdenDto {
     }
 
     @Override
-    public String toString() {
-        final int maxLen = 5;
-        StringBuilder builder = new StringBuilder();
-        builder.append("OmsOrdenDto [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (tipoServicioId != null) {
-            builder.append("tipoServicioId=").append(tipoServicioId).append(", ");
-        }
-        if (tipoServicioNombre != null) {
-            builder.append("tipoServicioNombre=").append(tipoServicioNombre).append(", ");
-        }
-        if (clienteId != null) {
-            builder.append("clienteId=").append(clienteId).append(", ");
-        }
-        if (clienteCodigo != null) {
-            builder.append("clienteCodigo=").append(clienteCodigo).append(", ");
-        }
-        if (clienteNombre != null) {
-            builder.append("clienteNombre=").append(clienteNombre).append(", ");
-        }
-        if (estadoOrden != null) {
-            builder.append("estadoOrden=").append(estadoOrden).append(", ");
-        }
-        if (origenOrden != null) {
-            builder.append("origenOrden=").append(origenOrden).append(", ");
-        }
-        if (numeroDocumentoOrdenCliente != null) {
-            builder.append("numeroDocumentoOrdenCliente=").append(numeroDocumentoOrdenCliente).append(", ");
-        }
-        if (consolidadoId != null) {
-            builder.append("consolidadoId=").append(consolidadoId).append(", ");
-        }
-        if (numeroDocumentoConsolidadoCliente != null) {
-            builder.append("numeroDocumentoConsolidadoCliente=").append(numeroDocumentoConsolidadoCliente).append(", ");
-        }
-        if (canalId != null) {
-            builder.append("canalId=").append(canalId).append(", ");
-        }
-        if (canalCodigo != null) {
-            builder.append("canalCodigo=").append(canalCodigo).append(", ");
-        }
-        if (canalNombre != null) {
-            builder.append("canalNombre=").append(canalNombre).append(", ");
-        }
-        if (canalCodigoAlterno != null) {
-            builder.append("canalCodigoAlterno=").append(canalCodigoAlterno).append(", ");
-        }
-        if (destinatarioId != null) {
-            builder.append("destinatarioId=").append(destinatarioId).append(", ");
-        }
-        if (destinatarioCodigo != null) {
-            builder.append("destinatarioCodigo=").append(destinatarioCodigo).append(", ");
-        }
-        if (destinatarioNombre != null) {
-            builder.append("destinatarioNombre=").append(destinatarioNombre).append(", ");
-        }
-        if (destinatarioNumeroIdentificacion != null) {
-            builder.append("destinatarioNumeroIdentificacion=").append(destinatarioNumeroIdentificacion).append(", ");
-        }
-        if (destinatarioCodigoAlterno != null) {
-            builder.append("destinatarioCodigoAlterno=").append(destinatarioCodigoAlterno).append(", ");
-        }
-        if (destinatarioNombreAlterno != null) {
-            builder.append("destinatarioNombreAlterno=").append(destinatarioNombreAlterno).append(", ");
-        }
-        if (destinatarioNumeroIdentificacionAlterno != null) {
-            builder.append("destinatarioNumeroIdentificacionAlterno=").append(destinatarioNumeroIdentificacionAlterno)
-                    .append(", ");
-        }
-        if (destinatarioDigitoVerificacionAlterno != null) {
-            builder.append("destinatarioDigitoVerificacionAlterno=").append(destinatarioDigitoVerificacionAlterno)
-                    .append(", ");
-        }
-        if (destinatarioCiudadId != null) {
-            builder.append("destinatarioCiudadId=").append(destinatarioCiudadId).append(", ");
-        }
-        if (destinatarioCiudadNombre != null) {
-            builder.append("destinatarioCiudadNombre=").append(destinatarioCiudadNombre).append(", ");
-        }
-        if (destinatarioDireccion != null) {
-            builder.append("destinatarioDireccion=").append(destinatarioDireccion).append(", ");
-        }
-        if (destinatarioIndicacionesDireccion != null) {
-            builder.append("destinatarioIndicacionesDireccion=").append(destinatarioIndicacionesDireccion).append(", ");
-        }
-        if (destinatarioContactoNombres != null) {
-            builder.append("destinatarioContactoNombres=").append(destinatarioContactoNombres).append(", ");
-        }
-        if (destinatarioContactoTelefonos != null) {
-            builder.append("destinatarioContactoTelefonos=").append(destinatarioContactoTelefonos).append(", ");
-        }
-        if (destinatarioContactoEmail != null) {
-            builder.append("destinatarioContactoEmail=").append(destinatarioContactoEmail).append(", ");
-        }
-        if (estadoSolicitudActualizacionDatosContactoDestinatario != null) {
-            builder.append("estadoSolicitudActualizacionDatosContactoDestinatario=")
-                    .append(estadoSolicitudActualizacionDatosContactoDestinatario).append(", ");
-        }
-        if (destinatarioCiudadNombreAlterno != null) {
-            builder.append("destinatarioCiudadNombreAlterno=").append(destinatarioCiudadNombreAlterno).append(", ");
-        }
-        if (destinoId != null) {
-            builder.append("destinoId=").append(destinoId).append(", ");
-        }
-        if (destinoCodigo != null) {
-            builder.append("destinoCodigo=").append(destinoCodigo).append(", ");
-        }
-        if (destinoNombre != null) {
-            builder.append("destinoNombre=").append(destinoNombre).append(", ");
-        }
-        if (destinoCodigoAlterno != null) {
-            builder.append("destinoCodigoAlterno=").append(destinoCodigoAlterno).append(", ");
-        }
-        if (destinoNombreAlterno != null) {
-            builder.append("destinoNombreAlterno=").append(destinoNombreAlterno).append(", ");
-        }
-        if (bodegaDestinoId != null) {
-            builder.append("bodegaDestinoId=").append(bodegaDestinoId).append(", ");
-        }
-        if (bodegaDestinoCodigo != null) {
-            builder.append("bodegaDestinoCodigo=").append(bodegaDestinoCodigo).append(", ");
-        }
-        if (bodegaDestinoNombre != null) {
-            builder.append("bodegaDestinoNombre=").append(bodegaDestinoNombre).append(", ");
-        }
-        if (bodegaDestinoCodigoAlterno != null) {
-            builder.append("bodegaDestinoCodigoAlterno=").append(bodegaDestinoCodigoAlterno).append(", ");
-        }
-        if (bodegaDestinoNombreAlterno != null) {
-            builder.append("bodegaDestinoNombreAlterno=").append(bodegaDestinoNombreAlterno).append(", ");
-        }
-        if (destinoCiudadId != null) {
-            builder.append("destinoCiudadId=").append(destinoCiudadId).append(", ");
-        }
-        if (destinoCiudadNombre != null) {
-            builder.append("destinoCiudadNombre=").append(destinoCiudadNombre).append(", ");
-        }
-        if (destinoDireccion != null) {
-            builder.append("destinoDireccion=").append(destinoDireccion).append(", ");
-        }
-        if (destinoIndicacionesDireccion != null) {
-            builder.append("destinoIndicacionesDireccion=").append(destinoIndicacionesDireccion).append(", ");
-        }
-        if (destinoContactoNombres != null) {
-            builder.append("destinoContactoNombres=").append(destinoContactoNombres).append(", ");
-        }
-        if (destinoContactoTelefonos != null) {
-            builder.append("destinoContactoTelefonos=").append(destinoContactoTelefonos).append(", ");
-        }
-        if (destinoContactoEmail != null) {
-            builder.append("destinoContactoEmail=").append(destinoContactoEmail).append(", ");
-        }
-        if (estadoSolicitudActualizacionDatosContactoDestino != null) {
-            builder.append("estadoSolicitudActualizacionDatosContactoDestino=")
-                    .append(estadoSolicitudActualizacionDatosContactoDestino).append(", ");
-        }
-        if (destinoCiudadNombreAlterno != null) {
-            builder.append("destinoCiudadNombreAlterno=").append(destinoCiudadNombreAlterno).append(", ");
-        }
-        builder.append("requiereServicioDistribucion=").append(requiereServicioDistribucion).append(", ");
-        if (fechaSugeridaEntregaMinima != null) {
-            builder.append("fechaSugeridaEntregaMinima=").append(fechaSugeridaEntregaMinima).append(", ");
-        }
-        if (fechaSugeridaEntregaMaxima != null) {
-            builder.append("fechaSugeridaEntregaMaxima=").append(fechaSugeridaEntregaMaxima).append(", ");
-        }
-        if (horaSugeridaEntregaMinima != null) {
-            builder.append("horaSugeridaEntregaMinima=").append(horaSugeridaEntregaMinima).append(", ");
-        }
-        if (horaSugeridaEntregaMaxima != null) {
-            builder.append("horaSugeridaEntregaMaxima=").append(horaSugeridaEntregaMaxima).append(", ");
-        }
-        if (horaSugeridaEntregaMinimaAdicional != null) {
-            builder.append("horaSugeridaEntregaMinimaAdicional=").append(horaSugeridaEntregaMinimaAdicional)
-                    .append(", ");
-        }
-        if (horaSugeridaEntregaMaximaAdicional != null) {
-            builder.append("horaSugeridaEntregaMaximaAdicional=").append(horaSugeridaEntregaMaximaAdicional)
-                    .append(", ");
-        }
-        if (fechaPlaneadaAlistamiento != null) {
-            builder.append("fechaPlaneadaAlistamiento=").append(fechaPlaneadaAlistamiento).append(", ");
-        }
-        if (fechaPlaneadaEntregaMinima != null) {
-            builder.append("fechaPlaneadaEntregaMinima=").append(fechaPlaneadaEntregaMinima).append(", ");
-        }
-        if (fechaPlaneadaEntregaMaxima != null) {
-            builder.append("fechaPlaneadaEntregaMaxima=").append(fechaPlaneadaEntregaMaxima).append(", ");
-        }
-        if (horaPlaneadaEntregaMinima != null) {
-            builder.append("horaPlaneadaEntregaMinima=").append(horaPlaneadaEntregaMinima).append(", ");
-        }
-        if (horaPlaneadaEntregaMaxima != null) {
-            builder.append("horaPlaneadaEntregaMaxima=").append(horaPlaneadaEntregaMaxima).append(", ");
-        }
-        if (horaPlaneadaEntregaMinimaAdicional != null) {
-            builder.append("horaPlaneadaEntregaMinimaAdicional=").append(horaPlaneadaEntregaMinimaAdicional)
-                    .append(", ");
-        }
-        if (horaPlaneadaEntregaMaximaAdicional != null) {
-            builder.append("horaPlaneadaEntregaMaximaAdicional=").append(horaPlaneadaEntregaMaximaAdicional)
-                    .append(", ");
-        }
-        if (requerimientosDistribucion != null) {
-            builder.append("requerimientosDistribucion=").append(toString(requerimientosDistribucion, maxLen))
-                    .append(", ");
-        }
-        if (notasRequerimientosDistribucion != null) {
-            builder.append("notasRequerimientosDistribucion=").append(notasRequerimientosDistribucion).append(", ");
-        }
-        if (requerimientosMaquila != null) {
-            builder.append("requerimientosMaquila=").append(toString(requerimientosMaquila, maxLen)).append(", ");
-        }
-        if (notasRequerimientosMaquila != null) {
-            builder.append("notasRequerimientosMaquila=").append(notasRequerimientosMaquila).append(", ");
-        }
-        if (fechaConfirmacion != null) {
-            builder.append("fechaConfirmacion=").append(fechaConfirmacion).append(", ");
-        }
-        if (usuarioConfirmacion != null) {
-            builder.append("usuarioConfirmacion=").append(usuarioConfirmacion).append(", ");
-        }
-        if (notasConfirmacion != null) {
-            builder.append("notasConfirmacion=").append(notasConfirmacion).append(", ");
-        }
-        if (fechaAprobacionCliente != null) {
-            builder.append("fechaAprobacionCliente=").append(fechaAprobacionCliente).append(", ");
-        }
-        if (usuarioAprobacionCliente != null) {
-            builder.append("usuarioAprobacionCliente=").append(usuarioAprobacionCliente).append(", ");
-        }
-        if (notasAprobacionCliente != null) {
-            builder.append("notasAprobacionCliente=").append(notasAprobacionCliente).append(", ");
-        }
-        if (fechaSolicitudRevisionCliente != null) {
-            builder.append("fechaSolicitudRevisionCliente=").append(fechaSolicitudRevisionCliente).append(", ");
-        }
-        if (usuarioSolicitudRevisionCliente != null) {
-            builder.append("usuarioSolicitudRevisionCliente=").append(usuarioSolicitudRevisionCliente).append(", ");
-        }
-        if (notasSolicitudRevisionCliente != null) {
-            builder.append("notasSolicitudRevisionCliente=").append(notasSolicitudRevisionCliente).append(", ");
-        }
-        if (causalSolicitudRevisionClienteId != null) {
-            builder.append("causalSolicitudRevisionClienteId=").append(causalSolicitudRevisionClienteId).append(", ");
-        }
-        if (causalSolicitudRevisionClienteNombre != null) {
-            builder.append("causalSolicitudRevisionClienteNombre=").append(causalSolicitudRevisionClienteNombre)
-                    .append(", ");
-        }
-        if (fechaInicioPlaneacionLogistica != null) {
-            builder.append("fechaInicioPlaneacionLogistica=").append(fechaInicioPlaneacionLogistica).append(", ");
-        }
-        if (usuarioInicioPlaneacionLogistica != null) {
-            builder.append("usuarioInicioPlaneacionLogistica=").append(usuarioInicioPlaneacionLogistica).append(", ");
-        }
-        if (fechaFinPlaneacionLogistica != null) {
-            builder.append("fechaFinPlaneacionLogistica=").append(fechaFinPlaneacionLogistica).append(", ");
-        }
-        if (usuarioFinPlaneacionLogistica != null) {
-            builder.append("usuarioFinPlaneacionLogistica=").append(usuarioFinPlaneacionLogistica).append(", ");
-        }
-        if (notasPlaneacionLogistica != null) {
-            builder.append("notasPlaneacionLogistica=").append(notasPlaneacionLogistica).append(", ");
-        }
-        if (fechaSolicitudRevisionPlaneacionLogistica != null) {
-            builder.append("fechaSolicitudRevisionPlaneacionLogistica=")
-                    .append(fechaSolicitudRevisionPlaneacionLogistica).append(", ");
-        }
-        if (usuarioSolicitudRevisionPlaneacionLogistica != null) {
-            builder.append("usuarioSolicitudRevisionPlaneacionLogistica=")
-                    .append(usuarioSolicitudRevisionPlaneacionLogistica).append(", ");
-        }
-        if (notasSolicitudRevisionPlaneacionLogistica != null) {
-            builder.append("notasSolicitudRevisionPlaneacionLogistica=")
-                    .append(notasSolicitudRevisionPlaneacionLogistica).append(", ");
-        }
-        if (causalSolicitudRevisionPlaneacionLogisticaId != null) {
-            builder.append("causalSolicitudRevisionPlaneacionLogisticaId=")
-                    .append(causalSolicitudRevisionPlaneacionLogisticaId).append(", ");
-        }
-        if (causalSolicitudRevisionPlaneacionLogisticaNombre != null) {
-            builder.append("causalSolicitudRevisionPlaneacionLogisticaNombre=")
-                    .append(causalSolicitudRevisionPlaneacionLogisticaNombre).append(", ");
-        }
-        if (fechaInicioEjecucionLogistica != null) {
-            builder.append("fechaInicioEjecucionLogistica=").append(fechaInicioEjecucionLogistica).append(", ");
-        }
-        if (fechaFinEjecucionLogistica != null) {
-            builder.append("fechaFinEjecucionLogistica=").append(fechaFinEjecucionLogistica).append(", ");
-        }
-        if (fechaCreacion != null) {
-            builder.append("fechaCreacion=").append(fechaCreacion).append(", ");
-        }
-        if (usuarioCreacion != null) {
-            builder.append("usuarioCreacion=").append(usuarioCreacion).append(", ");
-        }
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion).append(", ");
-        }
-        if (fechaAnulacion != null) {
-            builder.append("fechaAnulacion=").append(fechaAnulacion).append(", ");
-        }
-        if (usuarioAnulacion != null) {
-            builder.append("usuarioAnulacion=").append(usuarioAnulacion).append(", ");
-        }
-        if (notasAnulacion != null) {
-            builder.append("notasAnulacion=").append(notasAnulacion).append(", ");
-        }
-        if (causalAnulacionId != null) {
-            builder.append("causalAnulacionId=").append(causalAnulacionId).append(", ");
-        }
-        if (causalAnulacionNombre != null) {
-            builder.append("causalAnulacionNombre=").append(causalAnulacionNombre);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "OmsOrdenDto [" + (id != null ? "id=" + id + ", " : "")
+				+ (tipoServicioId != null ? "tipoServicioId=" + tipoServicioId + ", " : "")
+				+ (tipoServicioNombre != null ? "tipoServicioNombre=" + tipoServicioNombre + ", " : "")
+				+ (clienteId != null ? "clienteId=" + clienteId + ", " : "")
+				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
+				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
+				+ (estadoOrden != null ? "estadoOrden=" + estadoOrden + ", " : "")
+				+ (origenOrden != null ? "origenOrden=" + origenOrden + ", " : "")
+				+ (numeroDocumentoOrdenCliente != null
+						? "numeroDocumentoOrdenCliente=" + numeroDocumentoOrdenCliente + ", " : "")
+				+ (consolidadoId != null ? "consolidadoId=" + consolidadoId + ", " : "")
+				+ (numeroDocumentoConsolidadoCliente != null
+						? "numeroDocumentoConsolidadoCliente=" + numeroDocumentoConsolidadoCliente + ", " : "")
+				+ (canalId != null ? "canalId=" + canalId + ", " : "")
+				+ (canalCodigo != null ? "canalCodigo=" + canalCodigo + ", " : "")
+				+ (canalNombre != null ? "canalNombre=" + canalNombre + ", " : "")
+				+ (canalCodigoAlterno != null ? "canalCodigoAlterno=" + canalCodigoAlterno + ", " : "")
+				+ (destinatarioId != null ? "destinatarioId=" + destinatarioId + ", " : "")
+				+ (destinatarioCodigo != null ? "destinatarioCodigo=" + destinatarioCodigo + ", " : "")
+				+ (destinatarioNombre != null ? "destinatarioNombre=" + destinatarioNombre + ", " : "")
+				+ (destinatarioNumeroIdentificacion != null
+						? "destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion + ", " : "")
+				+ (destinatarioCodigoAlterno != null ? "destinatarioCodigoAlterno=" + destinatarioCodigoAlterno + ", "
+						: "")
+				+ (destinatarioNombreAlterno != null ? "destinatarioNombreAlterno=" + destinatarioNombreAlterno + ", "
+						: "")
+				+ (destinatarioNumeroIdentificacionAlterno != null
+						? "destinatarioNumeroIdentificacionAlterno=" + destinatarioNumeroIdentificacionAlterno + ", "
+						: "")
+				+ (destinatarioDigitoVerificacionAlterno != null
+						? "destinatarioDigitoVerificacionAlterno=" + destinatarioDigitoVerificacionAlterno + ", " : "")
+				+ (destinatarioCiudadId != null ? "destinatarioCiudadId=" + destinatarioCiudadId + ", " : "")
+				+ (destinatarioCiudadNombre != null ? "destinatarioCiudadNombre=" + destinatarioCiudadNombre + ", "
+						: "")
+				+ (destinatarioDireccion != null ? "destinatarioDireccion=" + destinatarioDireccion + ", " : "")
+				+ (destinatarioIndicacionesDireccion != null
+						? "destinatarioIndicacionesDireccion=" + destinatarioIndicacionesDireccion + ", " : "")
+				+ (destinatarioContactoNombres != null
+						? "destinatarioContactoNombres=" + destinatarioContactoNombres + ", " : "")
+				+ (destinatarioContactoTelefonos != null
+						? "destinatarioContactoTelefonos=" + destinatarioContactoTelefonos + ", " : "")
+				+ (destinatarioContactoEmail != null ? "destinatarioContactoEmail=" + destinatarioContactoEmail + ", "
+						: "")
+				+ (estadoSolicitudActualizacionDatosContactoDestinatario != null
+						? "estadoSolicitudActualizacionDatosContactoDestinatario="
+								+ estadoSolicitudActualizacionDatosContactoDestinatario + ", "
+						: "")
+				+ (destinatarioCiudadNombreAlterno != null
+						? "destinatarioCiudadNombreAlterno=" + destinatarioCiudadNombreAlterno + ", " : "")
+				+ (destinoId != null ? "destinoId=" + destinoId + ", " : "")
+				+ (destinoCodigo != null ? "destinoCodigo=" + destinoCodigo + ", " : "")
+				+ (destinoNombre != null ? "destinoNombre=" + destinoNombre + ", " : "")
+				+ (destinoCodigoAlterno != null ? "destinoCodigoAlterno=" + destinoCodigoAlterno + ", " : "")
+				+ (destinoNombreAlterno != null ? "destinoNombreAlterno=" + destinoNombreAlterno + ", " : "")
+				+ (bodegaDestinoId != null ? "bodegaDestinoId=" + bodegaDestinoId + ", " : "")
+				+ (bodegaDestinoCodigo != null ? "bodegaDestinoCodigo=" + bodegaDestinoCodigo + ", " : "")
+				+ (bodegaDestinoNombre != null ? "bodegaDestinoNombre=" + bodegaDestinoNombre + ", " : "")
+				+ (bodegaDestinoCodigoAlterno != null
+						? "bodegaDestinoCodigoAlterno=" + bodegaDestinoCodigoAlterno + ", " : "")
+				+ (bodegaDestinoNombreAlterno != null
+						? "bodegaDestinoNombreAlterno=" + bodegaDestinoNombreAlterno + ", " : "")
+				+ (destinoCiudadId != null ? "destinoCiudadId=" + destinoCiudadId + ", " : "")
+				+ (destinoCiudadNombre != null ? "destinoCiudadNombre=" + destinoCiudadNombre + ", " : "")
+				+ (destinoDireccion != null ? "destinoDireccion=" + destinoDireccion + ", " : "")
+				+ (destinoIndicacionesDireccion != null
+						? "destinoIndicacionesDireccion=" + destinoIndicacionesDireccion + ", " : "")
+				+ (destinoContactoNombres != null ? "destinoContactoNombres=" + destinoContactoNombres + ", " : "")
+				+ (destinoContactoTelefonos != null ? "destinoContactoTelefonos=" + destinoContactoTelefonos + ", "
+						: "")
+				+ (destinoContactoEmail != null ? "destinoContactoEmail=" + destinoContactoEmail + ", " : "")
+				+ (estadoSolicitudActualizacionDatosContactoDestino != null
+						? "estadoSolicitudActualizacionDatosContactoDestino="
+								+ estadoSolicitudActualizacionDatosContactoDestino + ", "
+						: "")
+				+ (destinoCiudadNombreAlterno != null
+						? "destinoCiudadNombreAlterno=" + destinoCiudadNombreAlterno + ", " : "")
+				+ "requiereServicioDistribucion=" + requiereServicioDistribucion + ", "
+				+ (fechaSugeridaEntregaMinima != null
+						? "fechaSugeridaEntregaMinima=" + fechaSugeridaEntregaMinima + ", " : "")
+				+ (fechaSugeridaEntregaMaxima != null
+						? "fechaSugeridaEntregaMaxima=" + fechaSugeridaEntregaMaxima + ", " : "")
+				+ (horaSugeridaEntregaMinima != null ? "horaSugeridaEntregaMinima=" + horaSugeridaEntregaMinima + ", "
+						: "")
+				+ (horaSugeridaEntregaMaxima != null ? "horaSugeridaEntregaMaxima=" + horaSugeridaEntregaMaxima + ", "
+						: "")
+				+ (horaSugeridaEntregaMinimaAdicional != null
+						? "horaSugeridaEntregaMinimaAdicional=" + horaSugeridaEntregaMinimaAdicional + ", " : "")
+				+ (horaSugeridaEntregaMaximaAdicional != null
+						? "horaSugeridaEntregaMaximaAdicional=" + horaSugeridaEntregaMaximaAdicional + ", " : "")
+				+ (fechaPlaneadaAlistamiento != null ? "fechaPlaneadaAlistamiento=" + fechaPlaneadaAlistamiento + ", "
+						: "")
+				+ (fechaPlaneadaEntregaMinima != null
+						? "fechaPlaneadaEntregaMinima=" + fechaPlaneadaEntregaMinima + ", " : "")
+				+ (fechaPlaneadaEntregaMaxima != null
+						? "fechaPlaneadaEntregaMaxima=" + fechaPlaneadaEntregaMaxima + ", " : "")
+				+ (horaPlaneadaEntregaMinima != null ? "horaPlaneadaEntregaMinima=" + horaPlaneadaEntregaMinima + ", "
+						: "")
+				+ (horaPlaneadaEntregaMaxima != null ? "horaPlaneadaEntregaMaxima=" + horaPlaneadaEntregaMaxima + ", "
+						: "")
+				+ (horaPlaneadaEntregaMinimaAdicional != null
+						? "horaPlaneadaEntregaMinimaAdicional=" + horaPlaneadaEntregaMinimaAdicional + ", " : "")
+				+ (horaPlaneadaEntregaMaximaAdicional != null
+						? "horaPlaneadaEntregaMaximaAdicional=" + horaPlaneadaEntregaMaximaAdicional + ", " : "")
+				+ (requerimientosDistribucion != null
+						? "requerimientosDistribucion=" + requerimientosDistribucion + ", " : "")
+				+ (notasRequerimientosDistribucion != null
+						? "notasRequerimientosDistribucion=" + notasRequerimientosDistribucion + ", " : "")
+				+ (requerimientosAlistamiento != null
+						? "requerimientosAlistamiento=" + requerimientosAlistamiento + ", " : "")
+				+ (notasRequerimientosAlistamiento != null
+						? "notasRequerimientosAlistamiento=" + notasRequerimientosAlistamiento + ", " : "")
+				+ (fechaConfirmacion != null ? "fechaConfirmacion=" + fechaConfirmacion + ", " : "")
+				+ (usuarioConfirmacion != null ? "usuarioConfirmacion=" + usuarioConfirmacion + ", " : "")
+				+ (notasConfirmacion != null ? "notasConfirmacion=" + notasConfirmacion + ", " : "")
+				+ (fechaAprobacionCliente != null ? "fechaAprobacionCliente=" + fechaAprobacionCliente + ", " : "")
+				+ (usuarioAprobacionCliente != null ? "usuarioAprobacionCliente=" + usuarioAprobacionCliente + ", "
+						: "")
+				+ (notasAprobacionCliente != null ? "notasAprobacionCliente=" + notasAprobacionCliente + ", " : "")
+				+ (fechaSolicitudRevisionCliente != null
+						? "fechaSolicitudRevisionCliente=" + fechaSolicitudRevisionCliente + ", " : "")
+				+ (usuarioSolicitudRevisionCliente != null
+						? "usuarioSolicitudRevisionCliente=" + usuarioSolicitudRevisionCliente + ", " : "")
+				+ (notasSolicitudRevisionCliente != null
+						? "notasSolicitudRevisionCliente=" + notasSolicitudRevisionCliente + ", " : "")
+				+ (causalSolicitudRevisionClienteId != null
+						? "causalSolicitudRevisionClienteId=" + causalSolicitudRevisionClienteId + ", " : "")
+				+ (causalSolicitudRevisionClienteNombre != null
+						? "causalSolicitudRevisionClienteNombre=" + causalSolicitudRevisionClienteNombre + ", " : "")
+				+ (fechaInicioPlaneacionLogistica != null
+						? "fechaInicioPlaneacionLogistica=" + fechaInicioPlaneacionLogistica + ", " : "")
+				+ (usuarioInicioPlaneacionLogistica != null
+						? "usuarioInicioPlaneacionLogistica=" + usuarioInicioPlaneacionLogistica + ", " : "")
+				+ (fechaFinPlaneacionLogistica != null
+						? "fechaFinPlaneacionLogistica=" + fechaFinPlaneacionLogistica + ", " : "")
+				+ (usuarioFinPlaneacionLogistica != null
+						? "usuarioFinPlaneacionLogistica=" + usuarioFinPlaneacionLogistica + ", " : "")
+				+ (notasPlaneacionLogistica != null ? "notasPlaneacionLogistica=" + notasPlaneacionLogistica + ", "
+						: "")
+				+ (fechaSolicitudRevisionPlaneacionLogistica != null ? "fechaSolicitudRevisionPlaneacionLogistica="
+						+ fechaSolicitudRevisionPlaneacionLogistica + ", " : "")
+				+ (usuarioSolicitudRevisionPlaneacionLogistica != null ? "usuarioSolicitudRevisionPlaneacionLogistica="
+						+ usuarioSolicitudRevisionPlaneacionLogistica + ", " : "")
+				+ (notasSolicitudRevisionPlaneacionLogistica != null ? "notasSolicitudRevisionPlaneacionLogistica="
+						+ notasSolicitudRevisionPlaneacionLogistica + ", " : "")
+				+ (causalSolicitudRevisionPlaneacionLogisticaId != null
+						? "causalSolicitudRevisionPlaneacionLogisticaId=" + causalSolicitudRevisionPlaneacionLogisticaId
+								+ ", "
+						: "")
+				+ (causalSolicitudRevisionPlaneacionLogisticaNombre != null
+						? "causalSolicitudRevisionPlaneacionLogisticaNombre="
+								+ causalSolicitudRevisionPlaneacionLogisticaNombre + ", "
+						: "")
+				+ (fechaInicioEjecucionLogistica != null
+						? "fechaInicioEjecucionLogistica=" + fechaInicioEjecucionLogistica + ", " : "")
+				+ (fechaFinEjecucionLogistica != null
+						? "fechaFinEjecucionLogistica=" + fechaFinEjecucionLogistica + ", " : "")
+				+ (fechaCreacion != null ? "fechaCreacion=" + fechaCreacion + ", " : "")
+				+ (usuarioCreacion != null ? "usuarioCreacion=" + usuarioCreacion + ", " : "")
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion + ", " : "")
+				+ (fechaAnulacion != null ? "fechaAnulacion=" + fechaAnulacion + ", " : "")
+				+ (usuarioAnulacion != null ? "usuarioAnulacion=" + usuarioAnulacion + ", " : "")
+				+ (notasAnulacion != null ? "notasAnulacion=" + notasAnulacion + ", " : "")
+				+ (causalAnulacionId != null ? "causalAnulacionId=" + causalAnulacionId + ", " : "")
+				+ (causalAnulacionNombre != null ? "causalAnulacionNombre=" + causalAnulacionNombre : "") + "]";
+	}
 
     private String toString(Collection<?> collection, int maxLen) {
         StringBuilder builder = new StringBuilder();

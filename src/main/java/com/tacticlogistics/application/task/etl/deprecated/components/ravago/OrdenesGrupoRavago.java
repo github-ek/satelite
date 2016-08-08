@@ -55,7 +55,7 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                             encontradoDestinoCiudadNombreAlterno = true;
 
                             lineas[i] = reduce(lineas[i]);
-                            sb.append(OrdenDtoAtributos.DESTINO_CIUDAD_NOMBRE_ALTERNO.toString()).append("\t")
+                            sb.append(OrdenDtoAtributos.DESTINO_CIUDAD_CODIGO_ALTERNO.toString()).append("\t")
                                     .append(lineas[i]).append("\n");
 
                             index = 0;
@@ -73,7 +73,7 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                                     encontradoDestinatarioNumeroIdentificacion = true;
 
                                     lineas[i] = reduce(lineas[i] + " ").trim();
-                                    sb.append(OrdenDtoAtributos.DESTINATARIO_NUMERO_IDENTIFICACION.toString())
+                                    sb.append(OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION.toString())
                                             .append("\t").append(lineas[i]).append("\n");
                                 } else {
                                     if (!encontradoUsuarioAprobacionCliente) {
@@ -82,17 +82,17 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                                             String usuarioAprobacionCliente = lineas[i].substring(0, lineas[i].length() - 8);
                                             String fechaSugeridaEntregaMaxima =  lineas[i].substring(lineas[i].length() - 8);
                                             
-                                            sb.append(OrdenDtoAtributos.USUARIO_APROBACION_CLIENTE.toString())
+                                            sb.append("USUARIO_CONFIRMACION_CLIENTE")
                                             .append("\t").append(usuarioAprobacionCliente).append("\n");
 
-                                            sb.append(OrdenDtoAtributos.FECHA_SUGERIDA_ENTREGA_MAXIMA.toString())
+                                            sb.append(OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MAXIMA.toString())
                                             .append("\t").append(fechaSugeridaEntregaMaxima).append("\n");
                                         }
                                     }else{
                                         if(!encontradoInicioLineas){
                                             encontradoInicioLineas =true;
 
-                                            sb.append(OrdenDtoAtributos.NOTAS_APROBACION_CLIENTE.toString())
+                                            sb.append(OrdenDtoAtributos.NOTAS.toString())
                                             .append("\t").append(lineas[i]).append("\n");
                                             
                                             index = 0;
@@ -131,7 +131,7 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
 
                                                 String notas = linea.toString().trim();
 
-                                                sb.append(OrdenDtoAtributos.LINEAS.toString()).append("\t");
+                                                sb.append("LINEAS").append("\t");
                                                 sb.append(productoCodigo).append("\t");
                                                 sb.append(cantidad).append("\t");
                                                 sb.append(unidadCodigoAlterno).append("\t");

@@ -5,46 +5,39 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "ordenes_requerimientos_maquila", catalog = "oms")
+//@Entity
+//@Table(name = "ordenes_requerimientos_alistamiento", catalog = "oms")
+@Embeddable
 public class OmsOrdenRequerimientoAlistamientoAssociation implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "id_orden", nullable = false, insertable = true, updatable = false)
-    private int ordenId;
+    //@Id
+    @Column(name = "id_requerimiento_alistamiento", nullable = false, insertable = true, updatable = false)
+    private int requerimientoAlistamientoId;
 
-    @Id
-    @Column(name = "id_requerimiento_maquila", nullable = false, insertable = true, updatable = false)
-    private int requerimientoMaquilaId;
-
-    @Id
-    @Column(nullable = false, length = 50)
+    //@Id
+	@Column(name = "codigo_alterno", nullable = false, length = 50)
     private String codigoAlterno;
 
-    @Column(nullable = false, length = 200)
+	@Column(name = "descripcion", nullable = false, length = 200)
     private String descripcion;
 
     // ---------------------------------------------------------------------------------------------------------
-    public OmsOrdenRequerimientoAlistamientoAssociation(int ordenId, int requerimientoMaquilaId, String codigoAlterno,
+    public OmsOrdenRequerimientoAlistamientoAssociation(int requerimientoAlistamientoId, String codigoAlterno,
             String descripcion) {
         super();
-        this.setOrdenId(ordenId);
-        this.setRequerimientoMaquilaId(requerimientoMaquilaId);
+        this.setRequerimientoAlistamientoId(requerimientoAlistamientoId);
         this.setCodigoAlterno(codigoAlterno);
         this.setDescripcion(descripcion);
     }
 
-    public int getOrdenId() {
-        return ordenId;
-    }
-
-    public int getRequerimientoMaquilaId() {
-        return requerimientoMaquilaId;
+    public int getRequerimientoAlistamientoId() {
+        return requerimientoAlistamientoId;
     }
 
     public String getCodigoAlterno() {
@@ -62,12 +55,8 @@ public class OmsOrdenRequerimientoAlistamientoAssociation implements Serializabl
         this.setDescripcion("");
     }
 
-    protected void setOrdenId(int value) {
-        this.ordenId = value;
-    }
-
-    protected void setRequerimientoMaquilaId(int value) {
-        this.requerimientoMaquilaId = value;
+    protected void setRequerimientoAlistamientoId(int value) {
+        this.requerimientoAlistamientoId = value;
     }
 
     protected void setCodigoAlterno(String value) {
@@ -79,48 +68,38 @@ public class OmsOrdenRequerimientoAlistamientoAssociation implements Serializabl
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((codigoAlterno == null) ? 0 : codigoAlterno.hashCode());
-        result = prime * result + ordenId;
-        result = prime * result + requerimientoMaquilaId;
-        return result;
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((codigoAlterno == null) ? 0 : codigoAlterno.hashCode());
+		result = prime * result + requerimientoAlistamientoId;
+		return result;
+	}
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        OmsOrdenRequerimientoAlistamientoAssociation other = (OmsOrdenRequerimientoAlistamientoAssociation) obj;
-        if (codigoAlterno == null) {
-            if (other.codigoAlterno != null)
-                return false;
-        } else if (!codigoAlterno.equals(other.codigoAlterno))
-            return false;
-        if (ordenId != other.ordenId)
-            return false;
-        if (requerimientoMaquilaId != other.requerimientoMaquilaId)
-            return false;
-        return true;
-    }
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OmsOrdenRequerimientoAlistamientoAssociation other = (OmsOrdenRequerimientoAlistamientoAssociation) obj;
+		if (codigoAlterno == null) {
+			if (other.codigoAlterno != null)
+				return false;
+		} else if (!codigoAlterno.equals(other.codigoAlterno))
+			return false;
+		if (requerimientoAlistamientoId != other.requerimientoAlistamientoId)
+			return false;
+		return true;
+	}
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("OmsOrdenRequerimientoMaquilaAssociation [ordenId=").append(ordenId)
-                .append(", requerimientoMaquilaId=").append(requerimientoMaquilaId).append(", ");
-        if (codigoAlterno != null) {
-            builder.append("codigoAlterno=").append(codigoAlterno).append(", ");
-        }
-        if (descripcion != null) {
-            builder.append("descripcion=").append(descripcion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "OmsOrdenRequerimientoAlistamientoAssociation [requerimientoAlistamientoId="
+				+ requerimientoAlistamientoId + ", "
+				+ (codigoAlterno != null ? "codigoAlterno=" + codigoAlterno + ", " : "")
+				+ (descripcion != null ? "descripcion=" + descripcion : "") + "]";
+	}
 }
