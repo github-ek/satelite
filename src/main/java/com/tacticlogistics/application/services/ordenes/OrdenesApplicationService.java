@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -38,23 +39,25 @@ import com.tacticlogistics.domain.model.common.IdentificacionType;
 import com.tacticlogistics.domain.model.common.TipoContenido;
 import com.tacticlogistics.domain.model.common.UsoUbicacionType;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
-import com.tacticlogistics.domain.model.common.valueobjects.Direccion;
+import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
 import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
 import com.tacticlogistics.domain.model.crm.Canal;
 import com.tacticlogistics.domain.model.crm.Cliente;
+import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.crm.DestinatarioRemitente;
 import com.tacticlogistics.domain.model.crm.DestinoOrigen;
 import com.tacticlogistics.domain.model.crm.TipoFormaPago;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.Consolidado;
 import com.tacticlogistics.domain.model.ordenes.EstadoOrden;
-import com.tacticlogistics.domain.model.ordenes.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.domain.model.requerimientos.Requerimiento;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
+import com.tacticlogistics.domain.model.wms.ProductoUnidadAssociation;
 import com.tacticlogistics.domain.model.wms.Unidad;
 import com.tacticlogistics.infrastructure.persistence.crm.CanalRepository;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
@@ -75,8 +78,8 @@ import com.tacticlogistics.infrastructure.services.Basic;
 @Service
 @Transactional(readOnly = true)
 public class OrdenesApplicationService {
-	@Autowired
-	private CiudadesApplicationService ciudadesService;
+	//@Autowired
+	//private CiudadesApplicationService ciudadesService;
 
 	@Autowired
 	private OrdenRepository ordenRepository;
@@ -91,9 +94,9 @@ public class OrdenesApplicationService {
 	@Autowired
 	private CanalRepository canalRepository;
 	@Autowired
-	private DestinatarioRemitenteRepository destinatarioRemitenteRepository;
+	private DestinatarioRemitenteRepository terceroRepository;
 	@Autowired
-	private DestinoOrigenRepository destinoOrigenRepository;
+	private DestinoOrigenRepository puntoRepository;
 	@Autowired
 	private CiudadRepository ciudadRepository;
 	@Autowired
@@ -107,9 +110,503 @@ public class OrdenesApplicationService {
 	@Autowired
 	private TipoContenidoRepository tipoContenidoRepository;
 
+	// TODO HOMOLOGAR CODIGOS ALTERNOS DE SERVICIOS
+	// TODO IMPLEMENTAR RGLAS DE NEGOCIO EN CONFIRMAR
+	// TODO RETORNAR ERRORES DE NEGOCIO
+	// TODO IMPLEMENTAR UN CACHE DE DATOS
+	// TODO QUITAR LOS CODIGOS ALTERNO DE LAS LINEAS
+	// TODO INCLUIR PINADO
+	// TODO VALIDAR ERRORES DE LONGITUD DE CARACTERES
+	@Transactional(readOnly = false)
+	public Orden saveOrdenDespachosSecundaria(ETLOrdenDto dto) throws DataAccessException {
+		StringBuffer errores = new StringBuffer();
+
+		Cliente cliente = null;
+		TipoServicio tipoServicio = null;
+		Ciudad ciudad = null;
+		DestinoOrigen punto = null;
+		Canal canal = null;
+		DestinatarioRemitente tercero = null;
+		Consolidado consolidado = null;
+
+		tipoServicio = tipoServicioRepository.findByCodigoIgnoringCase(dto.getTipoServicioCodigo());
+		if (tipoServicio == null) {
+			throw new RuntimeException("(tipoServicio == null)");
+		}
+
+		cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
+		if (cliente == null) {
+			throw new RuntimeException("(cliente == null)");
+		}
+
+		Orden model = checkOrdenExistente(dto, cliente.getId());
+		if (model != null) {
+			throw new RuntimeException("Ya existe una solicitud con el mismo numero");
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		String usuario = dto.getUsuarioConfirmacion();
+		Date fecha = new Date();
+
+		consolidado = homologarConsolidado(dto, cliente);
+		ciudad = homologarCiudad(cliente.getId(), dto.getDestinoCiudadNombreAlterno());
+		tercero = homologarTercero(dto, cliente.getId(), dto.getDestinatarioNumeroIdentificacion(), usuario);
+		if (tercero != null && ciudad != null) {
+			punto = homologarPunto(tercero.getId(), ciudad.getId(), dto.getDestinoDireccion(),
+					dto.getDestinoIndicaciones(), dto.getDestinoNombre(), dto.getDestinoContacto(), usuario, errores);
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		if (tercero != null) {
+			canal = canalRepository.findOne(tercero.getCanalId());
+
+			usarContactoPredeterminadoDelTercero(dto, tercero);
+		}
+		if (punto != null) {
+			usarContactoPredeterminadoDelPuntoDestino(dto, punto);
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		model = setDatosOrden(dto, cliente, tipoServicio, canal, tercero, ciudad, punto, null, null, consolidado,
+				usuario, fecha);
+
+		// ------------------------------------------------------------------------------------------------
+		for (ETLLineaOrdenDto linea : dto.getLineas()) {
+			saveLineaOrden(dto, linea, model);
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		model.confirmar(usuario, fecha, dto.getNotasConfirmacion());
+		model = ordenRepository.save(model);
+
+		return model;
+	}
+
+	@Transactional(readOnly = false)
+	public Orden saveOrdenRecibo(ETLOrdenDto dto) throws DataAccessException {
+		StringBuffer errores = new StringBuffer();
+
+		Cliente cliente = null;
+		TipoServicio tipoServicio = null;
+		Ciudad ciudad = null;
+		DestinoOrigen punto = null;
+		Canal canal = null;
+		DestinatarioRemitente tercero = null;
+		Consolidado consolidado = null;
+
+		tipoServicio = tipoServicioRepository.findByCodigoIgnoringCase(dto.getTipoServicioCodigo());
+		if (tipoServicio == null) {
+			throw new RuntimeException("(tipoServicio == null)");
+		}
+
+		cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
+		if (cliente == null) {
+			throw new RuntimeException("(cliente == null)");
+		}
+
+		Orden model = checkOrdenExistente(dto, cliente.getId());
+		if (model != null) {
+			throw new RuntimeException("Ya existe una solicitud con el mismo numero");
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		String usuario = dto.getUsuarioConfirmacion();
+		Date fecha = new Date();
+
+		consolidado = homologarConsolidado(dto, cliente);
+		ciudad = homologarCiudad(cliente.getId(), dto.getOrigenCiudadNombreAlterno());
+		tercero = homologarTercero(dto, cliente.getId(), dto.getDestinatarioNumeroIdentificacion(), usuario);
+		if (tercero != null && ciudad != null) {
+			punto = homologarPunto(tercero.getId(), ciudad.getId(), dto.getOrigenDireccion(),
+					dto.getOrigenIndicaciones(), dto.getOrigenNombre(), dto.getOrigenContacto(), usuario, errores);
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		if (tercero != null) {
+			canal = canalRepository.findOne(tercero.getCanalId());
+
+			usarContactoPredeterminadoDelTercero(dto, tercero);
+		}
+		if (punto != null) {
+			usarContactoPredeterminadoDelPuntoOrigen(dto, punto);
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		model = setDatosOrden(dto, cliente, tipoServicio, canal, tercero, null, null, ciudad, punto, consolidado,
+				usuario, fecha);
+
+		// ------------------------------------------------------------------------------------------------
+		for (ETLLineaOrdenDto linea : dto.getLineas()) {
+			saveLineaOrden(dto, linea, model);
+		}
+
+		// ------------------------------------------------------------------------------------------------
+		model.confirmar(usuario, fecha, dto.getNotasConfirmacion());
+		model = ordenRepository.save(model);
+
+		return model;
+	}
+
+	@Transactional(readOnly = false)
+	protected void saveLineaOrden(ETLOrdenDto dtoOrden, ETLLineaOrdenDto dto, Orden orden) {
+		LineaOrden model = null;
+		Producto producto = null;
+		Optional<ProductoUnidadAssociation> huella = null;
+		Unidad unidad = null;
+		Dimensiones dimensiones = null;
+		Bodega bodegaOrigen = null;
+		Bodega bodegaDestino = null;
+
+		model = new LineaOrden();
+		orden.addLinea(model);
+
+		// ----------------------------------------------------------------------------------------------------
+		producto = homologarProducto(dto, orden.getCliente().getId());
+		huella = homologarHuella(producto);
+
+		if (huella.isPresent()) {
+			unidad = huella.get().getUnidad();
+			dto.setUnidadCodigo(unidad.getCodigo());
+			dimensiones = huella.get().getDimensiones();
+		}
+
+		// ----------------------------------------------------------------------------------------------------
+		bodegaOrigen = homologarBodega(dto, dto.getBodegaOrigenCodigo(), orden.getCliente().getId(),
+				dto.getBodegaOrigenCodigoAlterno(), true);
+
+		bodegaDestino = homologarBodega(dto, dto.getBodegaDestinoCodigo(), orden.getCliente().getId(),
+				dto.getBodegaDestinoCodigoAlterno(), false);
+
+		// ----------------------------------------------------------------------------------------------------
+		model.setDescripcion(dto.getDescripcion());
+
+		model.setCantidadSolicitada(dto.getCantidadSolicitada());
+		model.setCantidadPlanificada(dto.getCantidadSolicitada());
+
+		model.setProducto(producto);
+		model.setProductoCodigo(dto.getProductoCodigo());
+		model.setProductoCodigoAlterno("");
+
+		model.setUnidad(unidad);
+		model.setUnidadCodigo(dto.getUnidadCodigo());
+		model.setUnidadCodigoAlterno("");
+
+		model.setTipoContenido(null);
+		model.setTipoContenidoCodigo("");
+		model.setTipoContenidoCodigoAlterno("");
+
+		model.setDimensiones(dimensiones);
+
+		model.setBodegaOrigen(bodegaOrigen);
+		model.setBodegaOrigenCodigo(dto.getBodegaOrigenCodigo());
+		model.setBodegaOrigenCodigoAlterno(dto.getBodegaOrigenCodigoAlterno());
+		model.setEstadoInventarioOrigenId(dto.getEstadoInventarioOrigen());
+
+		model.setBodegaDestino(bodegaDestino);
+		model.setBodegaDestinoCodigo(dto.getBodegaDestinoCodigo());
+		model.setBodegaDestinoCodigoAlterno(dto.getBodegaDestinoCodigoAlterno());
+		model.setEstadoInventarioDestinoId(dto.getEstadoInventarioDestino());
+
+		model.setLote(dto.getLote());
+		model.setSerial(dto.getSerial());
+		model.setCosecha(dto.getCosecha());
+
+		model.setRequerimientoEstampillado(dto.getRequerimientoEstampillado());
+		model.setRequerimientoSalud(dto.getRequerimientoSalud());
+		model.setRequerimientoImporte(dto.getRequerimientoImporte());
+		model.setRequerimientoDistribuido(dto.getRequerimientoDistribuido());
+		model.setRequerimientoNutricional(dto.getRequerimientoNutricional());
+		model.setRequerimientoBl(dto.getRequerimientoBl());
+		model.setRequerimientoFondoCuenta(dto.getRequerimientoFondoCuenta());
+		model.setRequerimientoOrigen(dto.getRequerimientoOrigen());
+
+		model.setPredistribucionDestinoFinal(dto.getPredistribucionDestinoFinal());
+		model.setPredistribucionRotulo(dto.getPredistribucionRotulo());
+		model.setValorDeclaradoPorUnidad(dto.getValorDeclaradoPorUnidad());
+		model.setNotas(dto.getNotas());
+
+		model.setFechaActualizacion(new Date());
+		model.setUsuarioActualizacion(dtoOrden.getUsuarioConfirmacion());
+
+		model.setFechaCreacion(model.getFechaActualizacion());
+		model.setUsuarioCreacion(model.getUsuarioActualizacion());
+	}
+
+	private Orden setDatosOrden(ETLOrdenDto dto, Cliente cliente, TipoServicio tipoServicio, Canal canal,
+			DestinatarioRemitente tercero, Ciudad ciudadDestino, DestinoOrigen puntoDestino, Ciudad ciudadOrigen,
+			DestinoOrigen puntoOrigen, Consolidado consolidado, String usuario, Date fecha) {
+
+		Orden model = new Orden();
+
+		// ---------------------------------------------------------------------------------------------------------
+		model.setDatosOrden(
+				dto.getNumeroOrden(), 
+				null, 
+				"", 
+				consolidado, 
+				cliente, 
+				tipoServicio, 
+				dto.getTipoServicioCodigoAlterno(),
+				dto.isRequiereServicioDistribucion());
+
+		// ---------------------------------------------------------------------------------------------------------
+		model.setDatosDireccionDestino(ciudadDestino, dto.getDestinoDireccion(), dto.getDestinoIndicaciones());
+		model.setDatosDireccionOrigen(ciudadOrigen, dto.getOrigenDireccion(), dto.getOrigenIndicaciones());
+
+		// ---------------------------------------------------------------------------------------------------------
+		model.setRequiereConfirmacionCitaEntrega(dto.isRequiereConfirmacionCitaEntrega());
+		model.setDatosCitaEntregaSugerida(
+				dto.getFechaEntregaSugeridaMinima(), 
+				dto.getFechaEntregaSugeridaMaxima(),
+				dto.getHoraEntregaSugeridaMinima(), 
+				dto.getHoraEntregaSugeridaMaxima());
+
+		// ---------------------------------------------------------------------------------------------------------
+		model.setRequiereConfirmacionCitaRecogida(dto.isRequiereConfirmacionCitaRecogida());
+		model.setDatosCitaRecogidaSugerida(
+				dto.getFechaRecogidaSugeridaMinima(), 
+				dto.getFechaRecogidaSugeridaMaxima(),
+				dto.getHoraRecogidaSugeridaMinima(), 
+				dto.getHoraRecogidaSugeridaMaxima());
+
+		// ---------------------------------------------------------------------------------------------------------
+		model.setDatosDestinatario(canal, dto.getCanalCodigoAlterno(), tercero, dto.getDestinatarioContacto());
+		model.setDatosPuntoDestino(puntoDestino, dto.getDestinoContacto());
+		model.setDatosPuntoDestino(puntoOrigen, dto.getOrigenContacto());
+
+		// ---------------------------------------------------------------------------------------------------------
+		model.setValorRecaudo(dto.getValorRecaudo());
+
+		model.setDatosCreacion(usuario, fecha);
+		model.setDatosActualizacion(usuario, fecha);
+
+		// notas_requerimientos_distribucion
+		// notas_requerimientos_alistamiento
+		// Listas de requerimientos
+
+		return model;
+	}
+
+	private Orden checkOrdenExistente(ETLOrdenDto dto, int clienteId) {
+		Orden model;
+		model = ordenRepository.findFirstByClienteIdAndNumeroOrden(clienteId, dto.getNumeroOrden());
+
+		if (model != null) {
+			switch (model.getEstadoOrden()) {
+			case ANULADA:
+				ordenRepository.delete(model.getId());
+				model = null;
+				break;
+			default:
+				break;
+			}
+		}
+
+		return model;
+	}
+
+	private Consolidado homologarConsolidado(ETLOrdenDto dto, Cliente cliente) {
+		Consolidado consolidado = null;
+
+		if (!dto.getNumeroConsolidado().isEmpty()) {
+			consolidado = consolidadoRepository.findByClienteIdAndNumeroDocumentoConsolidadoClienteIgnoringCase(
+					cliente.getId(), dto.getNumeroConsolidado());
+			if (consolidado == null) {
+				consolidado = CrearConsolidado(dto, cliente);
+			}
+		}
+		return consolidado;
+	}
+
+	private Ciudad homologarCiudad(int clienteId, String ciudadNombreAlterno) {
+		Ciudad ciudad = null;
+		if (!ciudadNombreAlterno.isEmpty()) {
+			ciudad = ciudadRepository.findTop1ByClienteIdAndNombreAlterno(clienteId, ciudadNombreAlterno);
+			if (ciudad == null) {
+				ciudad = ciudadRepository.findByNombreAlternoIgnoringCase(ciudadNombreAlterno);
+				if (ciudad == null) {
+					ciudad = ciudadRepository.findByCodigo(ciudadNombreAlterno);
+				}
+			}
+		}
+		return ciudad;
+	}
+
+	private DestinatarioRemitente homologarTercero(ETLOrdenDto dto, int clienteId, String identificacion,
+			String usuario) {
+		DestinatarioRemitente tercero = null;
+		if (!identificacion.isEmpty()) {
+			tercero = terceroRepository.findByClienteIdAndNumeroIdentificacion(clienteId, identificacion);
+			if (tercero == null) {
+				tercero = CrearDestintarioRemitente(dto, clienteId, usuario);
+			}
+		}
+		return tercero;
+	}
+
+	private DestinoOrigen homologarPunto(int terceroId, int ciudadId, String direccion, String indicaciones,
+			String puntoNombre, Contacto contacto, String usuario, StringBuffer errores) {
+
+		DestinoOrigen punto = null;
+		List<DestinoOrigen> puntos;
+
+		puntos = puntoRepository
+				.findAllByDestinatarioRemitenteIdAndDireccionCiudadIdAndDireccionDireccionOrderByCodigoAscNombreAsc(
+						terceroId, ciudadId, direccion);
+
+		if (puntos.isEmpty()) {
+			punto = this.CrearPunto(terceroId, ciudadId, direccion, indicaciones, puntoNombre, contacto, usuario);
+		} else {
+			if (puntos.size() > 1) {
+				errores.append("ADVERTENCIA: Se detectaron " + puntos.size() + " puntos con esta misma dirección.");
+			}
+			punto = puntos.get(0);
+		}
+
+		return punto;
+	}
+
+	private void usarContactoPredeterminadoDelTercero(ETLOrdenDto dto, DestinatarioRemitente tercero) {
+		// Solo si la informacion de contacto del destinatario no se ha
+		// personalizado en el dto, solo entoces
+		// se usa la del destinatario
+		Contacto contacto = dto.getDestinatarioContacto(); 
+		if (contacto.isEmpty()) {
+			dto.setDestinatarioContacto(tercero.getContacto());
+		}
+	}
+
+	private void usarContactoPredeterminadoDelPuntoDestino(ETLOrdenDto dto, DestinoOrigen punto) {
+		// Solo si la informacion de contacto del destino no se ha
+		// personalizado en el dto, solo entoces
+		// se usa la del destino
+		Contacto contacto = dto.getDestinoContacto(); 
+		if (contacto.isEmpty()) {
+			dto.setDestinoContacto(punto.getContacto());
+		}
+	}
+
+	private void usarContactoPredeterminadoDelPuntoOrigen(ETLOrdenDto dto, DestinoOrigen punto) {
+		// Solo si la informacion de contacto del destino no se ha
+		// personalizado en el dto, solo entoces
+		// se usa la del destino
+		Contacto contacto = dto.getOrigenContacto(); 
+		if (contacto.isEmpty()) {
+			dto.setDestinoContacto(punto.getContacto());
+		}
+	}
+
+	// TODO HOMOLOGAR CANAL
+	protected DestinatarioRemitente CrearDestintarioRemitente(ETLOrdenDto dto, int clienteId, String usuario) {
+		DestinatarioRemitente model = null;
+		if (dto.getDestinatarioNumeroIdentificacion().isEmpty()) {
+			return model;
+		}
+
+		model = new DestinatarioRemitente();
+
+		model.setClienteId(clienteId);
+		model.setCanalId(0);
+
+		model.setCodigo("");
+		model.setIdentificacionType(IdentificacionType.NI);
+		model.setNumeroIdentificacion(dto.getDestinatarioNumeroIdentificacion());
+		model.setDigitoVerificacion("");
+
+		model.setNombre(dto.getDestinatarioNombre());
+		model.setNombreComercial(dto.getDestinatarioNombre());
+
+		model.setDireccion(new OmsDireccion(null, "", ""));
+
+		model.setContacto(new Contacto(dto.getDestinatarioContactoNombres(), dto.getDestinatarioContactoEmail(),
+				dto.getDestinatarioContactoTelefonos()));
+
+		model.setFechaActualizacion(new Date());
+		model.setUsuarioActualizacion(usuario);
+
+		return terceroRepository.save(model);
+	}
+
+	protected DestinoOrigen CrearPunto(int terceroId, int ciudadId, String direccion, String indicaciones,
+			String puntoNombre, Contacto contacto, String usuario) {
+		DestinoOrigen model = null;
+
+		if (direccion.isEmpty()) {
+			return model;
+		}
+
+		model = new DestinoOrigen();
+		model.setDestinatarioRemitenteId(terceroId);
+		model.setCodigo("");
+		model.setNombre(puntoNombre);
+		model.setUsoUbicacionType(UsoUbicacionType.PUNTO_RUTA);
+
+		model.setDireccion(new OmsDireccion(ciudadId, direccion, indicaciones));
+		model.setContacto(contacto);
+
+		model.setFechaActualizacion(new Date());
+		model.setUsuarioActualizacion(usuario);
+
+		return puntoRepository.save(model);
+	}
+
+	private Producto homologarProducto(ETLLineaOrdenDto dto, int clienteid) {
+		Producto producto = null;
+
+		if (!dto.getProductoCodigo().isEmpty()) {
+			producto = productoRepository.findByClienteIdAndCodigo(clienteid, dto.getProductoCodigo());
+			if (producto != null) {
+				dto.setProductoCodigo(producto.getCodigo());
+				dto.setDescripcion(producto.getNombreLargo());
+			}
+		}
+		return producto;
+	}
+
+	private Optional<ProductoUnidadAssociation> homologarHuella(Producto producto) {
+		Optional<ProductoUnidadAssociation> huella = Optional.empty();
+
+		if (producto != null) {
+			huella = producto.getProductoUnidadAssociation().stream().filter(a -> a.getNivel() == 1).findFirst();
+		}
+		return huella;
+	}
+
+	private Bodega homologarBodega(ETLLineaOrdenDto dto, String bodegaCodigo, int clienteId, String bodegaCodigoAlterno,
+			boolean origen) {
+		Bodega bodega = null;
+
+		ClienteBodegaAssociation clienteBodega;
+
+		if (!bodegaCodigo.isEmpty()) {
+			bodega = bodegaRepository.findByCodigoIgnoringCase(bodegaCodigo);
+		} else if (!dto.getBodegaOrigenCodigoAlterno().isEmpty()) {
+			clienteBodega = bodegaRepository.findFirstByClienteIdAndCodigoAlterno(clienteId, bodegaCodigoAlterno);
+			if (clienteBodega != null) {
+				bodega = bodegaRepository.findOne(clienteBodega.getBodegaId());
+				if (origen) {
+					dto.setEstadoInventarioOrigen(clienteBodega.getEstadoInventarioId());
+				} else {
+					dto.setEstadoInventarioDestino(clienteBodega.getEstadoInventarioId());
+				}
+			}
+		}
+		if (bodega != null) {
+			if (origen) {
+				dto.setBodegaOrigenCodigo(bodega.getCodigo());
+			} else {
+				dto.setBodegaDestinoCodigo(bodega.getCodigo());
+			}
+		}
+		return bodega;
+	}
+
+	// TODO ELIMINAR
+
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Gestionar Ordenes
 	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	public List<Object> findAllEstadoOrden() throws DataAccessException {
 		List<EstadoOrden> entityList = estadoOrdenRepository.findAllByOrderByOrdinalAsc();
 
@@ -120,6 +617,7 @@ public class OrdenesApplicationService {
 		return list;
 	}
 
+	@Deprecated
 	public List<OrdenDto> findAllOrdenPorUsuarioPorTipoServicioPorEstadoOrden(Integer usuarioId, Integer tipoServicioId,
 			EstadoOrdenType estadoOrdenId, Integer clienteId) throws DataAccessException {
 		List<Orden> entityList = ordenRepository.findByUsuarioIdAndTipoServicioIdAndEstadoOrden(usuarioId,
@@ -143,13 +641,14 @@ public class OrdenesApplicationService {
 		return list;
 	}
 
-	public Map<String,Object> findAllOrdenPorFechaConfirmacion(Integer usuarioId, Date fechaDesde, Date fechaHasta)
+	@Deprecated
+	public Map<String, Object> findAllOrdenPorFechaConfirmacion(Integer usuarioId, Date fechaDesde, Date fechaHasta)
 			throws DataAccessException {
-		Map<String,Object> entityList = new HashMap<>();
-		entityList.put("usuarioId",usuarioId);
-		entityList.put("fechaDesde",fechaDesde);
-		entityList.put("fechaHasta",fechaHasta);
-		
+		Map<String, Object> entityList = new HashMap<>();
+		entityList.put("usuarioId", usuarioId);
+		entityList.put("fechaDesde", fechaDesde);
+		entityList.put("fechaHasta", fechaHasta);
+
 		// List<Orden> entityList =
 		// ordenRepository.findByUsuarioIdAndTipoServicioIdAndEstadoOrden(usuarioId,
 		// tipoServicioId, estadoOrdenId, clienteId);
@@ -172,6 +671,7 @@ public class OrdenesApplicationService {
 		return entityList;
 	}
 
+	@Deprecated
 	public Page<ConsultaOrdenesDto> findAllOrdenPorUsuarioPorTipoServicioPorEstadoOrdenConPaginacion(Integer usuarioId,
 			Integer tipoServicioId, EstadoOrdenType estadoOrdenId, Integer clienteId, Integer pageNumber,
 			Integer pageSize) throws DataAccessException {
@@ -277,6 +777,7 @@ public class OrdenesApplicationService {
 		return dto;
 	}
 
+	@Deprecated
 	public OrdenDto findOneOrdenPorId(Integer id) throws DataAccessException {
 		return ordenToViewModel(ordenRepository.findOne(id));
 	}
@@ -284,7 +785,7 @@ public class OrdenesApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Configuración
 	// ----------------------------------------------------------------------------------------------------------------
-	// TODO corregir implementacion
+	@Deprecated
 	public Object[] findAllConfiguracionClientePorTipoServicio(Integer clienteId, Integer tipoServicioId)
 			throws DataAccessException {
 		Cliente cliente = clienteRepository.findOne(clienteId);
@@ -374,6 +875,7 @@ public class OrdenesApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Ship To (Bodega Destino/Bodega Origen)
 	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	public List<Object> findAllBodegaPorCliente(Integer clienteId, Integer ciudadId, Integer tipoServicioId)
 			throws DataAccessException {
 		List<Object> list = new ArrayList<>();
@@ -390,6 +892,7 @@ public class OrdenesApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Lineas de Productos
 	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	public List<Object> findAllBodegaPorProductoPorCiudad(Integer productoId, Integer ciudadId)
 			throws DataAccessException {
 		List<Bodega> entityList = bodegaRepository.findAllByProductoIdAndCiudadId(productoId, ciudadId);
@@ -404,6 +907,7 @@ public class OrdenesApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Lineas de Paquetes
 	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	public List<Object> findAllTipoContenido() throws DataAccessException {
 		List<TipoContenido> entityList = tipoContenidoRepository.findAllByOrderByOrdinalAsc();
 
@@ -418,6 +922,7 @@ public class OrdenesApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Otros
 	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	public List<Object> findAllTipoFormaPagoPorClientePorTipoServicio(Integer clienteId, Integer tipoServicioId)
 			throws DataAccessException {
 		List<TipoFormaPago> entityList = tipoFormaPagoRepository.findAll();
@@ -431,6 +936,7 @@ public class OrdenesApplicationService {
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	@Transactional(readOnly = false)
 	public Orden saveOrden(DestinatarioDto dto) throws DataAccessException {
 		OrdenDto ordenDto = new OrdenDto();
@@ -440,14 +946,15 @@ public class OrdenesApplicationService {
 		return saveOrden(ordenDto, EstadoOrdenType.NO_CONFIRMADA);
 	}
 
+	@Deprecated
 	@Transactional(readOnly = false)
 	public Orden saveOrden(OrdenDto dto, EstadoOrdenType nuevoEstadoOrdenType) throws DataAccessException {
 		Orden model = null;
 
 		if (dto.getIdOrden() == null) {
 			model = new Orden();
-			model.setTipoServicio(tipoServicioRepository.getOne(dto.getDatosFacturacion().getTipoServicio()));
-			model.setCliente(clienteRepository.getOne(dto.getDatosFacturacion().getCliente()));
+			// model.setTipoServicio(tipoServicioRepository.getOne(dto.getDatosFacturacion().getTipoServicio()));
+			// model.setCliente(clienteRepository.getOne(dto.getDatosFacturacion().getCliente()));
 		} else {
 			model = ordenRepository.findOne(dto.getIdOrden());
 		}
@@ -462,7 +969,8 @@ public class OrdenesApplicationService {
 
 		}
 
-		model.setNumeroDocumentoOrdenCliente(dto.getDatosFacturacion().getNumeroDocumentoOrdenCliente());
+		// model.setDatosOrden(dto.getDatosFacturacion().getNumeroOrden(), null,
+		// "", null);
 
 		// -------------------------------------------------------------------------------------------------------------------
 		// Consolidado consolidado;
@@ -470,18 +978,21 @@ public class OrdenesApplicationService {
 
 		// -------------------------------------------------------------------------------------------------------------------
 		if (notEqualId(dto.getDatosFacturacion().getSegmento(),
-				(model.getSegmento() == null) ? null : model.getSegmento().getId())) {
+				(model.getCanal() == null) ? null : model.getCanal().getId())) {
 			model.setCanal(canalRepository.getOne(dto.getDatosFacturacion().getSegmento()));
 		}
 		if (notEqualId(dto.getDatosFacturacion().getDestinatario(),
 				(model.getDestinatario() == null) ? null : model.getDestinatario().getId())) {
-			model.setDestinatario(destinatarioRemitenteRepository.getOne(dto.getDatosFacturacion().getDestinatario()));
+			model.setDestinatario(terceroRepository.getOne(dto.getDatosFacturacion().getDestinatario()));
 		}
-
-		model.cambiarDatosAlternosDestinatarioRemitente(dto.getDatosFacturacion().getCodigoAlternoSegmento(),
-				dto.getDatosFacturacion().getNumeroIdentificacionAlternoDestinatario(),
-				dto.getDatosFacturacion().getCodigoAlternoDestinatario(),
-				dto.getDatosFacturacion().getNombreAlternoDestinatario());
+		// TODO
+		// model.setDatosDestinatario(null, canalCodigoAlterno, destinatario,
+		// contacto);
+		// model.cambiarDatosAlternosDestinatarioRemitente(
+		// dto.getDatosFacturacion().getCodigoAlternoSegmento(),
+		// dto.getDatosFacturacion().getNumeroIdentificacionAlternoDestinatario(),
+		// dto.getDatosFacturacion().getCodigoAlternoDestinatario(),
+		// dto.getDatosFacturacion().getNombreAlternoDestinatario());
 
 		model.setDestinatarioContacto(new Contacto(dto.getDatosFacturacion().getNombre(),
 				dto.getDatosFacturacion().getEmail(), dto.getDatosFacturacion().getTelefonos()));
@@ -490,27 +1001,18 @@ public class OrdenesApplicationService {
 		if (notEqualId(dto.getDestinoOrigen().getDestinoId(),
 				(model.getDestino() == null) ? null : model.getDestino().getId())) {
 			if (dto.getDestinoOrigen().getDestinoId() != null) {
-				model.setDestino(destinoOrigenRepository.getOne(dto.getDestinoOrigen().getDestinoId()));
+				model.setDestino(puntoRepository.getOne(dto.getDestinoOrigen().getDestinoId()));
 			} else {
 				model.setDestino(null);
 			}
 		}
-
-		model.cambiarDatosAlternosDestino(dto.getDestinoOrigen().getDestinoCodigoAlterno(),
-				dto.getDestinoOrigen().getDestinoNombreAlterno());
+		// TODO
+		// model.setDatosPuntoDestino(ubicacion, contacto);
+		// model.cambiarDatosAlternosDestino(
+		// dto.getDestinoOrigen().getDestinoCodigoAlterno(),
+		// dto.getDestinoOrigen().getDestinoNombreAlterno());
 
 		// -------------------------------------------------------------------------------------------------------------------
-		if (notEqualId(dto.getBodegaDestinoOrigen().getBodegaId(),
-				(model.getBodegaDestino() == null) ? null : model.getBodegaDestino().getId())) {
-			if (dto.getBodegaDestinoOrigen().getBodegaId() != null) {
-				model.setBodegaDestino(bodegaRepository.getOne(dto.getBodegaDestinoOrigen().getBodegaId()));
-			} else {
-				model.setBodegaDestino(null);
-			}
-		}
-
-		model.cambiarDatosAlternosBodegaDestino(dto.getBodegaDestinoOrigen().getBodegaCodigoAlterno(),
-				dto.getBodegaDestinoOrigen().getBodegaNombreAlterno());
 
 		// -------------------------------------------------------------------------------------------------------------------
 		// TODO HOMOLOGA4R PARTA BODEGAS, PERMITIR QUE LA BODEGA RECIBA SOLO LA
@@ -537,8 +1039,9 @@ public class OrdenesApplicationService {
 			ciudad = ciudadRepository.getOne(ciudadId);
 		}
 
-		model.setDestinoDireccion(new Direccion(ciudad, dto.getDestinoOrigen().getDireccion(),
-				dto.getDestinoOrigen().getIndicacionesDireccion()));
+		// model.setDestinoDireccion(new Direccion(ciudad,
+		// dto.getDestinoOrigen().getDireccion(),
+		// dto.getDestinoOrigen().getIndicacionesDireccion()));
 
 		model.setDestinoContacto(new Contacto(dto.getDestinoOrigen().getContactoNombres(),
 				dto.getDestinoOrigen().getContactoEmail(), dto.getDestinoOrigen().getContactoTelefonos()));
@@ -562,38 +1065,30 @@ public class OrdenesApplicationService {
 			}
 		}
 
-		model.cambiarCitaSugerida(dto.getDatosEntregaRecogida().getFechaMinima(),
+		model.setDatosCitaEntregaSugerida(dto.getDatosEntregaRecogida().getFechaMinima(),
 				dto.getDatosEntregaRecogida().getFechaMaxima(), horaMinima, horaMaxima);
 
 		// -------------------------------------------------------------------------------------------------------------------
-		if (notEqualId(dto.getDatosOtros().getTipoFormaPago(),
-				(model.getTipoFormaPago() == null) ? null : model.getTipoFormaPago().getId())) {
-			if (dto.getDatosOtros().getTipoFormaPago() != null) {
-				model.setTipoFormaPago(tipoFormaPagoRepository.getOne(dto.getDatosOtros().getTipoFormaPago()));
-			} else {
-				model.setTipoFormaPago(null);
-			}
-		}
-
-		model.setValorDeclarado(dto.getDatosOtros().getValorDeclarado());
-		model.setRequiereMaquila(dto.getDatosOtros().isRequiereMaquila());
-		model.setNotas(dto.getDatosOtros().getNotas());
+		model.setValorRecaudo(dto.getDatosOtros().getValorDeclarado());
+		model.setNotasConfirmacion(dto.getDatosOtros().getNotas());
 
 		// TODO Aparte de los cargue por PDF donde mas se haria una
 		// actualización de este tipo
 		for (LineaOrdenDto m : dto.getLineas()) {
 			updateLineaOrdenFromViewModel(model, m);
 		}
-
-		model.cambiarEstado(nuevoEstadoOrdenType, dto.getUsuarioActualizacion());
+		// TODO
+		// model.cambiarEstado(nuevoEstadoOrdenType,
+		// dto.getUsuarioActualizacion());
 
 		return ordenRepository.save(model);
 	}
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	@Transactional(readOnly = false)
-	public Orden saveLineaOrden(LineaOrdenDto model) throws DataAccessException {
+	public Orden saveLineaOrdenDeprecated(LineaOrdenDto model) throws DataAccessException {
 		Orden entity = ordenRepository.findOne(model.getIdOrden());
 
 		if (entity == null) {
@@ -607,8 +1102,10 @@ public class OrdenesApplicationService {
 		return entity;
 	}
 
+	@Deprecated
 	@Transactional(readOnly = false)
-	public Orden deleteLineaOrden(Integer ordenId, Integer lineaOrdenId, String usuario) throws DataAccessException {
+	public Orden deleteLineaOrdenDeprecated(Integer ordenId, Integer lineaOrdenId, String usuario)
+			throws DataAccessException {
 		Orden entity = ordenRepository.findOne(ordenId);
 
 		if (entity == null) {
@@ -630,353 +1127,7 @@ public class OrdenesApplicationService {
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------
-	// -- Homologar
-	// ----------------------------------------------------------------------------------------------------------------
-	@Transactional(readOnly = false)
-	public Orden saveOrden2(ETLOrdenDto dto) throws DataAccessException {
-		StringBuffer errores = new StringBuffer();
-		TipoServicio tipoServicio = null;
-		Cliente cliente = null;
-		Consolidado consolidado = null;
-		Ciudad ciudadDestino = null;
-		Ciudad ciudadOrigen = null;
-
-		Canal canal = null;
-		DestinatarioRemitente destinatarioRemitente = null;
-		List<DestinoOrigen> destinos = null;
-		DestinoOrigen destino = null;
-		//Bodega bodegaDestino = null;
-
-		cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
-		if (cliente == null) {
-			throw new RuntimeException("(cliente == null)");
-		}
-
-		tipoServicio = tipoServicioRepository.findByCodigoIgnoringCase(dto.getTipoServicioCodigo());
-		if (tipoServicio == null) {
-			throw new RuntimeException("(tipoServicio == null)");
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		Orden model = null;
-
-		model = ordenRepository.findFirstByClienteIdAndNumeroDocumentoOrdenCliente(cliente.getId(),
-				dto.getNumeroOrden());
-		if (model != null) {
-			switch (model.getEstadoOrden()) {
-			case ANULADA:
-				ordenRepository.delete(model.getId());
-				break;
-			default:
-				return null;
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		if (!dto.getNumeroConsolidado().isEmpty()) {
-			consolidado = consolidadoRepository.findByClienteIdAndNumeroDocumentoConsolidadoClienteIgnoringCase(
-					cliente.getId(), dto.getNumeroConsolidado());
-			if (consolidado == null) {
-				consolidado = CrearConsolidado(dto, cliente);
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		// TODO INTENTAR BUSCAR POR LA HOMOLOGACION DEL CLIENTE PRIMERO
-		if (!dto.getDestinoCiudadNombreAlterno().isEmpty()) {
-			ciudadDestino = ciudadRepository.findByNombreAlternoIgnoringCase(dto.getDestinoCiudadNombreAlterno());
-			if (ciudadDestino == null) {
-				ciudadDestino = ciudadRepository.findByCodigo(dto.getDestinoCiudadNombreAlterno());
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		// TODO INTENTAR BUSCAR POR LA HOMOLOGACION DEL CLIENTE PRIMERO
-		if (!dto.getOrigenCiudadNombreAlterno().isEmpty()) {
-			ciudadOrigen = ciudadRepository.findByNombreAlternoIgnoringCase(dto.getOrigenCiudadNombreAlterno());
-			if (ciudadOrigen == null) {
-				ciudadOrigen = ciudadRepository.findByCodigo(dto.getOrigenCiudadNombreAlterno());
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		// Buscar Canal independiente del maestro
-
-		// ------------------------------------------------------------------------------------------------
-		if (!dto.getDestinatarioNumeroIdentificacion().isEmpty()) {
-			destinatarioRemitente = destinatarioRemitenteRepository
-					.findByClienteIdAndNumeroIdentificacion(cliente.getId(), dto.getDestinatarioNumeroIdentificacion());
-			if (destinatarioRemitente == null) {
-				destinatarioRemitente = CrearDestintarioRemitente(dto, cliente);
-			}
-		}
-
-		if (destinatarioRemitente != null) {
-			canal = canalRepository.findOne(destinatarioRemitente.getCanalId());
-
-			// Solo si la informacion de contacto del destinatario no se ha
-			// personalizado en el dto, solo entoces
-			// se usa la del destinatario
-			if (dto.getDestinatarioContactoNombres().isEmpty() && dto.getDestinatarioContactoEmail().isEmpty()
-					&& dto.getDestinatarioContactoTelefonos().isEmpty()) {
-				dto.setDestinatarioContactoNombres(destinatarioRemitente.getContacto().getNombres());
-				dto.setDestinatarioContactoEmail(destinatarioRemitente.getContacto().getEmail());
-				dto.setDestinatarioContactoTelefonos(destinatarioRemitente.getContacto().getTelefonos());
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		if (destinatarioRemitente != null && ciudadDestino != null) {
-			destinos = destinoOrigenRepository
-					.findAllByDestinatarioRemitenteIdAndDireccionCiudadIdAndDireccionDireccionOrderByCodigoAscNombreAsc(
-							destinatarioRemitente.getId(), ciudadDestino.getId(), dto.getDestinoDireccion());
-
-			if (destinos.isEmpty()) {
-				destino = CrearDestinoOrigen(dto, destinatarioRemitente, ciudadDestino);
-			} else if (destinos.size() > 1) {
-				errores.append("ADVERTENCIA: Se detectaron " + destinos.size() + " destinos con esta misma dirección.");
-			} else {
-				destino = destinos.get(0);
-			}
-
-			if (destino != null) {
-				// Solo si la informacion de contacto del destino no se ha
-				// personalizado en el dto, solo entoces
-				// se usa la del destino
-				if (dto.getDestinoContactoNombres().isEmpty() && dto.getDestinoContactoEmail().isEmpty()
-						&& dto.getDestinoContactoTelefonos().isEmpty()) {
-					dto.setDestinoContactoNombres(destino.getContacto().getNombres());
-					dto.setDestinoContactoEmail(destino.getContacto().getEmail());
-					dto.setDestinoContactoTelefonos(destino.getContacto().getTelefonos());
-				}
-			}
-		}
-
-		// ------------------------------------------------------------------------------------------------
-		// TODO QUITAR
-//		if (!dto.getBodegaDestinoCodigo().isEmpty()) {
-//			bodegaDestino = bodegaRepository.findByCodigoIgnoringCase(dto.getBodegaDestinoCodigo());
-//		} else if (!dto.getBodegaDestinoCodigoAlterno().isEmpty()) {
-//			bodegaDestino = bodegaRepository.findByCodigoIgnoringCase(dto.getBodegaDestinoCodigoAlterno());
-//		}
-
-		// ------------------------------------------------------------------------------------------------
-		model = new Orden();
-		model.setNumeroDocumentoOrdenCliente(dto.getNumeroOrden());
-		model.setConsolidado(consolidado);
-
-		model.setCliente(cliente);
-		// model.setClienteCodigo(cliente.getCodigo());
-
-		model.setTipoServicio(tipoServicio);
-		// model.setTipoServicioCodigoAlterno(dto.getTipoServicioCodigoAlterno());
-		// requiere_servicio_distribucion
-		// requiere_servicio_alistamiento
-
-		model.setDestinoDireccion(
-				new Direccion(ciudadDestino, dto.getDestinoDireccion(), dto.getDestinoIndicaciones()));
-		// destino_ciudad_nombre_alterno
-
-		// id_ciudad_origen
-		// origen_ciudad_nombre_alterno
-		// origen_direccion
-		// origen_indicaciones
-
-		// requiere_confirmacion_cita_entrega
-		model.cambiarCitaSugerida(dto.getEntregaSugeridaMinima(), dto.getFechaEntregaSugeridaMaxima(),
-				dto.getHoraEntregaSugeridaMinima(), dto.getHoraEntregaSugeridaMaxima());
-		// hora_entrega_sugerida_minima_adicional
-		// hora_entrega_sugerida_maxima_adicional
-		model.cambiarCitaPlanificada(dto.getEntregaSugeridaMinima(), dto.getFechaEntregaSugeridaMaxima(),
-				dto.getHoraEntregaSugeridaMinima(), dto.getHoraEntregaSugeridaMaxima());
-
-		// requiere_confirmacion_cita_recogida
-		// fecha_recogida_sugerida_minima
-		// fecha_recogida_sugerida_maxima
-		// hora_recogida_sugerida_minima
-		// hora_recogida_sugerida_maxima
-		// fecha_recogida_planificada_minima
-		// fecha_recogida_planificada_maxima
-		// hora_recogida_planificada_minima
-		// hora_recogida_planificada_maxima
-
-		model.setCanal(canal);
-		// canal_codigo_alterno
-		model.setDestinatario(destinatarioRemitente);
-		model.cambiarDatosAlternosDestinatarioRemitente(dto.getCanalCodigoAlterno(),
-				dto.getDestinatarioNumeroIdentificacion(), "", dto.getDestinatarioNombre());
-		model.setDestinatarioContacto(new Contacto(dto.getDestinatarioContactoNombres(),
-				dto.getDestinatarioContactoEmail(), dto.getDestinatarioContactoTelefonos()));
-
-		model.setDestino(destino);
-		model.cambiarDatosAlternosDestino("", dto.getDestinoNombre());
-		model.setDestinoContacto(new Contacto(dto.getDestinoContactoNombres(), dto.getDestinoContactoEmail(),
-				dto.getDestinoContactoTelefonos()));
-
-		// id_origen
-		// origen_nombre
-		// origen_contacto_email
-		// origen_contacto_nombres
-		// origen_contacto_telefonos
-
-		// notas_requerimientos_distribucion
-		// notas_requerimientos_alistamiento
-		// Listas de requerimientos
-		model.setValorDeclarado(dto.getValorRecaudo());
-
-		model.setNotas(dto.getNotasConfirmacion());
-
-		// TODO QUITAR
-//		model.setBodegaDestino(bodegaDestino);
-//		model.cambiarDatosAlternosBodegaDestino(dto.getBodegaDestinoCodigoAlterno(), "");
-
-		for (ETLLineaOrdenDto linea : dto.getLineas()) {
-			saveLineaOrden2(dto, linea, model);
-		}
-
-		model.cambiarEstado(EstadoOrdenType.CONFIRMADA, dto.getUsuarioConfirmacion());
-		model.modificado(dto.getUsuarioConfirmacion());
-		// fecha_creacion
-		// usuario_creacion
-
-		model = ordenRepository.save(model);
-
-		return model;
-	}
-
-	@Transactional(readOnly = false)
-	protected void saveLineaOrden2(ETLOrdenDto dtoOrden, ETLLineaOrdenDto dto, Orden orden) {
-		LineaOrden model = null;
-		Producto producto = null;
-		Unidad unidad = null;
-		Bodega bodegaOrigen = null;
-		Bodega bodegaDestino = null;
-
-		model = new LineaOrden(null);
-		orden.addLinea(model);
-
-		// ----------------------------------------------------------------------------------------------------
-		if (!dto.getProductoCodigo().isEmpty()) {
-			producto = productoRepository.findByClienteIdAndCodigo(orden.getCliente().getId(), dto.getProductoCodigo());
-		} else if (!dto.getProductoCodigoAlterno().isEmpty()) {
-			producto = productoRepository.findByClienteIdAndCodigo(orden.getCliente().getId(),
-					dto.getProductoCodigoAlterno());
-			if (producto == null) {
-				producto = productoRepository.findByClienteIdAndCodigoAlterno(orden.getCliente().getId(),
-						dto.getProductoCodigoAlterno());
-			}
-		}
-		if (producto != null) {
-			dto.setProductoCodigo(producto.getCodigo());
-			dto.setDescripcion(producto.getNombreLargo());
-		}
-
-		// ----------------------------------------------------------------------------------------------------
-		// TODO BUSCAR EN LA HOMOLOGACION
-		if (!dto.getUnidadCodigo().isEmpty()) {
-			unidad = unidadRepository.findByCodigoIgnoringCase(dto.getUnidadCodigo());
-		} else if (!dto.getUnidadCodigoAlterno().isEmpty()) {
-			unidad = unidadRepository.findByCodigoIgnoringCase(dto.getUnidadCodigoAlterno());
-			if (unidad == null) {
-				unidad = unidadRepository.findByClienteIdAndByCodigoAlterno(orden.getCliente().getId(),
-						dto.getUnidadCodigoAlterno());
-			}
-		}
-		if (unidad != null) {
-			dto.setUnidadCodigo(unidad.getCodigo());
-		}
-
-		// ----------------------------------------------------------------------------------------------------
-		// TODO BUSCAR EN LA HOMOLOGACION
-		if (!dto.getBodegaOrigenCodigo().isEmpty()) {
-			bodegaOrigen = bodegaRepository.findByCodigoIgnoringCase(dto.getBodegaOrigenCodigo());
-		} else if (!dto.getBodegaOrigenCodigoAlterno().isEmpty()) {
-			bodegaOrigen = bodegaRepository.findByCodigoIgnoringCase(dto.getBodegaOrigenCodigoAlterno());
-			if (bodegaOrigen == null) {
-				// TODO usar los alias de bodegas
-			}
-		}
-		if (bodegaOrigen != null) {
-			dto.setBodegaOrigenCodigo(bodegaOrigen.getCodigo());
-		}
-
-		// ----------------------------------------------------------------------------------------------------
-		// TODO BUSCAR EN LA HOMOLOGACION
-		if (!dto.getBodegaDestinoCodigo().isEmpty()) {
-			bodegaDestino = bodegaRepository.findByCodigoIgnoringCase(dto.getBodegaDestinoCodigo());
-		} else if (!dto.getBodegaDestinoCodigoAlterno().isEmpty()) {
-			bodegaDestino = bodegaRepository.findByCodigoIgnoringCase(dto.getBodegaDestinoCodigoAlterno());
-			if (bodegaDestino == null) {
-				// TODO usar los alias de bodegas
-			}
-		}
-		if (bodegaDestino != null) {
-			dto.setBodegaDestinoCodigo(bodegaDestino.getCodigo());
-		}
-
-		// ----------------------------------------------------------------------------------------------------
-		model.setDescripcion(dto.getDescripcion());
-		model.setCantidad(dto.getCantidadSolicitada());
-		// cantidad_planificada
-
-		model.setProducto(producto);
-		model.setCodigoProducto(dto.getProductoCodigo());
-		model.setCodigoAlternoProducto(dto.getProductoCodigoAlterno());
-
-		model.setUnidad(unidad);
-		model.setCodigoUnidad(dto.getUnidadCodigo());
-		model.setCodigoAlternoUnidad(dto.getUnidadCodigoAlterno());
-
-		// id_tipo_contenido
-		// tipo_contenido_codigo
-		// tipo_contenido_codigo_alterno
-
-		// TODO dimensiones y pesos
-		// alto_por_unidad
-		// ancho_por_unidad
-		// largo_por_unidad
-		// peso_bruto_por_unidad
-
-		model.setBodegaOrigen(bodegaOrigen);
-		// bodega_origen_codigo
-		model.setBodegaOrigenCodigoAlterno(dto.getBodegaOrigenCodigoAlterno());
-		model.setOrigenNombreAlterno(dto.getEstadoInventarioOrigen());
-		// id_estado_inventario_origen
-
-		// id_bodega_destino
-		// bodega_destino_codigo
-		model.setOrigenCodigoAlterno(dto.getBodegaDestinoCodigoAlterno());
-		// id_estado_inventario_destino
-		model.setBodegaOrigenNombreAlterno(dto.getEstadoInventarioDestino());
-
-		model.setLote(dto.getLote());
-		// serial
-		// cosecha
-		model.setOrigenContacto(new Contacto(dto.getRequerimientoEstampillado(), dto.getRequerimientoBl(),
-				dto.getRequerimientoFondoCuenta()));
-		// requerimiento_estampillado
-		// requerimiento_salud
-		// requerimiento_importe
-		// requerimiento_distribuido
-		// requerimiento_nutricional
-		// requerimiento_bl
-		// requerimiento_fondo_cuenta
-		// requerimiento_origen
-
-		model.setPredistribucionDestinoFinal(dto.getPredistribucionDestinoFinal());
-		model.setPredistribucionRotulo(dto.getPredistribucionRotulo());
-		model.setValorDeclaradoPorUnidad(dto.getValorDeclaradoPorUnidad());
-
-		model.setNotas(dto.getNotas());
-
-		model.setFechaActualizacion(new Date());
-		model.setUsuarioActualizacion(dtoOrden.getUsuarioConfirmacion());
-
-		// TODO QUITAR
-		model.setOrigen(null);
-	}
-
-	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	private Consolidado CrearConsolidado(ETLOrdenDto dto, Cliente cliente) {
 		Consolidado model = new Consolidado();
 
@@ -988,67 +1139,13 @@ public class OrdenesApplicationService {
 		return consolidadoRepository.save(model);
 	}
 
-	protected DestinatarioRemitente CrearDestintarioRemitente(ETLOrdenDto dto, Cliente cliente) {
-		DestinatarioRemitente model = null;
-		if (dto.getDestinatarioNumeroIdentificacion().isEmpty()) {
-			return model;
-		}
-
-		model = new DestinatarioRemitente();
-
-		model.setClienteId(cliente.getId());
-		// TODO
-		model.setCanalId(0);
-
-		model.setCodigo("");
-		model.setIdentificacionType(IdentificacionType.NI);
-		model.setNumeroIdentificacion(dto.getDestinatarioNumeroIdentificacion());
-		model.setDigitoVerificacion("");
-
-		model.setNombre(dto.getDestinatarioNombre());
-		model.setNombreComercial(dto.getDestinatarioNombre());
-
-		model.setDireccion(new OmsDireccion(null, "", ""));
-
-		model.setContacto(new Contacto(dto.getDestinatarioContactoNombres(), dto.getDestinatarioContactoEmail(),
-				dto.getDestinatarioContactoTelefonos()));
-
-		model.setFechaActualizacion(new Date());
-		model.setUsuarioActualizacion(dto.getUsuarioConfirmacion());
-
-		return destinatarioRemitenteRepository.save(model);
-	}
-
-	protected DestinoOrigen CrearDestinoOrigen(ETLOrdenDto dto, DestinatarioRemitente destinatarioRemitente,
-			Ciudad ciudad) {
-		DestinoOrigen model = null;
-
-		if (ciudad == null || dto.getDestinoDireccion().isEmpty()) {
-			return model;
-		}
-
-		model = new DestinoOrigen();
-		model.setDestinatarioRemitenteId(destinatarioRemitente.getId());
-		model.setCodigo("");
-		model.setNombre(dto.getDestinoNombre());
-		model.setUsoUbicacionType(UsoUbicacionType.PUNTO_RUTA);
-
-		model.setDireccion(new OmsDireccion(ciudad.getId(), dto.getDestinoDireccion(), dto.getDestinoIndicaciones()));
-		model.setContacto(new Contacto(dto.getDestinoContactoNombres(), dto.getDestinoContactoEmail(),
-				dto.getDestinoContactoTelefonos()));
-
-		model.setFechaActualizacion(new Date());
-		model.setUsuarioActualizacion(dto.getUsuarioConfirmacion());
-
-		return destinoOrigenRepository.save(model);
-	}
-
 	// ----------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	public void updateLineaOrdenFromViewModel(Orden entity, LineaOrdenDto model) {
 		LineaOrden e = null;
 
 		if (model.getIdLineaOrden() == null) {
-			e = new LineaOrden(null);
+			e = new LineaOrden();
 			entity.addLinea(e);
 		} else {
 			e = entity.getLinea(model.getIdLineaOrden());
@@ -1063,9 +1160,6 @@ public class OrdenesApplicationService {
 		if (notEqualId(model.getBodega(), (e.getBodegaOrigen() == null) ? null : e.getBodegaOrigen().getId())) {
 			e.setBodegaOrigen(bodegaRepository.getOne(model.getBodega()));
 		}
-		if (notEqualId(model.getOrigen(), (e.getOrigen() == null) ? null : e.getOrigen().getId())) {
-			e.setOrigen(destinoOrigenRepository.getOne(model.getOrigen()));
-		}
 		if (notEqualId(model.getTipoContenido(),
 				(e.getTipoContenido() == null) ? null : e.getTipoContenido().getId())) {
 			e.setTipoContenido(tipoContenidoRepository.getOne(model.getTipoContenido()));
@@ -1073,9 +1167,10 @@ public class OrdenesApplicationService {
 
 		LineaOrdenViewModelAdpater.updateLineaOrdenFromViewModel(e, model);
 
-		entity.modificado(e.getUsuarioActualizacion());
+		// entity.modificado(e.getUsuarioActualizacion());
 	}
 
+	@Deprecated
 	protected boolean notEqualId(Integer a, Integer b) {
 		if (a == null) {
 			return (b != null);
@@ -1084,6 +1179,7 @@ public class OrdenesApplicationService {
 	}
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
+	@Deprecated
 	protected Map<String, Object> estadoOrdenToViewModel(EstadoOrden entity) {
 		Map<String, Object> o = new HashMap<String, Object>();
 
@@ -1094,18 +1190,20 @@ public class OrdenesApplicationService {
 		return o;
 	}
 
+	@Deprecated
 	protected Map<String, Object> bodegaToViewModel(Bodega entity) {
 		Map<String, Object> o = new HashMap<String, Object>();
 
 		o.put("id", entity.getId());
 		o.put("codigo", entity.getCodigo());
 		o.put("nombre", entity.getNombre());
-		o.put("direccion", ciudadesService.direccionToViewModel(entity.getDireccion()));
+		//o.put("direccion", ciudadesService.direccionToViewModel(entity.getDireccion()));
 		o.put("manejaRenta", entity.isManejaRenta());
 
 		return o;
 	}
 
+	@Deprecated
 	protected Map<String, Object> tipoContenidoToViewModel(TipoContenido entity) {
 		Map<String, Object> o = new HashMap<String, Object>();
 
@@ -1116,6 +1214,7 @@ public class OrdenesApplicationService {
 		return o;
 	}
 
+	@Deprecated
 	protected Map<String, Object> tipoFormaPagoToViewModel(TipoFormaPago entity) {
 		Map<String, Object> o = new HashMap<String, Object>();
 
@@ -1126,6 +1225,7 @@ public class OrdenesApplicationService {
 		return o;
 	}
 
+	@Deprecated
 	public OrdenDto ordenToViewModel(Orden entity) {
 		if (entity == null) {
 			return null;

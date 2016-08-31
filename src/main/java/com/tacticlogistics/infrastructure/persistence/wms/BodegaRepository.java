@@ -7,12 +7,25 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.presentation.api.wms.ingresos.dto.ListItemBodegaDto;
 
 public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
 	Bodega findByCodigoIgnoringCase(String codigo);
-	
+
+	@Query(""
+			+ " SELECT DISTINCT a"
+			+ " FROM ClienteBodegaAssociation a"
+			+ " WHERE :clienteId = :clienteId"
+			+ "	AND a.clienteId = :clienteId"
+			+ "	AND a.codigoAlterno = :codigoAlterno")
+	ClienteBodegaAssociation findFirstByClienteIdAndCodigoAlterno(
+			@Param("clienteId") Integer clienteId,
+			@Param("codigoAlterno") String codigoAlterno);
+
+ 
+	@Deprecated
 	@Query(""
 			+ " SELECT DISTINCT b.bodega"
 			+ " FROM Producto a"
@@ -28,6 +41,7 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
 			@Param("ciudadId") Integer ciudadId,
 			@Param("tipoServicioId") Integer tipoServicioId);
 
+	@Deprecated
 	@Query(""
 			+ " SELECT DISTINCT a.bodega"
 			+ " FROM ProductoBodegaAssociation a"
@@ -38,6 +52,7 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
 	List<Bodega> findAllByProductoId(
 			@Param("productoId") Integer productoId);
 	
+	@Deprecated
 	@Query(""
 			+ " SELECT DISTINCT a.bodega"
 			+ " FROM ProductoBodegaAssociation a"
@@ -50,7 +65,8 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
 			@Param("productoId") Integer productoId,
 			@Param("ciudadId") Integer ciudadId);	
 	
-   @Query(""
+	@Deprecated
+	@Query(""
             + " SELECT DISTINCT a"
             + " FROM Bodega a"
             + " WHERE a.direccion.ciudadId = :ciudadId"
@@ -59,7 +75,8 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
     List<Bodega> findByCiudadId(
             @Param("ciudadId") Integer ciudadId);   
 
-   @Query(""
+	@Deprecated
+	@Query(""
            + " SELECT new com.tacticlogistics.presentation.api.wms.ingresos.dto.ListItemBodegaDto("
            + "  a.bodega.id, "
            + "  a.bodega.codigo, "

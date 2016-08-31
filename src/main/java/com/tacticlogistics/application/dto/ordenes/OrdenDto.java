@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.tacticlogistics.domain.model.common.Mensaje;
-import com.tacticlogistics.domain.model.ordenes.EstadoOrdenType;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 
 public class OrdenDto {
     private Integer idOrden;

@@ -11,6 +11,9 @@ public class LineaRutaDto {
     public static final String dateFormat = "yyyy-MM-dd";
     public static final String timeFormat = "HH:mm";
 
+    @JsonIgnore
+    private int ordenId;
+    
     @JsonProperty("id")
     private String numeroDocumentoEntrega;
     private int secuencia;
@@ -65,7 +68,12 @@ public class LineaRutaDto {
         this.setCorreos(null);
     }
 
-    public String getNumeroDocumentoEntrega() {
+    
+    public int getOrdenId() {
+		return ordenId;
+	}
+
+	public String getNumeroDocumentoEntrega() {
         return numeroDocumentoEntrega;
     }
 
@@ -129,6 +137,10 @@ public class LineaRutaDto {
         return correos;
     }
 
+	public void setOrdenId(int ordenId) {
+		this.ordenId = ordenId;
+	}
+	
     public void setNumeroDocumentoEntrega(String value) {
         this.numeroDocumentoEntrega = coalesce(value,"");
     }

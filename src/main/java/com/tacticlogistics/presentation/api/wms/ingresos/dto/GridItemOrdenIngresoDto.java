@@ -5,7 +5,7 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 import java.sql.Time;
 import java.util.Date;
 
-import com.tacticlogistics.domain.model.ordenes.EstadoOrdenType;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 
 public class GridItemOrdenIngresoDto {
     private Integer id;
@@ -13,8 +13,8 @@ public class GridItemOrdenIngresoDto {
     // ---------------------------------------------------------------------------------------------------------
     private String clienteCodigo;
     // ---------------------------------------------------------------------------------------------------------
-    private com.tacticlogistics.domain.model.ordenes.EstadoOrdenType estadoOrden;
-    private String numeroDocumentoOrdenCliente;
+    private EstadoOrdenType estadoOrden;
+    private String numeroOrden;
 
     // ---------------------------------------------------------------------------------------------------------
     private Date fechaPlaneadaEntregaMinima;
@@ -40,12 +40,12 @@ public class GridItemOrdenIngresoDto {
         return clienteCodigo;
     }
 
-    public com.tacticlogistics.domain.model.ordenes.EstadoOrdenType getEstadoOrden() {
+    public EstadoOrdenType getEstadoOrden() {
         return estadoOrden;
     }
 
-    public String getNumeroDocumentoOrdenCliente() {
-        return numeroDocumentoOrdenCliente;
+    public String getNumeroOrden() {
+        return numeroOrden;
     }
 
     public Date getFechaPlaneadaEntregaMinima() {
@@ -97,12 +97,12 @@ public class GridItemOrdenIngresoDto {
         this.clienteCodigo = coalesce(value, "");
     }
 
-    public void setEstadoOrden(com.tacticlogistics.domain.model.ordenes.EstadoOrdenType value) {
+    public void setEstadoOrden(EstadoOrdenType value) {
         this.estadoOrden = value;
     }
 
-    public void setNumeroDocumentoOrdenCliente(String value) {
-        this.numeroDocumentoOrdenCliente = coalesce(value, "");
+    public void setNumeroOrden(String value) {
+        this.numeroOrden = coalesce(value, "");
     }
 
 
@@ -151,7 +151,7 @@ public class GridItemOrdenIngresoDto {
             int id, 
             String clienteCodigo, 
             EstadoOrdenType estadoOrden,
-            String numeroDocumentoOrdenCliente, 
+            String numeroOrden, 
             Date fechaPlaneadaEntregaMinima, 
             Date fechaPlaneadaEntregaMaxima,
             Date horaPlaneadaEntregaMinima, 
@@ -169,7 +169,7 @@ public class GridItemOrdenIngresoDto {
         this.id = id;
         this.setClienteCodigo (clienteCodigo);
         this.setEstadoOrden  (estadoOrden);
-        this.setNumeroDocumentoOrdenCliente  (numeroDocumentoOrdenCliente);
+        this.setNumeroOrden  (numeroOrden);
         this.setFechaPlaneadaEntregaMinima  (fechaPlaneadaEntregaMinima);
         this.setFechaPlaneadaEntregaMaxima  (fechaPlaneadaEntregaMaxima);
         this.setHoraPlaneadaEntregaMinima  ((horaPlaneadaEntregaMinima==null)?null:new Time(horaPlaneadaEntregaMinima.getTime()));
@@ -192,8 +192,8 @@ public class GridItemOrdenIngresoDto {
         if (estadoOrden != null) {
             builder.append("estadoOrden=").append(estadoOrden).append(", ");
         }
-        if (numeroDocumentoOrdenCliente != null) {
-            builder.append("numeroDocumentoOrdenCliente=").append(numeroDocumentoOrdenCliente).append(", ");
+        if (numeroOrden != null) {
+            builder.append("numeroOrden=").append(numeroOrden).append(", ");
         }
         if (fechaPlaneadaEntregaMinima != null) {
             builder.append("fechaPlaneadaEntregaMinima=").append(fechaPlaneadaEntregaMinima).append(", ");

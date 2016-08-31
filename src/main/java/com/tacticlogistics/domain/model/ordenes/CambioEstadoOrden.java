@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 
 @Entity
 @Table(name = "CambiosEstadoOrden", catalog = "ordenes")
@@ -33,7 +34,7 @@ public class CambioEstadoOrden implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_orden", nullable = false, length = 20)
-	private EstadoOrdenType estadoOrden;
+	private com.tacticlogistics.domain.model.oms.EstadoOrdenType estadoOrden;
 	
 	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
 	@Temporal(TemporalType.TIMESTAMP)

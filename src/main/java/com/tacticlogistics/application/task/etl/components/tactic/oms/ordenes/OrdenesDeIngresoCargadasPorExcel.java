@@ -1,24 +1,23 @@
 package com.tacticlogistics.application.task.etl.components.tactic.oms.ordenes;
 
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.CLIENTE_CODIGO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MINIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_SUGERIDA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_SUGERIDA_MINIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.ID_CARGA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_BL;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_BODEGA_DESTINO_CODIGO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_CANTIDAD_SOLICITADA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_ESTADO_DESTINO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_ESTAMPILLADO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_FONDOCUENTA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_LOTE;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PRODUCTO_CODIGO_ALTERNO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PRODUCTO_DESCRIPCION;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_UNIDAD_CODIGO_ALTERNO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NOTAS;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_CONSOLIDADO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.CLIENTE_CODIGO;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.FECHA_ENTREGA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.FECHA_ENTREGA_MINIMA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.HORA_ENTREGA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.HORA_ENTREGA_MINIMA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.ID_CARGA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_BL;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_BODEGA_DESTINO_CODIGO;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_CANTIDAD_SOLICITADA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_ESTADO_DESTINO;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_ESTAMPILLADO;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_FONDOCUENTA;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_LOTE;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_PRODUCTO_CODIGO;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.LINEA_PRODUCTO_DESCRIPCION;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.NOTAS;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.NUMERO_CONSOLIDADO;
+import static com.tacticlogistics.application.task.etl.MacroExcelOrdenDtoAtributos.NUMERO_ORDEN;
 
 import java.sql.Time;
 import java.text.ParseException;
@@ -60,17 +59,17 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
         //ORIGEN_CIUDAD_CODIGO
         //ORIGEN_DIRECCION
         
-        list.add(FECHA_ENTREGA_SUGERIDA_MINIMA.toString());
-        list.add(FECHA_ENTREGA_SUGERIDA_MAXIMA.toString());
-        list.add(HORA_ENTREGA_SUGERIDA_MINIMA.toString());
-        list.add(HORA_ENTREGA_SUGERIDA_MAXIMA.toString());
+        list.add(FECHA_ENTREGA_MINIMA.toString());
+        list.add(FECHA_ENTREGA_MAXIMA.toString());
+        list.add(HORA_ENTREGA_MINIMA.toString());
+        list.add(HORA_ENTREGA_MAXIMA.toString());
         list.add(NOTAS.toString());
 
         list.add(LINEA_PRODUCTO_DESCRIPCION.toString());
         list.add(LINEA_CANTIDAD_SOLICITADA.toString());
 
-        list.add(LINEA_PRODUCTO_CODIGO_ALTERNO.toString());
-        list.add(LINEA_UNIDAD_CODIGO_ALTERNO.toString());
+        list.add(LINEA_PRODUCTO_CODIGO.toString());
+        //list.add(LINEA_UNIDAD_CODIGO_ALTERNO.toString());
         list.add(LINEA_BODEGA_DESTINO_CODIGO.toString());
         list.add(LINEA_ESTADO_DESTINO.toString());
 
@@ -119,39 +118,39 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
             dto.setNumeroOrden(value);
 
             dateValue = null;
-            value = getValorCampo(FECHA_ENTREGA_SUGERIDA_MAXIMA, campos, mapNameToIndex);
+            value = getValorCampo(FECHA_ENTREGA_MAXIMA, campos, mapNameToIndex);
             try {
                 dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
             } catch (ParseException e) {
-                logParseException(key, FECHA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+                logParseException(key, FECHA_ENTREGA_MAXIMA, value, getFormatoFechaCorta().toPattern());
             }
             dto.setFechaEntregaSugeridaMaxima(dateValue);
 
             dateValue = null;
-            value = getValorCampo(FECHA_ENTREGA_SUGERIDA_MINIMA, campos, mapNameToIndex);
+            value = getValorCampo(FECHA_ENTREGA_MINIMA, campos, mapNameToIndex);
             try {
                 dateValue = Basic.toFecha(value, dto.getFechaEntregaSugeridaMaxima(), getFormatoFechaCorta());
             } catch (ParseException e) {
-                logParseException(key, FECHA_ENTREGA_SUGERIDA_MINIMA, value, getFormatoFechaCorta().toPattern());
+                logParseException(key, FECHA_ENTREGA_MINIMA, value, getFormatoFechaCorta().toPattern());
             }
             dto.setFechaEntregaSugeridaMinima(dateValue);
 
             timeValue = null;
-            value = getValorCampo(HORA_ENTREGA_SUGERIDA_MAXIMA, campos, mapNameToIndex);
+            value = getValorCampo(HORA_ENTREGA_MAXIMA, campos, mapNameToIndex);
             try {
                 timeValue = Basic.toHora(value, null, getFormatoHoraHH());
             } catch (ParseException e) {
-                logParseException(key, HORA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoHoraHH().toPattern());
+                logParseException(key, HORA_ENTREGA_MAXIMA, value, getFormatoHoraHH().toPattern());
             }
             dto.setHoraEntregaSugeridaMaxima(timeValue);
 
             timeValue = null;
-            value = getValorCampo(HORA_ENTREGA_SUGERIDA_MINIMA, campos, mapNameToIndex);
+            value = getValorCampo(HORA_ENTREGA_MINIMA, campos, mapNameToIndex);
             try {
                 Time defaultTimeValue = Basic.toHora("05", null, getFormatoHoraHH());
                 timeValue = Basic.toHora(value, defaultTimeValue, getFormatoHoraHH());
             } catch (ParseException e) {
-                logParseException(key, HORA_ENTREGA_SUGERIDA_MINIMA, value, getFormatoHoraHH().toPattern());
+                logParseException(key, HORA_ENTREGA_MINIMA, value, getFormatoHoraHH().toPattern());
             }
             dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -177,7 +176,7 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
 
             ETLLineaOrdenDto dto = new ETLLineaOrdenDto();
 
-            value = getValorCampo(LINEA_PRODUCTO_CODIGO_ALTERNO.toString(), campos, mapNameToIndex);
+            value = getValorCampo(LINEA_PRODUCTO_CODIGO.toString(), campos, mapNameToIndex);
             value = value.replaceFirst("^[`'´]", "");
             dto.setProductoCodigo(value);
 
@@ -193,7 +192,7 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
             }
             dto.setCantidadSolicitada(integerValue);
 
-            value = getValorCampo(LINEA_UNIDAD_CODIGO_ALTERNO, campos, mapNameToIndex);
+            value = "UN";//getValorCampo(LINEA_UNIDAD_CODIGO_ALTERNO, campos, mapNameToIndex);
             dto.setUnidadCodigo(value);
 
             value = getValorCampo(LINEA_BODEGA_DESTINO_CODIGO, campos, mapNameToIndex);
@@ -235,7 +234,7 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
         for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
             ETLOrdenDto dto = entry.getValue();
             try {
-                Orden orden = ordenesService.saveOrden2(dto);
+                Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
                 if(orden != null){
                     logInfo(dto.getNumeroOrden(), "", "OK");
                 }else{

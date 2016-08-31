@@ -102,10 +102,10 @@ public class PreProcesadorArchivosCargadosPorExcel {
         return " SELECT "
                 + "     MAX(CASE WHEN COALESCE(a.id_cliente,'') = 'ID_CLIENTE' THEN NULL ELSE COALESCE(a.id_cliente,'') END) AS  codigoCliente,"
                 + "     MAX(a.usuario) AS usuario," + "     a.id_carga AS cargaId," + "     MAX(a.fecha) AS fechaCargue"
-                + " FROM Stage.dbo.carga_texto a " 
+                + " FROM dbo.carga_texto a " 
                 + " WHERE 0 = 0 "
                 + " AND a.estado = 'CARGADO' "
-                //+ " AND a.id_carga = 'a-119745994_20160715153233' "
+                //+ " AND a.id_carga = '705453667_20160830161942' "
                 //+ " AND a.id_carga IN ('INGRESOS_705453667_20160601161634') "
                 //+ " AND 1 = 0 "
                 + " GROUP BY a.id_carga "
@@ -113,12 +113,21 @@ public class PreProcesadorArchivosCargadosPorExcel {
     }
 
     protected String getQueryTextoArchivoCargado() {
-        return " SELECT " + "   a.texto " + " FROM dbo.carga_texto a " + " WHERE 0 = 0 " + " AND a.id_carga = :cargaId "
-                + " ORDER BY " + "   a.id_linea_carga";
+        return " SELECT " 
+        		+ "   a.texto " 
+        		+ " FROM dbo.carga_texto a " 
+        		+ " WHERE 0 = 0 " 
+        		+ " AND a.id_carga = :cargaId "
+                + " ORDER BY " 
+        		+ "   a.id_linea_carga";
     }
 
     protected String getQueryUpdateArchivoCarga() {
-        return " UPDATE dbo.carga_texto " + " SET " + "     estado = :estado, " + "     fecha = :fecha " + " WHERE "
+        return " UPDATE dbo.carga_texto " 
+        		+ " SET " 
+        		+ "     estado = :estado, " 
+        		+ "     fecha = :fecha " 
+        		+ " WHERE "
                 + "     id_carga = :cargaId ";
     }    
     

@@ -82,7 +82,7 @@ public class OrdenesAltipal extends ETLPDFFileStrategy<Object> {
             String token = scanner.next();
             switch (token) {
             case "@orden:":
-                parseNumeroDocumentoOrdenCliente(scanner, model);
+                parseNumeroOrden(scanner, model);
                 parseDestinoDireccion(scanner, model);
                 parseDestinoCodigoAlterno(scanner, model);
                 parseDestinatarioNumeroIdentificacionAlterno(scanner, model);
@@ -118,13 +118,13 @@ public class OrdenesAltipal extends ETLPDFFileStrategy<Object> {
         }
     }
 
-    private void parseNumeroDocumentoOrdenCliente(Scanner scanner, Map<String, Object> model)
+    private void parseNumeroOrden(Scanner scanner, Map<String, Object> model)
             throws IllegalStateException {
         StringBuffer sb = new StringBuffer();
         sb.append(scanner.next());
         sb.append(scanner.next());
         sb.append(scanner.next());
-        model.put("numeroDocumentoOrdenCliente", sb.toString());
+        model.put("numeroOrden", sb.toString());
     }
 
     private void parseDestinoDireccion(Scanner scanner, Map<String, Object> model) throws IllegalStateException {

@@ -85,7 +85,7 @@ public class OrdenesDistribuidorDislicores extends ETLPDFFileStrategy<Object> {
     private void parseOrden(Scanner scanner, Map<String, Object> model) {
         String token;
 
-        model.put("numeroDocumentoOrdenCliente", scanner.next());
+        model.put("numeroOrden", scanner.next());
         model.put("destinatarioNumeroIdentificacionAlterno", scanner.next().substring(11));
         scanner.next();
 

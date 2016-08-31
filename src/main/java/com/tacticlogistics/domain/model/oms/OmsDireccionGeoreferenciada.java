@@ -67,9 +67,17 @@ public class OmsDireccionGeoreferenciada extends AssertionConcern {
         this(EstadoGeoReferenciacionType.SIN_SOLICITUD,null,null,null,"","","","","",null,"");
     }
 
-    public OmsDireccionGeoreferenciada(EstadoGeoReferenciacionType estadoGeoReferenciacion,
-            Integer tipoGeoReferenciacionId, BigDecimal cx, BigDecimal cy, String direccionEstandarizada,
-            String direccionSugerida, String zona, String localidad, String barrio, Date fechaGeoreferenciacion,
+    public OmsDireccionGeoreferenciada(
+    		EstadoGeoReferenciacionType estadoGeoReferenciacion,
+            Integer tipoGeoReferenciacionId, 
+            BigDecimal cx, 
+            BigDecimal cy, 
+            String direccionEstandarizada,
+            String direccionSugerida, 
+            String zona, 
+            String localidad, 
+            String barrio, 
+            Date fechaGeoreferenciacion,
             String usuarioGeoreferenciacion) {
         super();
         this.setEstadoGeoReferenciacion(estadoGeoReferenciacion);

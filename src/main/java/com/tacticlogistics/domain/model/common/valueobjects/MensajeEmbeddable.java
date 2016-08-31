@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import com.tacticlogistics.domain.model.common.Mensaje;
 import com.tacticlogistics.domain.model.common.SeveridadType;
@@ -16,6 +17,8 @@ public class MensajeEmbeddable implements Mensaje {
 	private SeveridadType severidad;
 	@Column(nullable = false, length = 20)
 	private String codigo;
+	@Transient
+	private String data;
 	@Column(nullable = false, length = 200)
 	private String texto;
 	@Column(nullable = false, length = 100)
@@ -51,5 +54,10 @@ public class MensajeEmbeddable implements Mensaje {
 	@Override
 	public String getGrupo() {
 		return grupo;
+	}
+
+	@Override
+	public Object getData() {
+		return data ;
 	}
 }

@@ -1,4 +1,4 @@
-package com.tacticlogistics.domain.model.cpr;
+package com.tacticlogistics.domain.model.tms;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,12 +17,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.tacticlogistics.domain.model.common.valueobjects.UbicacionEmbeddable;
-import com.tacticlogistics.domain.model.tms.Conductor;
-import com.tacticlogistics.domain.model.tms.Transportadora;
-import com.tacticlogistics.domain.model.tms.Vehiculo;
+import com.tacticlogistics.domain.model.cpr.CortePlaneacionRuta;
 
 @Entity
-@Table(name = "Rutas", catalog = "cpr")
+@Table(name = "Rutas", catalog = "crm")
 public class Ruta implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

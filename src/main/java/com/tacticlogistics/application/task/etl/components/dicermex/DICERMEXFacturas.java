@@ -8,10 +8,10 @@ import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CONTACTO_TELEFONOS;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_DIRECCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_NOMBRE;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MINIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_SUGERIDA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_SUGERIDA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_MINIMA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NOTAS;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.PREFIJO_NUMERO_ORDEN;
@@ -224,26 +224,6 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
                 }
             }
 
-            // Date fechaMin = dto.getFechaSugeridaEntregaMinima();
-            // Date fechaMax = dto.getFechaSugeridaEntregaMaxima();
-            // java.sql.Time horaMin = dto.getHoraSugeridaEntregaMinima();
-            // java.sql.Time horaMax = dto.getHoraSugeridaEntregaMaxima();
-            // SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            // System.out.print(dto.getNumeroDocumentoOrdenCliente());
-            // System.out.print("\t");
-            // System.out.print(fechaMin == null ? "" :
-            // getFormatoFechaCorta().format(fechaMin));
-            // System.out.print("\t");
-            // System.out.print(fechaMax == null ? "" :
-            // getFormatoFechaCorta().format(fechaMax));
-            // System.out.print("\t");
-            // System.out.print(horaMin == null ? "" : sdf.format(horaMin));
-            // System.out.print("\t");
-            // System.out.print(horaMax == null ? "" : sdf.format(horaMax));
-            // System.out.print("\t");
-            // System.out.print(value);
-            // System.out.println();
-
             dto.setUsuarioConfirmacion(getClienteCodigo());
 
             map.put(key, dto);
@@ -291,7 +271,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
             ETLOrdenDto dto = entry.getValue();
             try {
-                Orden orden = ordenesService.saveOrden2(dto);
+                Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
                 logInfo(dto.getNumeroOrden(), "", "OK");
             } catch (Exception e) {
                 logError(dto.getNumeroOrden(), "", e.getMessage());
@@ -321,7 +301,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             dateValue = Basic.toFecha(campos[2], null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_ENTREGA_MAXIMA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaEntregaSugeridaMaxima(dateValue);
         dto.setFechaEntregaSugeridaMinima(dto.getFechaEntregaSugeridaMaxima());
@@ -330,7 +310,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(campos[0], null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_SUGERIDA_MINIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_ENTREGA_MINIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -338,7 +318,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(campos[1], null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_ENTREGA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMaxima(timeValue);
     }
@@ -355,7 +335,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             dateValue = Basic.toFecha(campos[1], null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_ENTREGA_MAXIMA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaEntregaSugeridaMaxima(dateValue);
 
@@ -363,7 +343,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             dateValue = Basic.toFecha(campos[0], null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_SUGERIDA_MINIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_ENTREGA_MINIMA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaEntregaSugeridaMinima(dateValue);
     }
@@ -433,7 +413,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(horaMinima, null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_SUGERIDA_MINIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_ENTREGA_MINIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -441,7 +421,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(horaMaxima, null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_ENTREGA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMaxima(timeValue);
     }

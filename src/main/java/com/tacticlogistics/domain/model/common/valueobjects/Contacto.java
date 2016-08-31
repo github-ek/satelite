@@ -73,6 +73,10 @@ public class Contacto extends AssertionConcern {
     protected void setTelefonos(final String value) {
         telefonos = coalesce(value, "");
     }
+    
+    public boolean isEmpty(){
+    	return this.getNombres().isEmpty() && this.getEmail().isEmpty() && this.getTelefonos().isEmpty(); 
+    }
 
     // ---------------------------------------------------------------------------------------------------------
     @Override

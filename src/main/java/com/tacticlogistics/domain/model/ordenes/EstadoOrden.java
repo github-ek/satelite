@@ -20,7 +20,7 @@ public class EstadoOrden implements Serializable {
 	@Id
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_orden", nullable = false, length = 20, unique = true)
-	private EstadoOrdenType EstadoOrden;
+	private com.tacticlogistics.domain.model.oms.EstadoOrdenType EstadoOrden;
 
 	@Column(nullable = false, length = 200)
 	private String descripcion;
@@ -40,11 +40,11 @@ public class EstadoOrden implements Serializable {
 
 	}
 
-	public EstadoOrdenType getEstadoOrden() {
+	public com.tacticlogistics.domain.model.oms.EstadoOrdenType getEstadoOrden() {
 		return EstadoOrden;
 	}
 
-	public void setEstadoOrden(EstadoOrdenType estadoOrden) {
+	public void setEstadoOrden(com.tacticlogistics.domain.model.oms.EstadoOrdenType estadoOrden) {
 		EstadoOrden = estadoOrden;
 	}
 

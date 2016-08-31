@@ -24,47 +24,51 @@ public class CiudadesApplicationService {
 
     @Cacheable(value = "ciudades")
     public List<Object> findAllCiudad() throws DataAccessException {
-        List<Ciudad> entityList = ciudadRepository.findByOrderByOrdinalAsc();
-
-        List<Object> list = new ArrayList<>();
-        entityList.forEach(a -> {
-            list.add(ciudadToDto(a));
-        });
-        return list;
+//        List<Ciudad> entityList = ciudadRepository.findByOrderByOrdinalAsc();
+//
+//        List<Object> list = new ArrayList<>();
+//        entityList.forEach(a -> {
+//            list.add(ciudadToDto(a));
+//        });
+//        return list;
+    	return new ArrayList<>(); 
     }
 
     public List<Map<String, Object>> findCiudadesPorDestinatarioRemitentePorTipoServicio(
             Integer destinatarioRemitenteId, Integer tipoServicioId) throws DataAccessException {
-        List<Ciudad> entityList = ciudadRepository
-                .findByDestinatarioRemitenteIdAndTipoServicioId(destinatarioRemitenteId);
-
-        List<Map<String, Object>> list = new ArrayList<>();
-        entityList.forEach(a -> {
-            list.add(ciudadToDto(a));
-        });
-        return list;
+//        List<Ciudad> entityList = ciudadRepository
+//                .findByDestinatarioRemitenteIdAndTipoServicioId(destinatarioRemitenteId);
+//
+//        List<Map<String, Object>> list = new ArrayList<>();
+//        entityList.forEach(a -> {
+//            list.add(ciudadToDto(a));
+//        });
+//        return list;
+    	return new ArrayList<>();
     }
 
     public List<Object> findAllCiudadPorClientePorTipoServicio(Integer clienteId, Integer tipoServicioId)
             throws DataAccessException {
-        List<Object> list = new ArrayList<>();
-
-        List<Ciudad> entityList = ciudadRepository.findByClienteIdAndTipoServicioId(clienteId, tipoServicioId);
-
-        entityList.forEach(a -> {
-            list.add(ciudadToDto(a));
-        });
-        return list;
+//        List<Object> list = new ArrayList<>();
+//
+//        List<Ciudad> entityList = ciudadRepository.findByClienteIdAndTipoServicioId(clienteId, tipoServicioId);
+//
+//        entityList.forEach(a -> {
+//            list.add(ciudadToDto(a));
+//        });
+//        return list;
+    	return new ArrayList<>();
     }
 
     public List<Object> findCiudadesPorProducto(Integer productoId) throws DataAccessException {
-        List<Ciudad> entityList = ciudadRepository.findByProductoId(productoId);
+//        List<Ciudad> entityList = ciudadRepository.findByProductoId(productoId);
 
-        List<Object> list = new ArrayList<>();
-        entityList.forEach(a -> {
-            list.add(ciudadToDto(a));
-        });
-        return list;
+//        List<Object> list = new ArrayList<>();
+//        entityList.forEach(a -> {
+//            list.add(ciudadToDto(a));
+//        });
+//        return list;
+        return new ArrayList<>();
     }
 
     public Map<String, Object> ciudadToDto(Ciudad entity) {

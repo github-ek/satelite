@@ -45,15 +45,12 @@ import com.tacticlogistics.domain.model.crm.DestinatarioRemitente;
 import com.tacticlogistics.domain.model.crm.DestinoOrigen;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
-import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.tms.TipoVehiculo;
 
 @Entity
 @Table(name = "Ordenes", catalog = "oms")
-
+// TODO Trazabilidad de reprogramaciones
 // TODO DOCUMENTOS
-// TODO REQUERIMIENTOS DISTRIBUCION POR LINEA
-// TODO REQUERIMIENTOS ALISTAMIENTO POR LINEA
 // TODO COPIA ORIGINAL DE LAS LINEAS
 public class OmsOrden implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -67,6 +64,14 @@ public class OmsOrden implements Serializable {
 	@Column(nullable = false, length = 20)
 	@NotNull
 	private String numeroOrden;
+
+	@Column(nullable = true, columnDefinition = "DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaOrden;
+
+	@Column(nullable = false, length = 20)
+	@NotNull
+	private String numeroOrdenCompra;
 
 	@Column(nullable = false, length = 20)
 	@NotNull
@@ -88,6 +93,11 @@ public class OmsOrden implements Serializable {
 	@NotNull
 	private EstadoAlistamientoType estadoAlistamiento;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "id_estado_cumplidos", nullable = false, length = 50)
+	@NotNull
+	private EstadoCumplidosType estadoCumplidos;
+
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "id_cliente", nullable = false)
@@ -98,7 +108,6 @@ public class OmsOrden implements Serializable {
 	@NotNull
 	private String clienteCodigo;
 
-	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "id_tipo_servicio", nullable = false)
 	@NotNull
@@ -110,16 +119,14 @@ public class OmsOrden implements Serializable {
 
 	private boolean requiereServicioDistribucion;
 
-	private boolean requiereServicioAlistamiento;
-
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_ciudad_destino", nullable = true)
 	private Ciudad ciudadDestino;
 
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 100, name = "destino_ciudad_nombre_alterno")
 	@NotNull
-	private String destinoCiudadNombreAlterno;
+	private String destinoCiudadNombre;
 
 	@Column(nullable = false, length = 150)
 	@NotNull
@@ -134,9 +141,9 @@ public class OmsOrden implements Serializable {
 	@JoinColumn(name = "id_ciudad_origen", nullable = true)
 	private Ciudad ciudadOrigen;
 
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false, length = 100, name = "origen_ciudad_nombre_alterno")
 	@NotNull
-	private String origenCiudadNombreAlterno;
+	private String origenCiudadNombre;
 
 	@Column(nullable = false, length = 150)
 	@NotNull
@@ -163,12 +170,6 @@ public class OmsOrden implements Serializable {
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaEntregaSugeridaMaxima;
 
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSugeridaMinimaAdicional;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSugeridaMaximaAdicional;
-
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaRecogida;
 
@@ -186,12 +187,6 @@ public class OmsOrden implements Serializable {
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaRecogidaSugeridaMaxima;
 
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSugeridaMinimaAdicional;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSugeridaMaximaAdicional;
-
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_canal", nullable = true)
@@ -201,7 +196,6 @@ public class OmsOrden implements Serializable {
 	@NotNull
 	private String canalCodigoAlterno;
 
-	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_destinatario", nullable = true)
 	private DestinatarioRemitente destinatario;
@@ -284,55 +278,35 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaPlanificadaMinima;
-
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaPlanificadaMaxima;
+	private Date fechaCitaEntrega;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaPlanificadaMinima;
+	private Time horaCitaEntregaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaPlanificadaMaxima;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaPlanificadaMinimaAdicional;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaPlanificadaMaximaAdicional;
+	private Time horaCitaEntregaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaPlanificadaMinima;
-
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaPlanificadaMaxima;
+	private Date fechaCitaRecogida;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaPlanificadaMinima;
+	private Time horaCitaRecogidaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaPlanificadaMaxima;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaPlanificadaMinimaAdicional;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaPlanificadaMaximaAdicional;
+	private Time horaCitaRecogidaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAlistamientoPlanificada;
+	private Date fechaAlistamiento;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaAlistamientoPlanificadaMinima;
+	private Time horaAlistamientoMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaAlistamientoPlanificadaMaxima;
+	private Time horaAlistamientoMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -345,16 +319,114 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(length = 200, nullable = false)
 	@NotNull
-	private String notasAprobacionPlanificacion;
+	private String notasAceptacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAprobacionPlanificacion;
+	private Date fechaAceptacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
-	private String usuarioAprobacionPlanificacion;
+	private String usuarioAceptacion;
 
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, columnDefinition = "DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaEntrega;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaEntregaInicio;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaEntregaFin;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, columnDefinition = "DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaRecogida;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaRecogidaInicio;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaRecogidaFin;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, columnDefinition = "DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaCargue;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaCargueInicio;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaCargueFin;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, columnDefinition = "DATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaDescargue;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaDescargueInicio;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaDescargueFin;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	@NotNull
+	private Date fechaCreacion;
+
+	@Column(nullable = false, length = 50)
+	@NotNull
+	private String usuarioCreacion;
+
+	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	@NotNull
+	private Date fechaActualizacion;
+
+	@Column(nullable = false, length = 50)
+	@NotNull
+	private String usuarioActualizacion;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(name = "id_causal_anulacion", nullable = true)
+	private Integer causalAnulacionId;
+
+	@Column(length = 200, nullable = false)
+	@NotNull
+	private String notasAnulacion;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaAnulacion;
+
+	@Column(nullable = false, length = 50)
+	@NotNull
+	private String usuarioAnulacion;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<OmsLineaOrden> lineas;
+
+	@ElementCollection
+	@CollectionTable(name = "ordenes_requerimientos_distribucion", catalog = "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
+	private Set<OmsOrdenRequerimientoDistribucionAssociation> requerimientosDistribucion;
+
+	@ElementCollection
+	@CollectionTable(name = "ordenes_requerimientos_alistamiento", catalog = "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
+	private Set<OmsOrdenRequerimientoAlistamientoAssociation> requerimientosAlistamiento;
+
+	@ElementCollection
+	@CollectionTable(name = "ordenes_mensajes", catalog = "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
+	private Set<MensajeEmbeddable> mensajes;
+
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	@Embedded
 	@AttributeOverrides({
@@ -417,242 +489,283 @@ public class OmsOrden implements Serializable {
 	private String usuarioAsignacionRuta;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	@NotNull
-	private Date fechaCreacion;
-
-	@Column(nullable = false, length = 50)
-	@NotNull
-	private String usuarioCreacion;
-
-	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	@NotNull
-	private Date fechaActualizacion;
-
-	@Column(nullable = false, length = 50)
-	@NotNull
-	private String usuarioActualizacion;
-
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(length = 200, nullable = false)
-	@NotNull
-	private String notasAnulacion;
-
-	@Column(name = "id_causal_anulacion", nullable = true)
-	private Integer causalAnulacionId;
-
-	@Column(nullable = false, length = 50)
-	@NotNull
-	private String usuarioAnulacion;
-
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAnulacion;
-
 	// ---------------------------------------------------------------------------------------------------------
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OmsLineaOrden> lineas;
+	// ---------------------------------------------------------------------------------------------------------
+	public void confirmar(String usuario, Date fecha, String notas) {
+		this.setDatosConfirmacion(usuario, fecha, notas);
+		this.setEstadoOrden(EstadoOrdenType.CONFIRMADA);
+		this.setDatosActualizacion(usuario, fecha);
+	}
 
-	@ElementCollection
-	@CollectionTable(name = "ordenes_requerimientos_distribucion", catalog = "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
-	private Set<OmsOrdenRequerimientoDistribucionAssociation> requerimientosDistribucion;
+	public void aceptar(String usuario, Date fecha, String notas) {
+		this.setDatosAceptacion(usuario, fecha, notas);
+		this.setEstadoOrden(EstadoOrdenType.ACEPTADA);
+		this.setDatosActualizacion(usuario, fecha);
+	}
 
-	@ElementCollection
-	@CollectionTable(name = "ordenes_requerimientos_alistamiento", catalog = "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
-	private Set<OmsOrdenRequerimientoAlistamientoAssociation> requerimientosAlistamiento;
+	public void anular(String usuario, Date fecha, String notas, Integer causalId) {
+		this.setDatosAnulacion(usuario, fecha, notas, causalId);
+		this.setEstadoOrden(EstadoOrdenType.ANULADA);
+		this.setDatosActualizacion(usuario, fecha);
+	}
 
-	@ElementCollection
-	@CollectionTable(name = "ordenes_mensajes", catalog = "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
-	private Set<MensajeEmbeddable> mensajes;
+	public void revertirConfirmacion(String usuario, Date fecha) {
+		this.setDatosConfirmacion("", null, this.getNotasConfirmacion());
+		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
+		this.setDatosActualizacion(usuario, fecha);
+	}
+
+	public void revertirAceptacion(String usuario, Date fecha) {
+		this.setDatosAceptacion("", null, this.getNotasAceptacion());
+		this.confirmar(usuario, fecha, "");
+	}
+
+	public void revertirAnulacion(String usuario, Date fecha, EstadoOrdenType nuevoEstado) {
+		this.setDatosAnulacion("", null, "", null);
+	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public OmsOrden() {
 		super();
-		this.setId(null);
-		this.setNumeroOrden("");
-		this.setNumeroConsolidado("");
-		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
-		this.setEstadoDistribucion(EstadoDistribucionType.NO_PROGRAMADO);
-		this.setEstadoAlistamiento(EstadoAlistamientoType.NO_PROGRAMADO);
-		this.setCliente(null);
+		this.setDatosOrden("", null, "", "");
 
+		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
+		this.setEstadoDistribucion(EstadoDistribucionType.NO_PLANIFICADA);
+		this.setEstadoAlistamiento(EstadoAlistamientoType.NO_ALERTADA);
+		this.setEstadoCumplidos(EstadoCumplidosType.NO_REPORTADOS);
+
+		// ---------------------------------------------------------------------------------------------------------
+		this.setCliente(null);
 		this.setTipoServicio(null);
 		this.setTipoServicioCodigoAlterno("");
 		this.setRequiereServicioDistribucion(true);
-		this.setRequiereServicioAlistamiento(true);
 
-		this.setDireccionDestino();
+		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosDireccionDestino(null, "", "");
+		this.setDatosDireccionOrigen(null, "", "");
 
-		this.setDireccionOrigen();
-
+		// ---------------------------------------------------------------------------------------------------------
 		this.setRequiereConfirmacionCitaEntrega(false);
-		this.setCitaEntregaSugerida();
+		this.setDatosCitaEntregaSugerida(null, null, null, null);
 
 		this.setRequiereConfirmacionCitaRecogida(false);
-		this.setCitaRecogidaSugerida();
+		this.setDatosCitaRecogidaSugerida(null, null, null, null);
 
-		this.setDestinatario();
-		this.setUbicacionDestino();
-		this.setUbicacionOrigen();
+		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosDestinatario(null, "", null, null);
+		this.setDatosPuntoDestino(null, null);
+		this.setDatosPuntoOrigen(null, null);
 
+		// ---------------------------------------------------------------------------------------------------------
 		this.setNotasRequerimientosDistribucion("");
 		this.setNotasRequerimientosAlistamiento("");
 		this.setValorRecaudo(null);
 
-		this.setDatosConfirmacion();
+		this.setDatosConfirmacion("", null, "");
 
-		this.setCitaEntregaPlanificada();
-		this.setCitaRecogidaPlanificada();
-		this.setCitaAlistamientoPlanificada();
+		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosCitaEntrega(null, null, null);
+		this.setDatosCitaRecogida(null, null, null);
+		this.setDatosCitaAlistamiento(null, null, null);
 
-		this.setDatosPlanificacionTipoVehiculo();
+		this.setDatosPlanificacionPrimaria(null, null);
+		this.setDatosAceptacion("", null, "");
 
-		this.setDatosAprobacionPlanificacion();
+		this.setDatosEntrega(null, null, null);
+		this.setDatosRecogida(null, null, null);
+		this.setDatosCargue(null, null, null);
+		this.setDatosDescargue(null, null, null);
 
+		// ---------------------------------------------------------------------------------------------------------
 		this.setDestinoDireccionGeoreferenciada(null);
-
 		this.setOrigenDireccionGeoreferenciada(null);
 
-		this.setEstadoPlanificacionRuta(EstadoPlanificacionRutaType.SIN_SOLICITUD);
-		setDatosCortePlanificacionRuta();
+		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosCreacion("", null);
+		this.setDatosActualizacion("", null);
+		this.setDatosAnulacion("", null, "", null);
 
-		this.setDatosRuta();
-
-		this.setDatosCreacion();
-
-		this.setDatosActualizacion();
-
-		this.setDatosAnulacion();
-
+		// ---------------------------------------------------------------------------------------------------------
 		this.lineas = new HashSet<>();
 		this.mensajes = new HashSet<>();
 		this.requerimientosDistribucion = new HashSet<>();
 		this.requerimientosAlistamiento = new HashSet<>();
+
+		// ---------------------------------------------------------------------------------------------------------
+		this.setEstadoPlanificacionRuta(EstadoPlanificacionRutaType.SIN_SOLICITUD);
+		this.setDatosCorteRuta("", null, null);
+		this.setDatosRuta("", null, null);
+
 	}
 
-	public void setDireccionDestino() {
-		this.setCiudadDestino(null);
-		this.setDestinoCiudadNombreAlterno("");
-		this.setDestinoDireccion("");
-		this.setDestinoIndicaciones("");
+	public void setDatosOrden(String numeroOrden, Date fechaOrden, String numeroOrdenCompra, String numeroConsolidado) {
+		this.setNumeroOrden(numeroOrden);
+		this.setFechaOrden(fechaOrden);
+		this.setNumeroOrdenCompra(numeroOrdenCompra);
+		this.setNumeroConsolidado(numeroConsolidado);
 	}
 
-	public void setDireccionOrigen() {
-		this.setCiudadOrigen(null);
-		this.setOrigenCiudadNombreAlterno("");
-		this.setOrigenDireccion("");
-		this.setOrigenIndicaciones("");
+	public void setDatosDireccionDestino(Ciudad ciudad, String direccion, String indicaciones) {
+		this.setCiudadDestino(ciudad);
+		this.setDestinoCiudadNombre((ciudad == null) ? "" : ciudad.getNombreAlterno());
+		this.setDestinoDireccion(direccion);
+		this.setDestinoIndicaciones(indicaciones);
 	}
 
-	public void setDestinatario() {
-		this.setCanal(null);
-		this.setCanalCodigoAlterno("");
-		this.setDestinatario(null);
-		this.setDestinatarioNumeroIdentificacion("");
-		this.setDestinatarioNombre("");
-		this.setDestinatarioContacto(null);
+	public void setDatosDireccionOrigen(Ciudad ciudad, String direccion, String indicaciones) {
+		this.setCiudadOrigen(ciudad);
+		this.setOrigenCiudadNombre((ciudad == null) ? "" : ciudad.getNombreAlterno());
+		this.setOrigenDireccion(direccion);
+		this.setOrigenIndicaciones(indicaciones);
 	}
 
-	public void setUbicacionDestino() {
-		this.setDestino(null);
-		this.setDestinoNombre("");
-		this.setDestinoContacto(null);
+	public void setDatosCitaEntregaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
+		this.setFechaEntregaSugeridaMinima(feMi);
+		this.setFechaEntregaSugeridaMaxima(feMa);
+		this.setHoraEntregaSugeridaMinima(hoMi);
+		this.setHoraEntregaSugeridaMaxima(hoMa);
 	}
 
-	public void setUbicacionOrigen() {
-		this.setOrigen(null);
-		this.setOrigenNombre("");
-		this.setOrigenContacto(null);
+	public void setDatosCitaRecogidaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
+		this.setFechaRecogidaSugeridaMinima(feMi);
+		this.setFechaRecogidaSugeridaMaxima(feMa);
+		this.setHoraRecogidaSugeridaMinima(hoMi);
+		this.setHoraRecogidaSugeridaMaxima(hoMa);
 	}
 
-	public void setCitaEntregaSugerida() {
-		this.setFechaEntregaSugeridaMinima(null);
-		this.setFechaEntregaSugeridaMaxima(null);
-		this.setHoraEntregaSugeridaMinima(null);
-		this.setHoraEntregaSugeridaMaxima(null);
-		this.setHoraEntregaSugeridaMinimaAdicional(null);
-		this.setHoraEntregaSugeridaMaximaAdicional(null);
+	public void setDatosDestinatario(Canal canal, String canalCodigoAlterno, DestinatarioRemitente destinatario,
+			Contacto contacto) {
+		if (contacto == null) {
+			if (destinatario != null) {
+				contacto = destinatario.getContacto();
+			}
+			if (contacto == null) {
+				contacto = new Contacto();
+			}
+		}
+		this.setCanal(canal);
+		this.setCanalCodigoAlterno(canalCodigoAlterno);
+		this.setDestinatario(destinatario);
+		this.setDestinatarioNumeroIdentificacion((destinatario == null) ? "" : destinatario.getNumeroIdentificacion());
+		this.setDestinatarioNombre((destinatario == null) ? "" : destinatario.getNombre());
+		this.setDestinatarioContacto(contacto);
 	}
 
-	public void setCitaRecogidaSugerida() {
-		this.setFechaRecogidaSugeridaMinima(null);
-		this.setFechaRecogidaSugeridaMaxima(null);
-		this.setHoraRecogidaSugeridaMinima(null);
-		this.setHoraRecogidaSugeridaMaxima(null);
-		this.setHoraRecogidaSugeridaMinimaAdicional(null);
-		this.setHoraRecogidaSugeridaMaximaAdicional(null);
+	public void setDatosPuntoDestino(DestinoOrigen ubicacion, Contacto contacto) {
+		if (contacto == null) {
+			if (ubicacion != null) {
+				contacto = ubicacion.getContacto();
+			}
+			if (contacto == null) {
+				contacto = new Contacto();
+			}
+		}
+		this.setDestino(ubicacion);
+		this.setDestinoNombre((ubicacion == null) ? "" : ubicacion.getNombre());
+		this.setDestinoContacto(contacto);
 	}
 
-	public void setCitaEntregaPlanificada() {
-		this.setFechaEntregaPlanificadaMinima(null);
-		this.setFechaEntregaPlanificadaMaxima(null);
-		this.setHoraEntregaPlanificadaMinima(null);
-		this.setHoraEntregaPlanificadaMaxima(null);
-		this.setHoraEntregaPlanificadaMinimaAdicional(null);
-		this.setHoraEntregaPlanificadaMaximaAdicional(null);
+	public void setDatosPuntoOrigen(DestinoOrigen ubicacion, Contacto contacto) {
+		if (contacto == null) {
+			if (ubicacion != null) {
+				contacto = ubicacion.getContacto();
+			}
+			if (contacto == null) {
+				contacto = new Contacto();
+			}
+		}
+		this.setOrigen(ubicacion);
+		this.setOrigenNombre((ubicacion == null) ? "" : ubicacion.getNombre());
+		this.setOrigenContacto(contacto);
 	}
 
-	public void setCitaRecogidaPlanificada() {
-		this.setFechaRecogidaPlanificadaMinima(null);
-		this.setFechaRecogidaPlanificadaMaxima(null);
-		this.setHoraRecogidaPlanificadaMinima(null);
-		this.setHoraRecogidaPlanificadaMaxima(null);
-		this.setHoraRecogidaPlanificadaMinimaAdicional(null);
-		this.setHoraRecogidaPlanificadaMaximaAdicional(null);
+	public void setDatosConfirmacion(String usuario, Date fecha, String notas) {
+		this.setUsuarioConfirmacion(usuario);
+		this.setFechaConfirmacion(fecha);
+		this.setNotasConfirmacion(notas);
 	}
 
-	public void setCitaAlistamientoPlanificada() {
-		this.setFechaAlistamientoPlanificada(null);
-		this.setHoraAlistamientoPlanificadaMinima(null);
-		this.setHoraAlistamientoPlanificadaMaxima(null);
+	public void setDatosCitaEntrega(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaCitaEntrega(fecha);
+		this.setHoraCitaEntregaMinima(hoMi);
+		this.setHoraCitaEntregaMaxima(hoMa);
 	}
 
-	public void setDatosPlanificacionTipoVehiculo() {
-		this.setTipoVehiculoPlanificado(null);
-		this.setValorFletePlanificado(null);
+	public void setDatosCitaRecogida(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaCitaRecogida(fecha);
+		this.setHoraCitaRecogidaMinima(hoMi);
+		this.setHoraCitaRecogidaMaxima(hoMa);
 	}
 
-	public void setDatosAprobacionPlanificacion() {
-		this.setNotasAprobacionPlanificacion("");
-		this.setFechaAprobacionPlanificacion(null);
-		this.setUsuarioAprobacionPlanificacion("");
+	public void setDatosCitaAlistamiento(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaAlistamiento(fecha);
+		this.setHoraAlistamientoMinima(hoMi);
+		this.setHoraAlistamientoMaxima(hoMa);
 	}
 
-	public void setDatosCortePlanificacionRuta() {
-		this.setCortePlanificacionRutaId(null);
-		this.setFechaCortePlanificacionRuta(null);
-		this.setUsuarioCortePlanificacionRuta("");
+	public void setDatosPlanificacionPrimaria(TipoVehiculo tipoVehiculo, Integer valorFletePlanificado) {
+		this.setTipoVehiculoPlanificado(tipoVehiculo);
+		this.setValorFletePlanificado(valorFletePlanificado);
 	}
 
-	public void setDatosRuta() {
-		this.setRutaId(null);
-		this.setFechaAsignacionRuta(null);
-		this.setUsuarioAsignacionRuta("");
+	public void setDatosAceptacion(String usuario, Date fecha, String notas) {
+		this.setUsuarioAceptacion(usuario);
+		this.setFechaAceptacion(fecha);
+		this.setNotasAceptacion(notas);
 	}
 
-	public void setDatosConfirmacion() {
-		this.setNotasConfirmacion("");
-		this.setFechaConfirmacion(null);
-		this.setUsuarioConfirmacion("");
+	public void setDatosEntrega(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaEntrega(fecha);
+		this.setHoraEntregaInicio(hoMi);
+		this.setHoraEntregaFin(hoMa);
 	}
 
-	public void setDatosCreacion() {
-		this.setFechaCreacion(null);
-		this.setUsuarioCreacion("");
+	public void setDatosRecogida(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaRecogida(fecha);
+		this.setHoraRecogidaInicio(hoMi);
+		this.setHoraRecogidaFin(hoMa);
 	}
 
-	public void setDatosActualizacion() {
-		this.setFechaActualizacion(null);
-		this.setUsuarioActualizacion("");
+	public void setDatosCargue(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaCargue(fecha);
+		this.setHoraCargueInicio(hoMi);
+		this.setHoraCargueFin(hoMa);
 	}
 
-	public void setDatosAnulacion() {
-		this.setNotasAnulacion("");
-		this.setCausalAnulacionId(null);
-		this.setUsuarioAnulacion("");
-		this.setFechaAnulacion(null);
+	public void setDatosDescargue(Date fecha, Time hoMi, Time hoMa) {
+		this.setFechaDescargue(fecha);
+		this.setHoraDescargueInicio(hoMi);
+		this.setHoraDescargueFin(hoMa);
+	}
+
+	public void setDatosCreacion(String usuario, Date fecha) {
+		this.setUsuarioCreacion(usuario);
+		this.setFechaCreacion(fecha);
+	}
+
+	public void setDatosActualizacion(String usuario, Date fecha) {
+		this.setUsuarioActualizacion(usuario);
+		this.setFechaActualizacion(fecha);
+	}
+
+	public void setDatosAnulacion(String usuario, Date fecha, String notas, Integer causalId) {
+		this.setUsuarioAnulacion(usuario);
+		this.setFechaAnulacion(fecha);
+		this.setNotasAnulacion(notas);
+		this.setCausalAnulacionId(causalId);
+	}
+
+	public void setDatosCorteRuta(String usuario, Date fecha, Integer cortePlanificacionRutaId) {
+		this.setUsuarioCortePlanificacionRuta(usuario);
+		this.setFechaCortePlanificacionRuta(fecha);
+		this.setCortePlanificacionRutaId(cortePlanificacionRutaId);
+	}
+
+	public void setDatosRuta(String usuario, Date fecha, Integer rutaId) {
+		this.setUsuarioAsignacionRuta(usuario);
+		this.setFechaAsignacionRuta(fecha);
+		this.setRutaId(rutaId);
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -662,6 +775,14 @@ public class OmsOrden implements Serializable {
 
 	public String getNumeroOrden() {
 		return numeroOrden;
+	}
+
+	public Date getFechaOrden() {
+		return fechaOrden;
+	}
+
+	public String getNumeroOrdenCompra() {
+		return numeroOrdenCompra;
 	}
 
 	public String getNumeroConsolidado() {
@@ -679,6 +800,10 @@ public class OmsOrden implements Serializable {
 
 	public EstadoAlistamientoType getEstadoAlistamiento() {
 		return estadoAlistamiento;
+	}
+
+	public EstadoCumplidosType getEstadoCumplidos() {
+		return estadoCumplidos;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -703,17 +828,13 @@ public class OmsOrden implements Serializable {
 		return requiereServicioDistribucion;
 	}
 
-	public boolean isRequiereServicioAlistamiento() {
-		return requiereServicioAlistamiento;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
 	public Ciudad getCiudadDestino() {
 		return ciudadDestino;
 	}
 
-	public String getDestinoCiudadNombreAlterno() {
-		return destinoCiudadNombreAlterno;
+	public String getDestinoCiudadNombre() {
+		return destinoCiudadNombre;
 	}
 
 	public String getDestinoDireccion() {
@@ -729,8 +850,8 @@ public class OmsOrden implements Serializable {
 		return ciudadOrigen;
 	}
 
-	public String getOrigenCiudadNombreAlterno() {
-		return origenCiudadNombreAlterno;
+	public String getOrigenCiudadNombre() {
+		return origenCiudadNombre;
 	}
 
 	public String getOrigenDireccion() {
@@ -762,14 +883,6 @@ public class OmsOrden implements Serializable {
 		return horaEntregaSugeridaMaxima;
 	}
 
-	public Time getHoraEntregaSugeridaMinimaAdicional() {
-		return horaEntregaSugeridaMinimaAdicional;
-	}
-
-	public Time getHoraEntregaSugeridaMaximaAdicional() {
-		return horaEntregaSugeridaMaximaAdicional;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
 	public boolean isRequiereConfirmacionCitaRecogida() {
 		return requiereConfirmacionCitaRecogida;
@@ -789,14 +902,6 @@ public class OmsOrden implements Serializable {
 
 	public Time getHoraRecogidaSugeridaMaxima() {
 		return horaRecogidaSugeridaMaxima;
-	}
-
-	public Time getHoraRecogidaSugeridaMinimaAdicional() {
-		return horaRecogidaSugeridaMinimaAdicional;
-	}
-
-	public Time getHoraRecogidaSugeridaMaximaAdicional() {
-		return horaRecogidaSugeridaMaximaAdicional;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -823,9 +928,8 @@ public class OmsOrden implements Serializable {
 
 	public Contacto getDestinatarioContacto() {
 		if (this.destinatarioContacto == null) {
-			// TODO
+			destinatarioContacto = new Contacto();
 		}
-
 		return destinatarioContacto;
 	}
 
@@ -840,7 +944,7 @@ public class OmsOrden implements Serializable {
 
 	public Contacto getDestinoContacto() {
 		if (this.destinoContacto == null) {
-			// TODO
+			destinoContacto = new Contacto();
 		}
 		return destinoContacto;
 	}
@@ -856,7 +960,7 @@ public class OmsOrden implements Serializable {
 
 	public Contacto getOrigenContacto() {
 		if (this.origenContacto == null) {
-			// TODO
+			origenContacto = new Contacto();
 		}
 		return origenContacto;
 	}
@@ -888,66 +992,42 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaEntregaPlanificadaMinima() {
-		return fechaEntregaPlanificadaMinima;
+	public Date getFechaCitaEntrega() {
+		return fechaCitaEntrega;
 	}
 
-	public Date getFechaEntregaPlanificadaMaxima() {
-		return fechaEntregaPlanificadaMaxima;
+	public Time getHoraCitaEntregaMinima() {
+		return horaCitaEntregaMinima;
 	}
 
-	public Time getHoraEntregaPlanificadaMinima() {
-		return horaEntregaPlanificadaMinima;
-	}
-
-	public Time getHoraEntregaPlanificadaMaxima() {
-		return horaEntregaPlanificadaMaxima;
-	}
-
-	public Time getHoraEntregaPlanificadaMinimaAdicional() {
-		return horaEntregaPlanificadaMinimaAdicional;
-	}
-
-	public Time getHoraEntregaPlanificadaMaximaAdicional() {
-		return horaEntregaPlanificadaMaximaAdicional;
+	public Time getHoraCitaEntregaMaxima() {
+		return horaCitaEntregaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaRecogidaPlanificadaMinima() {
-		return fechaRecogidaPlanificadaMinima;
+	public Date getFechaCitaRecogida() {
+		return fechaCitaRecogida;
 	}
 
-	public Date getFechaRecogidaPlanificadaMaxima() {
-		return fechaRecogidaPlanificadaMaxima;
+	public Time getHoraCitaRecogidaMinima() {
+		return horaCitaRecogidaMinima;
 	}
 
-	public Time getHoraRecogidaPlanificadaMinima() {
-		return horaRecogidaPlanificadaMinima;
-	}
-
-	public Time getHoraRecogidaPlanificadaMaxima() {
-		return horaRecogidaPlanificadaMaxima;
-	}
-
-	public Time getHoraRecogidaPlanificadaMinimaAdicional() {
-		return horaRecogidaPlanificadaMinimaAdicional;
-	}
-
-	public Time getHoraRecogidaPlanificadaMaximaAdicional() {
-		return horaRecogidaPlanificadaMaximaAdicional;
+	public Time getHoraCitaRecogidaMaxima() {
+		return horaCitaRecogidaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaAlistamientoPlanificada() {
-		return fechaAlistamientoPlanificada;
+	public Date getFechaAlistamiento() {
+		return fechaAlistamiento;
 	}
 
-	public Time getHoraAlistamientoPlanificadaMinima() {
-		return horaAlistamientoPlanificadaMinima;
+	public Time getHoraAlistamientoMinima() {
+		return horaAlistamientoMinima;
 	}
 
-	public Time getHoraAlistamientoPlanificadaMaxima() {
-		return horaAlistamientoPlanificadaMaxima;
+	public Time getHoraAlistamientoMaxima() {
+		return horaAlistamientoMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -960,29 +1040,118 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public String getNotasAprobacionPlanificacion() {
-		return notasAprobacionPlanificacion;
+	public String getNotasAceptacion() {
+		return notasAceptacion;
 	}
 
-	public Date getFechaAprobacionPlanificacion() {
-		return fechaAprobacionPlanificacion;
+	public Date getFechaAceptacion() {
+		return fechaAceptacion;
 	}
 
-	public String getUsuarioAprobacionPlanificacion() {
-		return usuarioAprobacionPlanificacion;
+	public String getUsuarioAceptacion() {
+		return usuarioAceptacion;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaEntrega() {
+		return fechaEntrega;
+	}
+
+	public Time getHoraEntregaInicio() {
+		return horaEntregaInicio;
+	}
+
+	public Time getHoraEntregaFin() {
+		return horaEntregaFin;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaRecogida() {
+		return fechaRecogida;
+	}
+
+	public Time getHoraRecogidaInicio() {
+		return horaRecogidaInicio;
+	}
+
+	public Time getHoraRecogidaFin() {
+		return horaRecogidaFin;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaCargue() {
+		return fechaCargue;
+	}
+
+	public Time getHoraCargueInicio() {
+		return horaCargueInicio;
+	}
+
+	public Time getHoraCargueFin() {
+		return horaCargueFin;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaDescargue() {
+		return fechaDescargue;
+	}
+
+	public Time getHoraDescargueInicio() {
+		return horaDescargueInicio;
+	}
+
+	public Time getHoraDescargueFin() {
+		return horaDescargueFin;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+	public String getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public Date getFechaActualizacion() {
+		return fechaActualizacion;
+	}
+
+	public String getUsuarioActualizacion() {
+		return usuarioActualizacion;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Integer getCausalAnulacionId() {
+		return causalAnulacionId;
+	}
+
+	public String getNotasAnulacion() {
+		return notasAnulacion;
+	}
+
+	public String getUsuarioAnulacion() {
+		return usuarioAnulacion;
+	}
+
+	public Date getFechaAnulacion() {
+		return fechaAnulacion;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
 	public OmsDireccionGeoreferenciada getDestinoDireccionGeoreferenciada() {
 		if (destinoDireccionGeoreferenciada == null) {
-			// TODO
+			destinoDireccionGeoreferenciada = new OmsDireccionGeoreferenciada();
 		}
 		return destinoDireccionGeoreferenciada;
 	}
 
 	public OmsDireccionGeoreferenciada getOrigenDireccionGeoreferenciada() {
 		if (origenDireccionGeoreferenciada == null) {
-			// TODO
+			origenDireccionGeoreferenciada = new OmsDireccionGeoreferenciada();
 		}
 		return origenDireccionGeoreferenciada;
 	}
@@ -1018,63 +1187,40 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCreacion() {
-		return fechaCreacion;
-	}
-
-	public String getUsuarioCreacion() {
-		return usuarioCreacion;
-	}
-
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
-	}
-
-	public String getUsuarioActualizacion() {
-		return usuarioActualizacion;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
-	public String getNotasAnulacion() {
-		return notasAnulacion;
-	}
-
-	public Integer getCausalAnulacionId() {
-		return causalAnulacionId;
-	}
-
-	public String getUsuarioAnulacion() {
-		return usuarioAnulacion;
-	}
-
-	public Date getFechaAnulacion() {
-		return fechaAnulacion;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public void setNumeroOrden(String value) {
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setNumeroOrden(String value) {
 		this.numeroOrden = coalesce(value, "");
 	}
 
-	public void setNumeroConsolidado(String value) {
+	protected void setFechaOrden(Date fechaOrden) {
+		this.fechaOrden = fechaOrden;
+	}
+
+	protected void setNumeroOrdenCompra(String value) {
+		this.numeroOrdenCompra = coalesce(value, "");
+	}
+
+	protected void setNumeroConsolidado(String value) {
 		this.numeroConsolidado = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setEstadoOrden(EstadoOrdenType estadoOrden) {
+	protected void setEstadoOrden(EstadoOrdenType estadoOrden) {
 		this.estadoOrden = estadoOrden;
 	}
 
-	public void setEstadoDistribucion(EstadoDistribucionType estadoDistribucion) {
+	protected void setEstadoDistribucion(EstadoDistribucionType estadoDistribucion) {
 		this.estadoDistribucion = estadoDistribucion;
 	}
 
-	public void setEstadoAlistamiento(EstadoAlistamientoType estadoAlistamiento) {
+	protected void setEstadoAlistamiento(EstadoAlistamientoType estadoAlistamiento) {
 		this.estadoAlistamiento = estadoAlistamiento;
+	}
+
+	protected void setEstadoCumplidos(EstadoCumplidosType estadoCumplidos) {
+		this.estadoCumplidos = estadoCumplidos;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -1083,7 +1229,7 @@ public class OmsOrden implements Serializable {
 		this.setClienteCodigo((this.cliente != null) ? this.cliente.getCodigo() : "");
 	}
 
-	public void setClienteCodigo(String value) {
+	protected void setClienteCodigo(String value) {
 		this.clienteCodigo = coalesce(value, "");
 	}
 
@@ -1100,163 +1246,134 @@ public class OmsOrden implements Serializable {
 		this.requiereServicioDistribucion = requiereServicioDistribucion;
 	}
 
-	public void setRequiereServicioAlistamiento(boolean requiereServicioAlistamiento) {
-		this.requiereServicioAlistamiento = requiereServicioAlistamiento;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	public void setCiudadDestino(Ciudad ciudadDestino) {
+	protected void setCiudadDestino(Ciudad ciudadDestino) {
 		this.ciudadDestino = ciudadDestino;
 	}
 
-	public void setDestinoCiudadNombreAlterno(String value) {
-		this.destinoCiudadNombreAlterno = coalesce(value, "");
+	protected void setDestinoCiudadNombre(String value) {
+		this.destinoCiudadNombre = coalesce(value, "");
 	}
 
-	public void setDestinoDireccion(String value) {
+	protected void setDestinoDireccion(String value) {
 		this.destinoDireccion = coalesce(value, "");
 	}
 
-	public void setDestinoIndicaciones(String value) {
+	protected void setDestinoIndicaciones(String value) {
 		this.destinoIndicaciones = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	public void setCiudadOrigen(Ciudad ciudadOrigen) {
+	protected void setCiudadOrigen(Ciudad ciudadOrigen) {
 		this.ciudadOrigen = ciudadOrigen;
 	}
 
-	public void setOrigenCiudadNombreAlterno(String value) {
-		this.origenCiudadNombreAlterno = coalesce(value, "");
+	protected void setOrigenCiudadNombre(String value) {
+		this.origenCiudadNombre = coalesce(value, "");
 	}
 
-	public void setOrigenDireccion(String value) {
+	protected void setOrigenDireccion(String value) {
 		this.origenDireccion = coalesce(value, "");
 	}
 
-	public void setOrigenIndicaciones(String value) {
+	protected void setOrigenIndicaciones(String value) {
 		this.origenIndicaciones = coalesce(value, "");
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	public void setRequiereConfirmacionCitaEntrega(boolean requiereConfirmacionCitaEntrega) {
 		this.requiereConfirmacionCitaEntrega = requiereConfirmacionCitaEntrega;
 	}
 
-	public void setFechaEntregaSugeridaMinima(Date fechaEntregaSugeridaMinima) {
+	protected void setFechaEntregaSugeridaMinima(Date fechaEntregaSugeridaMinima) {
 		this.fechaEntregaSugeridaMinima = fechaEntregaSugeridaMinima;
 	}
 
-	public void setFechaEntregaSugeridaMaxima(Date fechaEntregaSugeridaMaxima) {
+	protected void setFechaEntregaSugeridaMaxima(Date fechaEntregaSugeridaMaxima) {
 		this.fechaEntregaSugeridaMaxima = fechaEntregaSugeridaMaxima;
 	}
 
-	public void setHoraEntregaSugeridaMinima(Time horaEntregaSugeridaMinima) {
+	protected void setHoraEntregaSugeridaMinima(Time horaEntregaSugeridaMinima) {
 		this.horaEntregaSugeridaMinima = horaEntregaSugeridaMinima;
 	}
 
-	public void setHoraEntregaSugeridaMaxima(Time horaEntregaSugeridaMaxima) {
+	protected void setHoraEntregaSugeridaMaxima(Time horaEntregaSugeridaMaxima) {
 		this.horaEntregaSugeridaMaxima = horaEntregaSugeridaMaxima;
 	}
 
-	public void setHoraEntregaSugeridaMinimaAdicional(Time horaEntregaSugeridaMinimaAdicional) {
-		this.horaEntregaSugeridaMinimaAdicional = horaEntregaSugeridaMinimaAdicional;
-	}
-
-	public void setHoraEntregaSugeridaMaximaAdicional(Time horaEntregaSugeridaMaximaAdicional) {
-		this.horaEntregaSugeridaMaximaAdicional = horaEntregaSugeridaMaximaAdicional;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	public void setRequiereConfirmacionCitaRecogida(boolean requiereConfirmacionCitaRecogida) {
+	protected void setRequiereConfirmacionCitaRecogida(boolean requiereConfirmacionCitaRecogida) {
 		this.requiereConfirmacionCitaRecogida = requiereConfirmacionCitaRecogida;
 	}
 
-	public void setFechaRecogidaSugeridaMinima(Date fechaRecogidaSugeridaMinima) {
+	protected void setFechaRecogidaSugeridaMinima(Date fechaRecogidaSugeridaMinima) {
 		this.fechaRecogidaSugeridaMinima = fechaRecogidaSugeridaMinima;
 	}
 
-	public void setFechaRecogidaSugeridaMaxima(Date fechaRecogidaSugeridaMaxima) {
+	protected void setFechaRecogidaSugeridaMaxima(Date fechaRecogidaSugeridaMaxima) {
 		this.fechaRecogidaSugeridaMaxima = fechaRecogidaSugeridaMaxima;
 	}
 
-	public void setHoraRecogidaSugeridaMinima(Time horaRecogidaSugeridaMinima) {
+	protected void setHoraRecogidaSugeridaMinima(Time horaRecogidaSugeridaMinima) {
 		this.horaRecogidaSugeridaMinima = horaRecogidaSugeridaMinima;
 	}
 
-	public void setHoraRecogidaSugeridaMaxima(Time horaRecogidaSugeridaMaxima) {
+	protected void setHoraRecogidaSugeridaMaxima(Time horaRecogidaSugeridaMaxima) {
 		this.horaRecogidaSugeridaMaxima = horaRecogidaSugeridaMaxima;
 	}
 
-	public void setHoraRecogidaSugeridaMinimaAdicional(Time horaRecogidaSugeridaMinimaAdicional) {
-		this.horaRecogidaSugeridaMinimaAdicional = horaRecogidaSugeridaMinimaAdicional;
-	}
-
-	public void setHoraRecogidaSugeridaMaximaAdicional(Time horaRecogidaSugeridaMaximaAdicional) {
-		this.horaRecogidaSugeridaMaximaAdicional = horaRecogidaSugeridaMaximaAdicional;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	public void setCanal(Canal canal) {
+	protected void setCanal(Canal canal) {
 		this.canal = canal;
 	}
 
-	public void setCanalCodigoAlterno(String value) {
+	protected void setCanalCodigoAlterno(String value) {
 		this.canalCodigoAlterno = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-
-	public void setDestinatario(DestinatarioRemitente destinatario) {
+	protected void setDestinatario(DestinatarioRemitente destinatario) {
 		this.destinatario = destinatario;
 	}
 
-	public void setDestinatarioNumeroIdentificacion(String value) {
+	protected void setDestinatarioNumeroIdentificacion(String value) {
 		this.destinatarioNumeroIdentificacion = coalesce(value, "");
 	}
 
-	public void setDestinatarioNombre(String value) {
+	protected void setDestinatarioNombre(String value) {
 		this.destinatarioNombre = coalesce(value, "");
 	}
 
-	public void setDestinatarioContacto(Contacto value) {
+	protected void setDestinatarioContacto(Contacto value) {
 		this.destinatarioContacto = coalesce(value, new Contacto("", "", ""));
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	public void setDestino(DestinoOrigen destino) {
+	protected void setDestino(DestinoOrigen destino) {
 		this.destino = destino;
 	}
 
-	public void setDestinoNombre(String value) {
+	protected void setDestinoNombre(String value) {
 		this.destinoNombre = coalesce(value, "");
 	}
 
-	public void setDestinoContacto(Contacto value) {
+	protected void setDestinoContacto(Contacto value) {
 		this.destinoContacto = coalesce(value, new Contacto("", "", ""));
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	public void setOrigen(DestinoOrigen origen) {
+	protected void setOrigen(DestinoOrigen origen) {
 		this.origen = origen;
 	}
 
-	public void setOrigenNombre(String value) {
+	protected void setOrigenNombre(String value) {
 		this.origenNombre = coalesce(value, "");
 	}
 
-	public void setOrigenContacto(Contacto value) {
+	protected void setOrigenContacto(Contacto value) {
 		this.origenContacto = coalesce(value, new Contacto("", "", ""));
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	public void setNotasRequerimientosDistribucion(String value) {
 		this.notasRequerimientosDistribucion = coalesce(value, "");
@@ -1271,176 +1388,162 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setNotasConfirmacion(String value) {
+	protected void setNotasConfirmacion(String value) {
 		this.notasConfirmacion = coalesce(value, "");
 	}
 
-	public void setFechaConfirmacion(Date fechaConfirmacion) {
+	protected void setFechaConfirmacion(Date fechaConfirmacion) {
 		this.fechaConfirmacion = fechaConfirmacion;
 	}
 
-	public void setUsuarioConfirmacion(String value) {
+	protected void setUsuarioConfirmacion(String value) {
 		this.usuarioConfirmacion = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setFechaEntregaPlanificadaMinima(Date fechaEntregaPlanificadaMinima) {
-		this.fechaEntregaPlanificadaMinima = fechaEntregaPlanificadaMinima;
+	protected void setFechaCitaEntrega(Date fechaCitaEntrega) {
+		this.fechaCitaEntrega = fechaCitaEntrega;
 	}
 
-	public void setFechaEntregaPlanificadaMaxima(Date fechaEntregaPlanificadaMaxima) {
-		this.fechaEntregaPlanificadaMaxima = fechaEntregaPlanificadaMaxima;
+	protected void setHoraCitaEntregaMinima(Time horaCitaEntregaMinima) {
+		this.horaCitaEntregaMinima = horaCitaEntregaMinima;
 	}
 
-	public void setHoraEntregaPlanificadaMinima(Time horaEntregaPlanificadaMinima) {
-		this.horaEntregaPlanificadaMinima = horaEntregaPlanificadaMinima;
-	}
-
-	public void setHoraEntregaPlanificadaMaxima(Time horaEntregaPlanificadaMaxima) {
-		this.horaEntregaPlanificadaMaxima = horaEntregaPlanificadaMaxima;
-	}
-
-	public void setHoraEntregaPlanificadaMinimaAdicional(Time horaEntregaPlanificadaMinimaAdicional) {
-		this.horaEntregaPlanificadaMinimaAdicional = horaEntregaPlanificadaMinimaAdicional;
-	}
-
-	public void setHoraEntregaPlanificadaMaximaAdicional(Time horaEntregaPlanificadaMaximaAdicional) {
-		this.horaEntregaPlanificadaMaximaAdicional = horaEntregaPlanificadaMaximaAdicional;
+	protected void setHoraCitaEntregaMaxima(Time horaCitaEntregaMaxima) {
+		this.horaCitaEntregaMaxima = horaCitaEntregaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setFechaRecogidaPlanificadaMinima(Date fechaRecogidaPlanificadaMinima) {
-		this.fechaRecogidaPlanificadaMinima = fechaRecogidaPlanificadaMinima;
+	protected void setFechaCitaRecogida(Date fechaCitaRecogida) {
+		this.fechaCitaRecogida = fechaCitaRecogida;
 	}
 
-	public void setFechaRecogidaPlanificadaMaxima(Date fechaRecogidaPlanificadaMaxima) {
-		this.fechaRecogidaPlanificadaMaxima = fechaRecogidaPlanificadaMaxima;
+	protected void setHoraCitaRecogidaMinima(Time horaCitaRecogidaMinima) {
+		this.horaCitaRecogidaMinima = horaCitaRecogidaMinima;
 	}
 
-	public void setHoraRecogidaPlanificadaMinima(Time horaRecogidaPlanificadaMinima) {
-		this.horaRecogidaPlanificadaMinima = horaRecogidaPlanificadaMinima;
-	}
-
-	public void setHoraRecogidaPlanificadaMaxima(Time horaRecogidaPlanificadaMaxima) {
-		this.horaRecogidaPlanificadaMaxima = horaRecogidaPlanificadaMaxima;
-	}
-
-	public void setHoraRecogidaPlanificadaMinimaAdicional(Time horaRecogidaPlanificadaMinimaAdicional) {
-		this.horaRecogidaPlanificadaMinimaAdicional = horaRecogidaPlanificadaMinimaAdicional;
-	}
-
-	public void setHoraRecogidaPlanificadaMaximaAdicional(Time horaRecogidaPlanificadaMaximaAdicional) {
-		this.horaRecogidaPlanificadaMaximaAdicional = horaRecogidaPlanificadaMaximaAdicional;
+	protected void setHoraCitaRecogidaMaxima(Time horaCitaRecogidaMaxima) {
+		this.horaCitaRecogidaMaxima = horaCitaRecogidaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-
-	public void setFechaAlistamientoPlanificada(Date fechaAlistamientoPlanificada) {
-		this.fechaAlistamientoPlanificada = fechaAlistamientoPlanificada;
+	protected void setFechaAlistamiento(Date fechaAlistamiento) {
+		this.fechaAlistamiento = fechaAlistamiento;
 	}
 
-	public void setHoraAlistamientoPlanificadaMinima(Time horaAlistamientoPlanificadaMinima) {
-		this.horaAlistamientoPlanificadaMinima = horaAlistamientoPlanificadaMinima;
+	protected void setHoraAlistamientoMinima(Time horaAlistamientoMinima) {
+		this.horaAlistamientoMinima = horaAlistamientoMinima;
 	}
 
-	public void setHoraAlistamientoPlanificadaMaxima(Time horaAlistamientoPlanificadaMaxima) {
-		this.horaAlistamientoPlanificadaMaxima = horaAlistamientoPlanificadaMaxima;
+	protected void setHoraAlistamientoMaxima(Time horaAlistamientoMaxima) {
+		this.horaAlistamientoMaxima = horaAlistamientoMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setTipoVehiculoPlanificado(TipoVehiculo tipoVehiculoPlanificado) {
+	protected void setTipoVehiculoPlanificado(TipoVehiculo tipoVehiculoPlanificado) {
 		this.tipoVehiculoPlanificado = tipoVehiculoPlanificado;
 	}
 
-	public void setValorFletePlanificado(Integer valorFletePlanificado) {
+	protected void setValorFletePlanificado(Integer valorFletePlanificado) {
 		this.valorFletePlanificado = valorFletePlanificado;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setNotasAprobacionPlanificacion(String value) {
-		this.notasAprobacionPlanificacion = coalesce(value, "");
+	protected void setNotasAceptacion(String value) {
+		this.notasAceptacion = coalesce(value, "");
 	}
 
-	public void setFechaAprobacionPlanificacion(Date fechaAprobacionPlanificacion) {
-		this.fechaAprobacionPlanificacion = fechaAprobacionPlanificacion;
+	protected void setFechaAceptacion(Date fechaAceptacion) {
+		this.fechaAceptacion = fechaAceptacion;
 	}
 
-	public void setUsuarioAprobacionPlanificacion(String value) {
-		this.usuarioAprobacionPlanificacion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setDestinoDireccionGeoreferenciada(OmsDireccionGeoreferenciada value) {
-		this.destinoDireccionGeoreferenciada = coalesce(value, new OmsDireccionGeoreferenciada());
-	}
-
-	public void setOrigenDireccionGeoreferenciada(OmsDireccionGeoreferenciada value) {
-		this.origenDireccionGeoreferenciada = coalesce(value, new OmsDireccionGeoreferenciada());
+	protected void setUsuarioAceptacion(String value) {
+		this.usuarioAceptacion = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setEstadoPlanificacionRuta(EstadoPlanificacionRutaType estadoPlanificacionRuta) {
-		this.estadoPlanificacionRuta = estadoPlanificacionRuta;
+	protected void setFechaEntrega(Date fechaEntrega) {
+		this.fechaEntrega = fechaEntrega;
 	}
 
-	public void setCortePlanificacionRutaId(Integer cortePlanificacionRutaId) {
-		this.cortePlanificacionRutaId = cortePlanificacionRutaId;
+	protected void setHoraEntregaInicio(Time horaEntregaInicio) {
+		this.horaEntregaInicio = horaEntregaInicio;
 	}
 
-	public void setFechaCortePlanificacionRuta(Date fechaPlanificacionRuta) {
-		this.fechaCortePlanificacionRuta = fechaPlanificacionRuta;
-	}
-
-	public void setUsuarioCortePlanificacionRuta(String value) {
-		this.usuarioCortePlanificacionRuta = coalesce(value, "");
+	protected void setHoraEntregaFin(Time horaEntregaFin) {
+		this.horaEntregaFin = horaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setRutaId(Integer rutaId) {
-		this.rutaId = rutaId;
+	protected void setFechaRecogida(Date fechaRecogida) {
+		this.fechaRecogida = fechaRecogida;
 	}
 
-	public void setFechaAsignacionRuta(Date fechaAsignacionRuta) {
-		this.fechaAsignacionRuta = fechaAsignacionRuta;
+	protected void setHoraRecogidaInicio(Time horaRecogidaInicio) {
+		this.horaRecogidaInicio = horaRecogidaInicio;
 	}
 
-	public void setUsuarioAsignacionRuta(String value) {
-		this.usuarioAsignacionRuta = coalesce(value, "");
+	protected void setHoraRecogidaFin(Time horaRecogidaFin) {
+		this.horaRecogidaFin = horaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setFechaCreacion(Date fechaCreacion) {
+	protected void setFechaCargue(Date fechaCargue) {
+		this.fechaCargue = fechaCargue;
+	}
+
+	protected void setHoraCargueInicio(Time horaCargueInicio) {
+		this.horaCargueInicio = horaCargueInicio;
+	}
+
+	protected void setHoraCargueFin(Time horaCargueFin) {
+		this.horaCargueFin = horaCargueFin;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setFechaDescargue(Date fechaDescargue) {
+		this.fechaDescargue = fechaDescargue;
+	}
+
+	protected void setHoraDescargueInicio(Time horaDescargueInicio) {
+		this.horaDescargueInicio = horaDescargueInicio;
+	}
+
+	protected void setHoraDescargueFin(Time horaDescargueFin) {
+		this.horaDescargueFin = horaDescargueFin;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setFechaCreacion(Date fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
 
-	public void setUsuarioCreacion(String value) {
+	protected void setUsuarioCreacion(String value) {
 		this.usuarioCreacion = coalesce(value, "");
 	}
 
-	public void setFechaActualizacion(Date fechaActualizacion) {
+	protected void setFechaActualizacion(Date fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
 
-	public void setUsuarioActualizacion(String value) {
+	protected void setUsuarioActualizacion(String value) {
 		this.usuarioActualizacion = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setNotasAnulacion(String value) {
-		this.notasAnulacion = coalesce(value, "");
-	}
-
-	public void setCausalAnulacionId(Integer causalAnulacionId) {
+	protected void setCausalAnulacionId(Integer causalAnulacionId) {
 		this.causalAnulacionId = causalAnulacionId;
 	}
 
-	public void setFechaAnulacion(Date fechaAnulacion) {
+	protected void setNotasAnulacion(String value) {
+		this.notasAnulacion = coalesce(value, "");
+	}
+
+	protected void setFechaAnulacion(Date fechaAnulacion) {
 		this.fechaAnulacion = fechaAnulacion;
 	}
 
-	public void setUsuarioAnulacion(String value) {
+	protected void setUsuarioAnulacion(String value) {
 		this.usuarioAnulacion = coalesce(value, "");
 	}
 
@@ -1520,5 +1623,166 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	public Set<MensajeEmbeddable> getMensajes() {
 		return mensajes;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
+	public void setDestinoDireccionGeoreferenciada(OmsDireccionGeoreferenciada value) {
+		this.destinoDireccionGeoreferenciada = coalesce(value, new OmsDireccionGeoreferenciada());
+	}
+
+	public void setOrigenDireccionGeoreferenciada(OmsDireccionGeoreferenciada value) {
+		this.origenDireccionGeoreferenciada = coalesce(value, new OmsDireccionGeoreferenciada());
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setEstadoPlanificacionRuta(EstadoPlanificacionRutaType estadoPlanificacionRuta) {
+		this.estadoPlanificacionRuta = estadoPlanificacionRuta;
+	}
+
+	protected void setCortePlanificacionRutaId(Integer cortePlanificacionRutaId) {
+		this.cortePlanificacionRutaId = cortePlanificacionRutaId;
+	}
+
+	protected void setFechaCortePlanificacionRuta(Date fechaPlanificacionRuta) {
+		this.fechaCortePlanificacionRuta = fechaPlanificacionRuta;
+	}
+
+	protected void setUsuarioCortePlanificacionRuta(String value) {
+		this.usuarioCortePlanificacionRuta = coalesce(value, "");
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setRutaId(Integer rutaId) {
+		this.rutaId = rutaId;
+	}
+
+	protected void setFechaAsignacionRuta(Date fechaAsignacionRuta) {
+		this.fechaAsignacionRuta = fechaAsignacionRuta;
+	}
+
+	protected void setUsuarioAsignacionRuta(String value) {
+		this.usuarioAsignacionRuta = coalesce(value, "");
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public static boolean transicionPermitida(EstadoOrdenType estadoOrigen, EstadoOrdenType estadoDestino) {
+		switch (estadoOrigen) {
+		case NO_CONFIRMADA:
+			return transicionPermitidaDesde_NO_CONFIRMADA(estadoDestino);
+		case CONFIRMADA:
+			return transicionPermitidaDesde_CONFIRMADA(estadoDestino);
+		case ACEPTADA:
+			return transicionPermitidaDesde_ACEPTADA(estadoDestino);
+		case EJECUCION:
+			return transicionPermitidaDesde_EJECUCION(estadoDestino);
+		case ENTREGADA:
+			return transicionPermitidaDesde_ENTREGADA(estadoDestino);
+		case NO_ENTREGADA:
+			return transicionPermitidaDesde_NO_ENTREGADA(estadoDestino);
+		case NOVEDADES:
+			return transicionPermitidaDesde_NOVEDADES(estadoDestino);
+		case FINALIZADA:
+			return transicionPermitidaDesde_FINALIZADA(estadoDestino);
+		case REPROGRAMADA:
+			return transicionPermitidaDesde_REPROGRAMADA(estadoDestino);
+		case ANULADA:
+			return transicionPermitidaDesde_ANULADA(estadoDestino);
+		default:
+			break;
+		}
+		return false;
+	}
+
+	private static boolean transicionPermitidaDesde_NO_CONFIRMADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case CONFIRMADA:
+		case ACEPTADA:
+		case ANULADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_CONFIRMADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case NO_CONFIRMADA:
+		case ACEPTADA:
+		case ANULADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_ACEPTADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case CONFIRMADA:
+		case ANULADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_EJECUCION(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case CONFIRMADA:
+		case ANULADA:
+		case REPROGRAMADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_ENTREGADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case FINALIZADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_NO_ENTREGADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case FINALIZADA:
+		case REPROGRAMADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_NOVEDADES(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case FINALIZADA:
+		case REPROGRAMADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_ANULADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case NO_CONFIRMADA:
+		case CONFIRMADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_FINALIZADA(EstadoOrdenType nuevoEstado) {
+		return false;
+	}
+
+	private static boolean transicionPermitidaDesde_REPROGRAMADA(EstadoOrdenType nuevoEstado) {
+		return false;
 	}
 }

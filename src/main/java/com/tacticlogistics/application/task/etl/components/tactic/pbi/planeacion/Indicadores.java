@@ -470,7 +470,7 @@ public class Indicadores extends ETLFlatFileStrategy<List<Map<String, Object>>> 
 		try {
 			decimalValue = Basic.toBigDecimal(value, null, getCantidadSolicitadaFormat());
 		} catch (ParseException e) {
-			logParseException(key, VALOR_RECAUDO, value, getCantidadSolicitadaFormat().toPattern());
+			logParseException(key, campo, value, getCantidadSolicitadaFormat().toPattern());
 		}
 
 		return decimalValue;

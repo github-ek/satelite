@@ -17,11 +17,11 @@ public class ConsultaOrdenesDto {
     private String clienteNombre;
 
     // ---------------------------------------------------------------------------------------------------------
-    private com.tacticlogistics.domain.model.ordenes.EstadoOrdenType estadoOrden;
-    private String numeroDocumentoOrdenCliente;
+    private com.tacticlogistics.domain.model.oms.EstadoOrdenType estadoOrden;
+    private String numeroOrden;
 
     // ---------------------------------------------------------------------------------------------------------
-    private String numeroDocumentoConsolidadoCliente;
+    private String numeroConsolidado;
 
     // ---------------------------------------------------------------------------------------------------------
     private String canalCodigo;
@@ -86,16 +86,16 @@ public class ConsultaOrdenesDto {
         return clienteNombre;
     }
 
-    public com.tacticlogistics.domain.model.ordenes.EstadoOrdenType getEstadoOrden() {
+    public com.tacticlogistics.domain.model.oms.EstadoOrdenType getEstadoOrden() {
         return estadoOrden;
     }
 
-    public String getNumeroDocumentoOrdenCliente() {
-        return numeroDocumentoOrdenCliente;
+    public String getNumeroOrden() {
+        return numeroOrden;
     }
 
-    public String getNumeroDocumentoConsolidadoCliente() {
-        return numeroDocumentoConsolidadoCliente;
+    public String getNumeroConsolidado() {
+        return numeroConsolidado;
     }
 
     public String getCanalCodigo() {
@@ -227,16 +227,16 @@ public class ConsultaOrdenesDto {
         this.clienteNombre = coalesce(value, "");
     }
 
-    public void setEstadoOrden(com.tacticlogistics.domain.model.ordenes.EstadoOrdenType value) {
+    public void setEstadoOrden(com.tacticlogistics.domain.model.oms.EstadoOrdenType value) {
         this.estadoOrden = value;
     }
 
-    public void setNumeroDocumentoOrdenCliente(String value) {
-        this.numeroDocumentoOrdenCliente = coalesce(value, "");
+    public void setNumeroOrden(String value) {
+        this.numeroOrden = coalesce(value, "");
     }
 
-    public void setNumeroDocumentoConsolidadoCliente(String value) {
-        this.numeroDocumentoConsolidadoCliente = coalesce(value, "");
+    public void setNumeroConsolidado(String value) {
+        this.numeroConsolidado = coalesce(value, "");
     }
 
     public void setCanalCodigo(String value) {
@@ -356,8 +356,8 @@ public class ConsultaOrdenesDto {
         this.setTipoServicioNombre("");
         this.setClienteCodigo("");
         this.setClienteNombre("");
-        this.setNumeroDocumentoOrdenCliente("");
-        this.setNumeroDocumentoConsolidadoCliente("");
+        this.setNumeroOrden("");
+        this.setNumeroConsolidado("");
         this.setCanalCodigo("");
         this.setCanalNombre("");
         this.setDestinatarioNombre("");
@@ -372,86 +372,13 @@ public class ConsultaOrdenesDto {
         this.setUsuarioAprobacionCliente("");
     }
 
-//    public ConsultaOrdenesDto(
-//            Integer id, 
-//            String tipoServicioNombre, 
-//            String clienteCodigo, String clienteNombre,
-//            com.tacticlogistics.domain.model.ordenes.EstadoOrdenType estadoOrden, 
-//            String numeroDocumentoOrdenCliente, 
-//            String numeroDocumentoConsolidadoCliente,
-//            
-//            String canalCodigo, 
-//            String canalNombre, 
-//            String destinatarioNombre, 
-//            String destinatarioNumeroIdentificacion,
-//            String destinoNombre, 
-//            String bodegaDestinoCodigo, 
-//            String bodegaDestinoNombre, 
-//            String destinoCiudadNombre,
-//            String destinoDireccion, 
-//            
-//            Date fechaSugeridaEntregaMinima, Date fechaSugeridaEntregaMaxima,
-//            Time horaSugeridaEntregaMinima, Time horaSugeridaEntregaMaxima, Time horaSugeridaEntregaMinimaAdicional, Time horaSugeridaEntregaMaximaAdicional, 
-//            
-//            Date fechaPlaneadaAlistamiento, 
-//            Date fechaPlaneadaEntregaMinima, Date fechaPlaneadaEntregaMaxima, 
-//            Time horaPlaneadaEntregaMinima, Time horaPlaneadaEntregaMaxima, Time horaPlaneadaEntregaMinimaAdicional, Time horaPlaneadaEntregaMaximaAdicional, 
-//            
-//            Date fechaActualizacion,
-//            String usuarioActualizacion, 
-//            Date fechaConfirmacion, 
-//            String usuarioConfirmacion,
-//            Date fechaAprobacionCliente, 
-//            String usuarioAprobacionCliente) {
-//        super();
-//        this.setId(id);
-//        this.setTipoServicioNombre(tipoServicioNombre);
-//        this.setClienteCodigo(clienteCodigo);
-//        this.setClienteNombre(clienteNombre);
-//        this.setEstadoOrden(estadoOrden);
-//        this.setNumeroDocumentoOrdenCliente(numeroDocumentoOrdenCliente);
-//        this.setNumeroDocumentoConsolidadoCliente(numeroDocumentoConsolidadoCliente);
-//        
-//        this.setCanalCodigo(canalCodigo);
-//        this.setCanalNombre(canalNombre);
-//        this.setDestinatarioNombre(destinatarioNombre);
-//        this.setDestinatarioNumeroIdentificacion(destinatarioNumeroIdentificacion);
-//        this.setDestinoNombre(destinoNombre);
-//        this.setBodegaDestinoCodigo(bodegaDestinoCodigo);
-//        this.setBodegaDestinoNombre(bodegaDestinoNombre);
-//        this.setDestinoCiudadNombre(destinoCiudadNombre);
-//        this.setDestinoDireccion(destinoDireccion);
-//
-//        this.setFechaSugeridaEntregaMinima(fechaSugeridaEntregaMinima);
-//        this.setFechaSugeridaEntregaMaxima(fechaSugeridaEntregaMaxima);
-//        this.setHoraSugeridaEntregaMinima(horaSugeridaEntregaMinima);
-//        this.setHoraSugeridaEntregaMaxima(horaSugeridaEntregaMaxima);
-//        this.setHoraSugeridaEntregaMinimaAdicional(horaSugeridaEntregaMinimaAdicional);
-//        this.setHoraSugeridaEntregaMaximaAdicional(horaSugeridaEntregaMaximaAdicional);
-//        
-//        this.setFechaPlaneadaAlistamiento(fechaPlaneadaAlistamiento);
-//        this.setFechaPlaneadaEntregaMinima(fechaPlaneadaEntregaMinima);
-//        this.setFechaPlaneadaEntregaMaxima(fechaPlaneadaEntregaMaxima);
-//        this.setHoraPlaneadaEntregaMinima(horaPlaneadaEntregaMinima);
-//        this.setHoraPlaneadaEntregaMaxima(horaPlaneadaEntregaMaxima);
-//        this.setHoraPlaneadaEntregaMinimaAdicional(horaPlaneadaEntregaMinimaAdicional);
-//        this.setHoraPlaneadaEntregaMaximaAdicional(horaPlaneadaEntregaMaximaAdicional);
-//        
-//        this.setFechaActualizacion(fechaActualizacion);
-//        this.setUsuarioActualizacion(usuarioActualizacion);
-//        this.setFechaConfirmacion(fechaConfirmacion);
-//        this.setUsuarioConfirmacion(usuarioConfirmacion);
-//        this.setFechaAprobacionCliente(fechaAprobacionCliente);
-//        this.setUsuarioAprobacionCliente(usuarioAprobacionCliente);
-//    }
-
     public ConsultaOrdenesDto(
             Integer id, 
             String tipoServicioNombre, 
             String clienteCodigo, String clienteNombre,
-            com.tacticlogistics.domain.model.ordenes.EstadoOrdenType estadoOrden, 
-            String numeroDocumentoOrdenCliente, 
-            String numeroDocumentoConsolidadoCliente,
+            com.tacticlogistics.domain.model.oms.EstadoOrdenType estadoOrden, 
+            String numeroOrden, 
+            String numeroConsolidado,
 
             String canalCodigo, 
             String canalNombre, 
@@ -480,8 +407,8 @@ public class ConsultaOrdenesDto {
         this.setClienteCodigo(clienteCodigo);
         this.setClienteNombre(clienteNombre);
         this.setEstadoOrden(estadoOrden);
-        this.setNumeroDocumentoOrdenCliente(numeroDocumentoOrdenCliente);
-        this.setNumeroDocumentoConsolidadoCliente(numeroDocumentoConsolidadoCliente);
+        this.setNumeroOrden(numeroOrden);
+        this.setNumeroConsolidado(numeroConsolidado);
         
         this.setCanalCodigo(canalCodigo);
         this.setCanalNombre(canalNombre);
@@ -533,11 +460,11 @@ public class ConsultaOrdenesDto {
         if (estadoOrden != null) {
             builder.append("estadoOrden=").append(estadoOrden).append(", ");
         }
-        if (numeroDocumentoOrdenCliente != null) {
-            builder.append("numeroDocumentoOrdenCliente=").append(numeroDocumentoOrdenCliente).append(", ");
+        if (numeroOrden != null) {
+            builder.append("numeroOrden=").append(numeroOrden).append(", ");
         }
-        if (numeroDocumentoConsolidadoCliente != null) {
-            builder.append("numeroDocumentoConsolidadoCliente=").append(numeroDocumentoConsolidadoCliente).append(", ");
+        if (numeroConsolidado != null) {
+            builder.append("numeroDocumentoConsolidadoCliente=").append(numeroConsolidado).append(", ");
         }
         if (canalCodigo != null) {
             builder.append("canalCodigo=").append(canalCodigo).append(", ");

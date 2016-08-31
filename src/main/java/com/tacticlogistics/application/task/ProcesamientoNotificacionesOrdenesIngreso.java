@@ -28,7 +28,7 @@ import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
 import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 import com.tacticlogistics.infrastructure.persistence.wms.BodegaRepository;
-
+@Deprecated
 @Service
 public class ProcesamientoNotificacionesOrdenesIngreso {
     @Autowired

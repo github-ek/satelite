@@ -2,7 +2,7 @@ package com.tacticlogistics.application.dto.ordenes;
 
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
-import com.tacticlogistics.domain.model.ordenes.EstadoOrdenType;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 
 public class DestinatarioDto {
     // private Integer idOrden;
@@ -20,7 +20,7 @@ public class DestinatarioDto {
     // TODO consolidado
 
     // ---------------------------------------------------------------------------------------------------------
-    private String numeroDocumentoOrdenCliente;
+    private String numeroOrden;
     private EstadoOrdenType estadoOrdenType;
 
     // ---------------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ public class DestinatarioDto {
         this.setNombreTipoServicio("");
         this.setCodigoCliente("");
         this.setNombreCliente("");
-        this.setNumeroDocumentoOrdenCliente("");
+        this.setNumeroOrden("");
         this.setCodigoCausalAnulacion("");
         this.setNombreCausalAnulacion("");
         this.setCodigoSegmento("");
@@ -104,8 +104,8 @@ public class DestinatarioDto {
         return nombreCliente;
     }
 
-    public String getNumeroDocumentoOrdenCliente() {
-        return numeroDocumentoOrdenCliente;
+    public String getNumeroOrden() {
+        return numeroOrden;
     }
 
     public EstadoOrdenType getEstadoOrdenType() {
@@ -211,8 +211,8 @@ public class DestinatarioDto {
         if (nombreCliente != null) {
             builder.append("nombreCliente=").append(nombreCliente).append(", ");
         }
-        if (numeroDocumentoOrdenCliente != null) {
-            builder.append("numeroDocumentoOrdenCliente=").append(numeroDocumentoOrdenCliente).append(", ");
+        if (numeroOrden != null) {
+            builder.append("numeroOrden=").append(numeroOrden).append(", ");
         }
         if (estadoOrdenType != null) {
             builder.append("estadoOrdenType=").append(estadoOrdenType).append(", ");
@@ -303,8 +303,8 @@ public class DestinatarioDto {
         this.nombreCliente = coalesce(value, "");
     }
 
-    public void setNumeroDocumentoOrdenCliente(String value) {
-        this.numeroDocumentoOrdenCliente = coalesce(value, "");
+    public void setNumeroOrden(String value) {
+        this.numeroOrden = coalesce(value, "");
     }
 
     public void setEstadoOrdenType(EstadoOrdenType value) {

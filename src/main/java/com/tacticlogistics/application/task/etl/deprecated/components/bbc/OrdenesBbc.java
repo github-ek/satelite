@@ -36,7 +36,7 @@ public class OrdenesBbc extends ETLPDFFileStrategy<ETLOrdenDto> {
     @Override
     protected String limpiar(String texto) {
         boolean encontradoNuevaOrden = false;
-        boolean encontradoNumeroDocumentoOrdenCliente = false;
+        boolean encontradoNumeroOrden = false;
         boolean encontradoDestinatarioNumeroIdentificacion = false;
         boolean encontradoOrigen = false;
         boolean encontradoDestino = false;
@@ -57,7 +57,7 @@ public class OrdenesBbc extends ETLPDFFileStrategy<ETLOrdenDto> {
         for (int i = 0; i < lineas.length; i++) {
             if (!encontradoNuevaOrden) {
                 encontradoNuevaOrden = true;
-                encontradoNumeroDocumentoOrdenCliente = false;
+                encontradoNumeroOrden = false;
                 encontradoDestinatarioNumeroIdentificacion = false;
                 encontradoOrigen = false;
                 encontradoDestino = false;
@@ -68,9 +68,9 @@ public class OrdenesBbc extends ETLPDFFileStrategy<ETLOrdenDto> {
 
                 sb.append("@orden").append("\n");
             } else {
-                if (!encontradoNumeroDocumentoOrdenCliente) {
+                if (!encontradoNumeroOrden) {
                     if (index == 4) {
-                        encontradoNumeroDocumentoOrdenCliente = true;
+                        encontradoNumeroOrden = true;
 
                         sb.append(_NUMERO_DOCUMENTO_ORDEN_CLIENTE).append("\t").append(lineas[i]).append("\n");
                     }
@@ -269,7 +269,7 @@ public class OrdenesBbc extends ETLPDFFileStrategy<ETLOrdenDto> {
                 if (!encontradoIndicadorSalida) {
                     if (campos[i].equals("S")) {
                         encontradoIndicadorSalida = true;
-                        dto.setUnidadCodigoAlterno(campos[i - 1]);
+                        //dto.setUnidadCodigoAlterno(campos[i - 1]);
                     }
                 } else {
                     if (!encontradoCO) {
@@ -281,7 +281,7 @@ public class OrdenesBbc extends ETLPDFFileStrategy<ETLOrdenDto> {
                             if (!encontradoProductoCodigoAlterno) {
                                 if (!campos[i].isEmpty()) {
                                     encontradoProductoCodigoAlterno = true;
-                                    dto.setProductoCodigoAlterno(campos[i]);
+                                    //dto.setProductoCodigoAlterno(campos[i]);
                                 }
                             } else {
                                 sb.append(campos[i]).append(" ");

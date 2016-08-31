@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
+
 @Entity
 @Table(name = "productos_unidades", catalog = "wms")
 public class ProductoUnidadAssociation implements Serializable {
@@ -138,6 +140,10 @@ public class ProductoUnidadAssociation implements Serializable {
 	public void setPesoBruto(BigDecimal pesoBruto) {
 		this.pesoBruto = pesoBruto;
 	}
+	
+	public Dimensiones getDimensiones(){
+		return new Dimensiones(this.getLargo(), this.getAncho(), this.getAlto(), this.getPesoBruto()); 
+	} 
 
 	public boolean isHabilitadaEnOrdenesDeIngreso() {
 		return habilitadaEnOrdenesDeIngreso;

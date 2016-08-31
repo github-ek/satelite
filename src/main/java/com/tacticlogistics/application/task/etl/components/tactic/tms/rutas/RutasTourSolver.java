@@ -22,7 +22,7 @@ import com.tacticlogistics.application.task.etl.readers.Reader;
 import com.tacticlogistics.infrastructure.services.Basic;
 
 @Component("TACTIC.TMS.RUTAS.TOURSOLVER")
-public class RutasTourSolver extends Rutas {
+public class RutasTourSolver extends ConfirmacionesDeRutas {
     // ---------------------------------------------------------------------------------------------------------------------------------------
     @Autowired
     private ExcelWorkSheetReader reader;
@@ -127,6 +127,17 @@ public class RutasTourSolver extends Rutas {
         String value;
         value = getValorCampo(CLIENTE_CODIGO, campos, mapNameToIndex);
         dto.setClienteCodigo(value);
+        
+        Integer integerValue;
+
+        integerValue = null;
+        value = getValorCampo(ENTREGA_ID, campos, mapNameToIndex);
+        try {
+            integerValue = Basic.parseEntero(value, getFormatoEntero());
+        } catch (ParseException e) {
+            logParseException(key, ENTREGA_ID, value, getFormatoEntero().toPattern());
+        }
+        dto.setOrdenId(integerValue);
     }
 
     @Override

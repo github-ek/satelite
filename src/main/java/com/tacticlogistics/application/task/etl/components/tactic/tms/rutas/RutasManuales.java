@@ -1,6 +1,5 @@
 package com.tacticlogistics.application.task.etl.components.tactic.tms.rutas;
 
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MAXIMA;
 import static com.tacticlogistics.infrastructure.services.Basic.substringSafe;
 
 import java.text.ParseException;
@@ -18,7 +17,7 @@ import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.
 import com.tacticlogistics.infrastructure.services.Basic;
 
 @Component("TACTIC.TMS.RUTAS.MANUALES")
-public class RutasManuales extends Rutas {
+public class RutasManuales extends ConfirmacionesDeRutas {
     // ---------------------------------------------------------------------------------------------------------------------------------------
     @Override
     protected String getSeparadorCampos() {
@@ -115,7 +114,7 @@ public class RutasManuales extends Rutas {
         try {
             dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_SUGERIDA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_HORA_ENTREGA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaFinal(dateValue);
         dto.setFechaInicial(dateValue);

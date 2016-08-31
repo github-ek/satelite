@@ -253,7 +253,7 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
         boolean error = this.getMensajes().getSeveridadMaxima().equals(SeveridadType.FATAL);
         Path path = (error ? getDirectorioErrores() : getDirectorioProcesados()).toPath();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
         try {
             FileSystemService.move(getArchivo(), path);
             File newFile = path.resolve(getArchivo().getName()).toFile();

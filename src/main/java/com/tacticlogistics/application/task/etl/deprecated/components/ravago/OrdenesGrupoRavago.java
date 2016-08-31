@@ -11,7 +11,7 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
 
     @Override
     protected String limpiar(String texto) {
-        boolean encontradoNumeroDocumentoOrdenCliente = false;
+        boolean encontradoNumeroOrden = false;
         boolean encontradoDestinatarioNombre = false;
         boolean encontradoDestinoDireccion = false;
         boolean encontradoDestinoCiudadNombreAlterno = false;
@@ -26,9 +26,9 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
         String lineas[] = texto.split("\r\n");
 
         for (int i = 1; i < lineas.length; i++) {
-            if (!encontradoNumeroDocumentoOrdenCliente) {
+            if (!encontradoNumeroOrden) {
                 if (lineas[i - 1].equals("REMISION")) {
-                    encontradoNumeroDocumentoOrdenCliente = true;
+                    encontradoNumeroOrden = true;
 
                     String value;
                     value = lineas[i].replaceAll("\\s+", "");
@@ -85,7 +85,7 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                                             sb.append("USUARIO_CONFIRMACION_CLIENTE")
                                             .append("\t").append(usuarioAprobacionCliente).append("\n");
 
-                                            sb.append(OrdenDtoAtributos.FECHA_ENTREGA_SUGERIDA_MAXIMA.toString())
+                                            sb.append(OrdenDtoAtributos.FECHA_ENTREGA_MAXIMA.toString())
                                             .append("\t").append(fechaSugeridaEntregaMaxima).append("\n");
                                         }
                                     }else{

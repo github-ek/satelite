@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +33,8 @@ import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.
 import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.SuscriptorDto;
 import com.tacticlogistics.infrastructure.services.Basic;
 
-public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
-    private static final Logger log = LoggerFactory.getLogger(Rutas.class);
+public abstract class ConfirmacionesDeRutas extends ETLFlatFileStrategy<RutaDto> {
+    private static final Logger log = LoggerFactory.getLogger(ConfirmacionesDeRutas.class);
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
     public static final String IDENTIFICADOR_VEHICULO = "IDENTIFICADOR";
@@ -78,7 +79,7 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
     }
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
-    public Rutas() {
+    public ConfirmacionesDeRutas() {
         super();
     }
 
@@ -179,7 +180,8 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
         Map<String, String> clientes = getMapClientes(getJdbcTemplate());
         Map<String, List<SuscriptorDto>> confirmaciones = getMapSuscriptores(getJdbcTemplate(), "CONFIRMACION_ENTREGA");
         Map<String, String> vehiculos = getMapVehiculos(getJdbcTemplate());
-
+        
+        
         for (RutaDto ruta : map.values()) {
             LineaRutaDto[] lineas = ruta.getLineas().toArray(new LineaRutaDto[0]);
 
@@ -187,6 +189,12 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
             configurarNotificaciones(lineas, confirmaciones);
             configurarDocumentos(ruta);
             configurarIdentificadorMovil(ruta, vehiculos);
+            
+            //CONSULTAR LA ORDEN
+            //SI EXISTE
+            	//COLOCAR EL VALOR DE RECAUDO A LA ENTREGA
+            	
+            			
         }
 
         return map;
@@ -236,11 +244,17 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
     public Map<String, String> getMapClientes(NamedParameterJdbcTemplate jdbcTemplate) {
-        String query = " " + " SELECT " + "      a.codigo" + "     ,a.numero_identificacion " + " FROM crm.clientes a "
-                + " ORDER BY " + "     a.codigo ";
+        String query = " " 
+        		+ " SELECT " 
+        		+ "      a.codigo" 
+        		+ "     ,a.numero_identificacion " 
+        		+ " FROM crm.clientes a "
+                + " ORDER BY " 
+        		+ "     a.codigo ";
 
         List<String[]> list = jdbcTemplate.query(query, (rs, rowNum) -> new String[] {
-                rs.getString("codigo").toUpperCase(), rs.getString("numero_identificacion").toUpperCase() });
+                rs.getString("codigo").toUpperCase(), 
+                rs.getString("numero_identificacion").toUpperCase() });
 
         Map<String, String> map = new HashMap<>();
         for (String[] item : list) {
@@ -251,20 +265,36 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
 
     public Map<String, List<SuscriptorDto>> getMapSuscriptores(NamedParameterJdbcTemplate jdbcTemplate,
             String notificacionCodigo) {
-        String query = "" + " SELECT DISTINCT " + "      a.id_cliente " + "     ,a.codigo " + "     ,b.contacto_email "
-                + "     ,b.contacto_nombres " + "     ,b.contacto_telefonos " + " FROM crm.clientes a "
-                + " INNER JOIN notificaciones.suscriptores b ON " + "    b.id_cliente = a.id_cliente "
+        String query = "" 
+            + " SELECT DISTINCT " 
+        		+ "      a.id_cliente " 
+        		+ "     ,a.codigo " 
+        		+ "     ,b.contacto_email "
+                + "     ,b.contacto_nombres " 
+        		+ "     ,b.contacto_telefonos " 
+                + " FROM crm.clientes a "
+                + " INNER JOIN notificaciones.suscriptores b ON " 
+                + "    b.id_cliente = a.id_cliente "
                 + " INNER JOIN notificaciones.suscriptores_notificaciones c ON "
-                + "    c.id_suscriptor = b.id_suscriptor " + " INNER JOIN notificaciones.notificaciones d ON "
-                + "    d.id_notificacion = c.id_notificacion " + " WHERE " + "    0 = 0 "
-                + " AND d.codigo = :notificacionCodigo " + " ORDER BY " + "     a.codigo" + "    ,b.contacto_email";
+                + "    c.id_suscriptor = b.id_suscriptor " 
+                + " INNER JOIN notificaciones.notificaciones d ON "
+                + "    d.id_notificacion = c.id_notificacion " 
+                + " WHERE " + "    0 = 0 "
+                + " AND d.codigo = :notificacionCodigo " 
+                + " ORDER BY " 
+                + "     a.codigo" 
+                + "    ,b.contacto_email";
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("notificacionCodigo", notificacionCodigo);
 
         List<SuscriptorDto> rows = jdbcTemplate.query(query, parameters, (rs, rowNum) -> {
-            return new SuscriptorDto(rs.getInt("id_cliente"), rs.getString("codigo"), rs.getString("contacto_email"),
-                    rs.getString("contacto_nombres"), rs.getString("contacto_telefonos"));
+            return new SuscriptorDto(
+            		rs.getInt("id_cliente"), 
+            		rs.getString("codigo"), 
+            		rs.getString("contacto_email"),
+                    rs.getString("contacto_nombres"), 
+                    rs.getString("contacto_telefonos"));
         });
 
         Map<String, List<SuscriptorDto>> map = new HashMap<>();
@@ -295,21 +325,30 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
     }
 
     public static SuscriptorDto getSuscriptorOrden(NamedParameterJdbcTemplate jdbcTemplate, String clienteCodigo,
-            String numeroDocumentoOrdenCliente) {
-        String query = "" + "        SELECT " + "            a.id_cliente, " + "            a.codigo, "
-                + "            b.destino_contacto_email, " + "            b.destino_contacto_nombres, "
-                + "            b.destino_contacto_telefonos " + "        FROM crm.clientes a "
-                + "        INNER JOIN ordenes.ordenes b ON " + "            b.id_cliente = a.id_cliente "
-                + "        WHERE " + "            a.codigo = :clienteCodigo "
-                + "        AND b.numero_documento_orden_cliente = :numeroDocumentoOrdenCliente ";
+            String numeroOrden) {
+        String query = "" 
+        		+ "        SELECT " 
+        		+ "            a.id_cliente, " 
+        		+ "            a.codigo, "
+                + "            b.destino_contacto_email, " 
+        		+ "            b.destino_contacto_nombres, "
+                + "            b.destino_contacto_telefonos " 
+        		+ "        FROM crm.clientes a "
+                + "        INNER JOIN ordenes.ordenes b ON " 
+        		+ "            b.id_cliente = a.id_cliente "
+                + "        WHERE " 
+        		+ "            a.codigo = :clienteCodigo "
+                + "        AND b.numero_documento_orden_cliente = :numeroOrden ";
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("clienteCodigo", clienteCodigo);
-        parameters.put("numeroDocumentoOrdenCliente", numeroDocumentoOrdenCliente);
+        parameters.put("numeroOrden", numeroOrden);
 
         List<SuscriptorDto> rows = jdbcTemplate.query(query, parameters, (rs, rowNum) -> {
-            return new SuscriptorDto(rs.getInt("id_cliente"), rs.getString("codigo"),
-                    rs.getString("destino_contacto_email"), rs.getString("destino_contacto_nombres"),
+            return new SuscriptorDto(rs.getInt("id_cliente"), 
+            		rs.getString("codigo"),
+                    rs.getString("destino_contacto_email"), 
+                    rs.getString("destino_contacto_nombres"),
                     rs.getString("destino_contacto_telefonos"));
         });
 
@@ -326,9 +365,19 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
     protected void cargar(Map<String, RutaDto> map) {
         log.info("Begin cargar");
         List<RutaDto> rutas = new ArrayList<>(map.values());
+        
         try {
             ResultadosProgramacionRutasDto result;
             result = send(getApiUrl(), getApiToken(), rutas);
+            
+            for (RutaDto rutaDto : rutas) {
+				for (ResultadoProgramacionRutaDto resultado: result.getRutas()) {
+					if(rutaDto.getIdentificadorMovil().equals(resultado.getIdentificadorMovil())){
+						System.out.println("Identificado: "+rutaDto.getIdentificadorMovil());
+						
+					}
+				}
+			}
             //TODO Generar rutas
             generarLogResultados(rutas, result);
         } catch (Exception e) {
@@ -353,11 +402,21 @@ public abstract class Rutas extends ETLFlatFileStrategy<RutaDto> {
         log.info(mapping.getObjectMapper().writeValueAsString(request));
 
         try {
-            ResultadosProgramacionRutasDto result = restTemplate.postForObject(apiUrl, requestEntity,
-                    ResultadosProgramacionRutasDto.class);
-            log.info(mapping.getObjectMapper().writeValueAsString(result));
+			if (false) {
+				ResultadosProgramacionRutasDto result = restTemplate.postForObject(apiUrl, requestEntity,
+						ResultadosProgramacionRutasDto.class);
+				log.info(mapping.getObjectMapper().writeValueAsString(result));
 
-            return result;
+				return result;
+			} else {
+				List<ResultadoProgramacionRutaDto> resultado = new LinkedList<>();
+				
+				for (RutaDto ruta : request) {
+					resultado.add(new ResultadoProgramacionRutaDto(ruta.getIdentificadorMovil(), "OK", ""));
+				}
+		
+				return new ResultadosProgramacionRutasDto("OK",resultado);
+			}
         } catch (HttpClientErrorException hcee) {
             log.error(hcee.getMessage());
             throw new RuntimeException(hcee);

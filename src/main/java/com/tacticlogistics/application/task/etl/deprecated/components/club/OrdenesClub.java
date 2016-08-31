@@ -33,7 +33,7 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
         boolean encontradoDestinoDireccion = false;
         boolean encontradoDestinatarioNumeroIdentificacion = false;
         boolean encontradoRequerimientoEntregaFormaPago = false;
-        boolean encontradoNumeroDocumentoOrdenCliente = false;
+        boolean encontradoNumeroOrden = false;
         boolean encontradoClienteCodigoAlterno = false;
         boolean encontradoTokenInicioDeLineas = false;
         boolean encontradoTokenFinDeLineas = false;
@@ -108,9 +108,9 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
                                 sb.append("REQUERIMIENTO_ENTREGA").append("\t").append(value).append("\n");
                             }
                         } else {
-                            if (!encontradoNumeroDocumentoOrdenCliente) {
+                            if (!encontradoNumeroOrden) {
                                 if (lineas[i].startsWith("NO.")) {
-                                    encontradoNumeroDocumentoOrdenCliente = true;
+                                    encontradoNumeroOrden = true;
 
                                     String value = lineas[i].substring("NO.".length()).replaceAll("\\s+", "");
                                     sb.append(OrdenDtoAtributos.NUMERO_ORDEN.toString()).append("\t")
@@ -258,9 +258,9 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
             dto.setTipoServicioCodigoAlterno(getTipoServicioCodigoAlterno());
             dto.setClienteCodigo(getClienteCodigoAlterno());
 
-            dto.setDestinatarioNombre(orden.get(OrdenDtoAtributos.DESTINATARIO_NOMBRE.toString()));
-            dto.setDestinoDireccion(orden.get(OrdenDtoAtributos.DESTINO_DIRECCION.toString()));
-            dto.setDestinoContactoTelefonos(orden.get(OrdenDtoAtributos.DESTINO_CONTACTO_TELEFONOS.toString()));
+//            dto.setDestinatarioNombre(orden.get(OrdenDtoAtributos.DESTINATARIO_NOMBRE.toString()));
+//            dto.setDestinoDireccion(orden.get(OrdenDtoAtributos.DESTINO_DIRECCION.toString()));
+//            dto.setDestinoContactoTelefonos(orden.get(OrdenDtoAtributos.DESTINO_CONTACTO_TELEFONOS.toString()));
             dto.setDestinatarioNumeroIdentificacion(
                     orden.get(OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION.toString()));
 //            dto.setDestinatarioDigitoVerificacion(
@@ -391,7 +391,7 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
             e.printStackTrace();
         }
         dto.setDescripcion(descripcion);
-        dto.setProductoCodigoAlterno(productoCodigoAlterno);
+        //dto.setProductoCodigoAlterno(productoCodigoAlterno);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
@@ -464,10 +464,6 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
 //        sb.append(texto);
 //
 //        model.put("notas", sb.toString());
-//    }
-//
-//    private void extraerNumeroDocumentoOrdenCliente(String texto, Map<String, Object> model) {
-//        model.put("numero_documento_orden_cliente", texto.replaceAll("NO\\. ", ""));
 //    }
 //
 //    private void extraerClienteCodigoAlterno(String texto, Map<String, Object> model) {

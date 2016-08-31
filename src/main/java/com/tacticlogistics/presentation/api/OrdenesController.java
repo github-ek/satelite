@@ -29,7 +29,7 @@ import com.tacticlogistics.application.services.ordenes.OrdenesApplicationServic
 import com.tacticlogistics.application.services.seguridad.UsuarioApplicationService;
 import com.tacticlogistics.application.services.wms.ProductosApplicationService;
 import com.tacticlogistics.domain.model.common.SeveridadType;
-import com.tacticlogistics.domain.model.ordenes.EstadoOrdenType;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 
 @CrossOrigin
@@ -52,6 +52,7 @@ public class OrdenesController {
     // ----------------------------------------------------------------------------------------------------------------
     // -- Gestionar Ordenes
     // ----------------------------------------------------------------------------------------------------------------
+    @Deprecated
     @RequestMapping("/estados-ordenes")
     public List<Object> getAllEstadoOrden() {
         List<Object> list = new ArrayList<>();
@@ -431,7 +432,7 @@ public class OrdenesController {
         Map<String, Object> respuesta = new HashMap<>();
         MensajesDto mensajes = new MensajesDto();
         try {
-            Orden orden = this.ordenesService.saveLineaOrden(model);
+            Orden orden = this.ordenesService.saveLineaOrdenDeprecated(model);
             respuesta.put("orden", ordenesService.ordenToViewModel(orden));
             mensajes.addMensaje(SeveridadType.INFO, "");
         } catch (Exception e) {
@@ -449,7 +450,7 @@ public class OrdenesController {
         Map<String, Object> respuesta = new HashMap<>();
         MensajesDto mensajes = new MensajesDto();
         try {
-            Orden orden = this.ordenesService.deleteLineaOrden(ordenId, lineaOrdenId, usuario);
+            Orden orden = this.ordenesService.deleteLineaOrdenDeprecated(ordenId, lineaOrdenId, usuario);
             respuesta.put("orden", ordenesService.ordenToViewModel(orden));
             mensajes.addMensaje(SeveridadType.INFO, "");
         } catch (Exception e) {

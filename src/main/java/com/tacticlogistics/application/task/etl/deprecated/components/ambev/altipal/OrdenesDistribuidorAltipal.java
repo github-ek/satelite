@@ -97,7 +97,7 @@ public class OrdenesDistribuidorAltipal extends ETLPDFFileStrategy<Object> {
             scanner.next();
         }
 
-        model.put("numeroDocumentoOrdenCliente", scanner.next());
+        model.put("numeroOrden", scanner.next());
 
         while (scanner.hasNext()) {
             if (!scanner.hasNext("@lineas:")) {

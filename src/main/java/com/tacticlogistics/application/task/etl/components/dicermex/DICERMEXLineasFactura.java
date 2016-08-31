@@ -2,7 +2,6 @@ package com.tacticlogistics.application.task.etl.components.dicermex;
 
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_CANTIDAD_SOLICITADA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PRODUCTO_CODIGO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_UNIDAD_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_BODEGA_DESTINO_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
@@ -153,8 +152,8 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
             dto.setCantidadSolicitada(integerValue);
 
             dto.setUnidadCodigo("UN");
-            value = getValorCampo(LINEA_UNIDAD_CODIGO_ALTERNO, campos, mapNameToIndex);
-            dto.setUnidadCodigoAlterno(value);
+            //value = getValorCampo(LINEA_UNIDAD_CODIGO_ALTERNO, campos, mapNameToIndex);
+            //dto.setUnidadCodigoAlterno(value);
 
             value = getValorCampo(LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO, campos, mapNameToIndex);
             dto.setBodegaOrigenCodigoAlterno(value);

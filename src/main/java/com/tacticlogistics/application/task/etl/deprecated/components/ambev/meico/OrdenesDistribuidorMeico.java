@@ -21,7 +21,7 @@ public class OrdenesDistribuidorMeico extends ETLPDFFileStrategy<Object> {
                 .replaceAll("BOGOTA CODIGO DESCRIPCION REFERENCIA UDM DESCUENTO VR COSTO CANTIDAD", "@lineas:")
                 .replaceAll("FIRMA AUTORIZADA Y SELLO TOTAL :", "@fin:")
                 .replaceAll("SRAMBEV COLOMBIA S\\.A\\.S\\.", " ")
-                .replaceAll("ORDEN DE COMPRA NO.", "numeroDocumentoOrdenCliente")
+                .replaceAll("ORDEN DE COMPRA NO.", "numeroOrden")
                 .replaceAll("NIT \\d+ FECHA DE ORDEN .+ CONDICION PAGO", "condicionPago")
                 // .replaceAll("NIT \\d+ FECHA DE ORDEN : .+ CONDICION PAGO",
                 // "condicionPago")
@@ -84,7 +84,7 @@ public class OrdenesDistribuidorMeico extends ETLPDFFileStrategy<Object> {
 
         sb = new StringBuffer();
         while (scanner.hasNext()) {
-            if (!scanner.hasNext("numeroDocumentoOrdenCliente")) {
+            if (!scanner.hasNext("numeroOrden")) {
                 sb.append(scanner.next()).append(" ");
             } else {
                 break;
@@ -94,7 +94,7 @@ public class OrdenesDistribuidorMeico extends ETLPDFFileStrategy<Object> {
 
         if (scanner.hasNext()) {
             scanner.next();
-            model.put("numeroDocumentoOrdenCliente", scanner.next());
+            model.put("numeroOrden", scanner.next());
         }
 
         sb = new StringBuffer();

@@ -36,11 +36,11 @@ public class OmsOrdenDto {
     // ---------------------------------------------------------------------------------------------------------
     private EstadoOrdenType estadoOrden;
     private OrigenOrdenType origenOrden;
-    private String numeroDocumentoOrdenCliente;
+    private String numeroOrden;
 
     // ---------------------------------------------------------------------------------------------------------
     private Integer consolidadoId;
-    private String numeroDocumentoConsolidadoCliente;
+    private String numeroConsolidado;
 
     // ---------------------------------------------------------------------------------------------------------
     private Integer canalId;
@@ -239,16 +239,16 @@ public class OmsOrdenDto {
         return origenOrden;
     }
 
-    public String getNumeroDocumentoOrdenCliente() {
-        return numeroDocumentoOrdenCliente;
+    public String getNumeroOrden() {
+        return numeroOrden;
     }
 
     public Integer getConsolidadoId() {
         return consolidadoId;
     }
 
-    public String getNumeroDocumentoConsolidadoCliente() {
-        return numeroDocumentoConsolidadoCliente;
+    public String getNumeroConsolidado() {
+        return numeroConsolidado;
     }
 
     public Integer getCanalId() {
@@ -643,8 +643,8 @@ public class OmsOrdenDto {
         this.origenOrden = value;
     }
 
-    public void setNumeroDocumentoOrdenCliente(String value) {
-        this.numeroDocumentoOrdenCliente = coalesce(value, "");
+    public void setNumeroOrden(String value) {
+        this.numeroOrden = coalesce(value, "");
     }
 
     public void setConsolidadoId(Integer value) {
@@ -652,7 +652,7 @@ public class OmsOrdenDto {
     }
 
     public void setNumeroDocumentoConsolidadoCliente(String value) {
-        this.numeroDocumentoConsolidadoCliente = coalesce(value, "");
+        this.numeroConsolidado = coalesce(value, "");
     }
 
     public void setCanalId(Integer value) {
@@ -1024,7 +1024,7 @@ public class OmsOrdenDto {
         this.setClienteCodigo("");
         this.setClienteNombre("");
 
-        this.setNumeroDocumentoOrdenCliente("");
+        this.setNumeroOrden("");
         this.setNumeroDocumentoConsolidadoCliente("");
 
         this.setCanalCodigo("");
@@ -1136,11 +1136,11 @@ public class OmsOrdenDto {
 				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
 				+ (estadoOrden != null ? "estadoOrden=" + estadoOrden + ", " : "")
 				+ (origenOrden != null ? "origenOrden=" + origenOrden + ", " : "")
-				+ (numeroDocumentoOrdenCliente != null
-						? "numeroDocumentoOrdenCliente=" + numeroDocumentoOrdenCliente + ", " : "")
+				+ (numeroOrden != null
+						? "numeroOrden=" + numeroOrden + ", " : "")
 				+ (consolidadoId != null ? "consolidadoId=" + consolidadoId + ", " : "")
-				+ (numeroDocumentoConsolidadoCliente != null
-						? "numeroDocumentoConsolidadoCliente=" + numeroDocumentoConsolidadoCliente + ", " : "")
+				+ (numeroConsolidado != null
+						? "numeroDocumentoConsolidadoCliente=" + numeroConsolidado + ", " : "")
 				+ (canalId != null ? "canalId=" + canalId + ", " : "")
 				+ (canalCodigo != null ? "canalCodigo=" + canalCodigo + ", " : "")
 				+ (canalNombre != null ? "canalNombre=" + canalNombre + ", " : "")

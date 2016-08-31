@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.domain.model.common.SeveridadType;
-import com.tacticlogistics.domain.model.ordenes.EstadoOrdenType;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
 import com.tacticlogistics.infrastructure.persistence.tms.TipoVehiculoRepository;
 import com.tacticlogistics.infrastructure.persistence.tms.TransportadoraRepository;

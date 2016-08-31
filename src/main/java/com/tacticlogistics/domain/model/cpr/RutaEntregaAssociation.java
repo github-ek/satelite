@@ -18,6 +18,7 @@ import javax.persistence.TemporalType;
 
 import com.tacticlogistics.domain.model.entregas.Entrega;
 import com.tacticlogistics.domain.model.entregas.EstadoEntregaType;
+import com.tacticlogistics.domain.model.tms.Ruta;
 
 @Entity
 @Table(name = "rutas_entregas", catalog = "cpr")

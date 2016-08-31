@@ -6,6 +6,8 @@ public interface Mensaje {
 
 	String getCodigo();
 
+	Object getData();
+	
 	String getTexto();
 
 	String getGrupo();

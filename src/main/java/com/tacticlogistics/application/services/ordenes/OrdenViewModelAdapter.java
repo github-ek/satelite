@@ -17,6 +17,7 @@ import com.tacticlogistics.application.dto.ordenes.LineaOrdenDto;
 import com.tacticlogistics.application.dto.ordenes.OtrosDatosDto;
 import com.tacticlogistics.domain.model.common.Mensaje;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
+import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
 import com.tacticlogistics.domain.model.common.valueobjects.Direccion;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.DestinatarioRemitente;
@@ -43,14 +44,14 @@ public class OrdenViewModelAdapter {
             updateViewModelFromTipoServicio(model, entity.getTipoServicio());
             updateViewModelFromCliente(model, entity.getCliente());
             updateViewModelFromConsolidado(model, entity.getConsolidado());
-            model.setNumeroDocumentoOrdenCliente(entity.getNumeroDocumentoOrdenCliente());
+            model.setNumeroOrden(entity.getNumeroOrden());
             model.setEstadoOrdenType(entity.getEstadoOrden());
             updateViewModelFromCausalAnulacion(model, entity.getCausalAnulacion());
-            updateViewModelFromSegmento(model, entity.getSegmento());
+            updateViewModelFromSegmento(model, entity.getCanal());
             updateViewModelFromDestinatarioRemitente(model, entity.getDestinatario());
-            model.setCodigoAlternoDestinatario(entity.getDestinatarioCodigoAlterno());
-            model.setNumeroIdentificacionAlternoDestinatario(entity.getDestinatarioNumeroIdentificacionAlterno());
-            model.setNombreAlternoDestinatario(entity.getDestinatarioNombreAlterno());
+            model.setCodigoAlternoDestinatario("");
+            model.setNumeroIdentificacionAlternoDestinatario(entity.getDestinatarioNumeroIdentificacion());
+            model.setNombreAlternoDestinatario(entity.getDestinatarioNombre());
             updateViewModelFromContacto(model, entity.getDestinatarioContacto());
 
             return model;
@@ -155,7 +156,7 @@ public class OrdenViewModelAdapter {
         protected static BodegaDestinoOrigenDto createViewModelFromOrden2(Orden entity) {
             BodegaDestinoOrigenDto model = new BodegaDestinoOrigenDto();
 
-            updateViewModelFromBodega(model, entity.getBodegaDestino());
+            //updateViewModelFromBodega(model, entity.getBodegaDestino());
 
             return model;
         }
@@ -233,15 +234,8 @@ public class OrdenViewModelAdapter {
         protected static OtrosDatosDto ordenToViewModel(Orden entity) {
             OtrosDatosDto model = new OtrosDatosDto();
 
-            model.setValorDeclarado(entity.getValorDeclarado());
-            if (entity.getTipoFormaPago() != null) {
-                model.setTipoFormaPago(null);
-                model.setCodigoTipoFormaPago(null);
-                model.setNombreTipoFormaPago(null);
-            }
-
-            model.setRequiereMaquila(entity.isRequiereMaquila());
-            model.setNotas(entity.getNotas());
+            model.setValorDeclarado(entity.getValorRecaudo());
+            model.setNotas(entity.getNotasConfirmacion());
 
             return model;
         }
@@ -251,9 +245,6 @@ public class OrdenViewModelAdapter {
 
         protected static BodegaDestinoOrigenDto ordenToViewModel(Orden entity) {
             BodegaDestinoOrigenDto model = new BodegaDestinoOrigenDto();
-
-            updateViewModelFromBodega(model, entity.getBodegaDestino());
-
             // updateViewModelFromDestinoOrigen(model, entity.getDestino());
             // updateViewModelFromDestinoDireccion(model,
             // entity.getDestinoDireccion());
@@ -320,36 +311,34 @@ public class OrdenViewModelAdapter {
         }
 
         public static void updateLineaOrdenFromViewModel(LineaOrden model, LineaOrdenDto dto) {
-            model.setConsistente(false);
 
             // todo ver paquetes
 
-            model.setCantidad(dto.getCantidad());
+            model.setCantidadSolicitada(dto.getCantidad());
             model.setLote(dto.getLote());
             model.setValorDeclaradoPorUnidad(dto.getValorDeclaradoPorUnidad());
             model.setNotas(dto.getNotas() == null ? "" : dto.getNotas());
 
-            model.setCodigoAlternoProducto(dto.getCodigoProductoAlterno() == null ? "" : dto.getCodigoProductoAlterno());
-            model.setCodigoAlternoUnidad(dto.getCodigoUnidadAlterno() == null ? "" : dto.getCodigoUnidadAlterno());
+            model.setProductoCodigoAlterno(dto.getCodigoProductoAlterno() == null ? "" : dto.getCodigoProductoAlterno());
+            model.setUnidadCodigoAlterno(dto.getCodigoUnidadAlterno() == null ? "" : dto.getCodigoUnidadAlterno());
             model.setBodegaOrigenCodigoAlterno(dto.getCodigoBodegaAlterno() == null ? "" : dto.getCodigoBodegaAlterno());
-            model.setBodegaOrigenNombreAlterno(dto.getNombreBodegaAlterno() == null ? "" : dto.getNombreBodegaAlterno());
 
             if (model.getProducto() != null) {
                 Optional<ProductoUnidadAssociation> pua = model.getProducto().getProductoUnidadAssociation().stream()
                         .filter(a -> a.getUnidad().equals(model.getUnidad())).findFirst();
 
                 model.setDescripcion(model.getProducto().getNombreLargo());
-                model.setCodigoProducto(model.getProducto().getCodigo());
-                model.setCodigoUnidad((model.getUnidad() != null) ? model.getUnidad().getCodigo() : "");
+                model.setProductoCodigo(model.getProducto().getCodigo());
+                model.setUnidadCodigo((model.getUnidad() != null) ? model.getUnidad().getCodigo() : "");
                 if (pua.isPresent()) {
-                    model.cambiarDimensiones(pua.get().getLargo(), pua.get().getAncho(), pua.get().getAlto(),
-                            pua.get().getPesoBruto());
+                    model.setDimensiones(new Dimensiones(pua.get().getLargo(), pua.get().getAncho(), pua.get().getAlto(),
+                            pua.get().getPesoBruto()));
                 }
             } else {
                 model.setDescripcion(dto.getDescripcion());
-                model.setCodigoProducto("");
-                model.setCodigoUnidad("");
-                model.cambiarDimensiones(dto.getLargoPorUnidad(), dto.getAnchoPorUnidad(), dto.getAltoPorUnidad(),dto.getPesoBrutoPorUnidad());
+                model.setProductoCodigo("");
+                model.setUnidadCodigo("");
+                model.setDimensiones(new Dimensiones(dto.getLargoPorUnidad(), dto.getAnchoPorUnidad(), dto.getAltoPorUnidad(),dto.getPesoBrutoPorUnidad()));
             }
 
             //model.setOrigenContacto(new Contacto((dto.getNombre() == null ? "" : dto.getNombre()),
@@ -364,7 +353,6 @@ public class OrdenViewModelAdapter {
             //    model.setOrigenDireccion(new Direccion(direcccion.getCiudad(), direcccion.getDireccion(),
             //            direcccion.getIndicacionesDireccion()));
             //} else {
-                model.setOrigenDireccion(new Direccion());
             //}
 
             // Set<MensajeEmbeddable> mensajes = new
@@ -381,24 +369,24 @@ public class OrdenViewModelAdapter {
             dto.setNumeroItem(model.getNumeroItem());
 
             dto.setDescripcion(model.getDescripcion());
-            dto.setCantidad(model.getCantidad());
+            dto.setCantidad(model.getCantidadSolicitada());
             dto.setValorDeclaradoPorUnidad(model.getValorDeclaradoPorUnidad());
 
             if (model.getProducto() != null) {
                 dto.setProducto(model.getProducto().getId());
 
             }
-            dto.setCodigoProducto(model.getCodigoProducto());
+            dto.setCodigoProducto(model.getProductoCodigo());
             dto.setNombreProducto(model.getDescripcion());
-            dto.setCodigoProductoAlterno(model.getCodigoAlternoProducto());
+            dto.setCodigoProductoAlterno(model.getProductoCodigoAlterno());
             dto.setNombreProductoAlterno("");
 
             if (model.getUnidad() != null) {
                 dto.setUnidad(model.getUnidad().getId());
                 dto.setNombreUnidad(model.getUnidad().getNombre());
             }
-            dto.setCodigoUnidad(model.getCodigoUnidad());
-            dto.setCodigoUnidadAlterno(model.getCodigoAlternoUnidad());
+            dto.setCodigoUnidad(model.getUnidadCodigo());
+            dto.setCodigoUnidadAlterno(model.getUnidadCodigoAlterno());
 
             dto.cambiarDimensiones(model.getLargoPorUnidad(), model.getAnchoPorUnidad(), model.getAltoPorUnidad(),
                     model.getPesoBrutoPorUnidad());
@@ -409,7 +397,6 @@ public class OrdenViewModelAdapter {
                 dto.setNombreBodega(model.getBodegaOrigen().getNombre());
             }
             dto.setCodigoBodegaAlterno(model.getBodegaOrigenCodigoAlterno());
-            dto.setNombreBodegaAlterno(model.getBodegaOrigenNombreAlterno());
 
             // TODO ubicaion origen
             // private Integer origen;
