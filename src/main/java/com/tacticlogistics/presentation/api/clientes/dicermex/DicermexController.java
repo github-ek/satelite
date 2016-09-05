@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
 import com.tacticlogistics.domain.model.common.SeveridadType;
 
@@ -42,6 +43,8 @@ public class DicermexController {
 		MensajesDto mensajes = new MensajesDto();
 		try {
 			System.out.println(dto.toString());
+			//ETLOrdenDto orden = null;
+			//ordenesService.saveOrdenReciboPrimaria(orden);	
 			mensajes.addMensaje(SeveridadType.INFO, "OK");
 			return mensajes; 
 		} catch (Exception e) {
