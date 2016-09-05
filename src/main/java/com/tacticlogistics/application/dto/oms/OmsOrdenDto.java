@@ -3,10 +3,8 @@ package com.tacticlogistics.application.dto.oms;
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
 import java.sql.Time;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,8 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tacticlogistics.application.dto.common.ItemGenerico;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
-import com.tacticlogistics.domain.model.oms.EstadoSolicitudActualizacionDatosMaestrosType;
-import com.tacticlogistics.domain.model.oms.OrigenOrdenType;
 
 public class OmsOrdenDto {
     @SuppressWarnings("unused")
@@ -35,7 +31,6 @@ public class OmsOrdenDto {
 
     // ---------------------------------------------------------------------------------------------------------
     private EstadoOrdenType estadoOrden;
-    private OrigenOrdenType origenOrden;
     private String numeroOrden;
 
     // ---------------------------------------------------------------------------------------------------------
@@ -68,7 +63,6 @@ public class OmsOrdenDto {
     private String destinatarioContactoNombres;
     private String destinatarioContactoTelefonos;
     private String destinatarioContactoEmail;
-    private EstadoSolicitudActualizacionDatosMaestrosType estadoSolicitudActualizacionDatosContactoDestinatario;
 
     private String destinatarioCiudadNombreAlterno;
 
@@ -95,8 +89,6 @@ public class OmsOrdenDto {
     private String destinoContactoNombres;
     private String destinoContactoTelefonos;
     private String destinoContactoEmail;
-
-    private EstadoSolicitudActualizacionDatosMaestrosType estadoSolicitudActualizacionDatosContactoDestino;
 
     private String destinoCiudadNombreAlterno;
 
@@ -235,10 +227,6 @@ public class OmsOrdenDto {
         return estadoOrden;
     }
 
-    public OrigenOrdenType getOrigenOrden() {
-        return origenOrden;
-    }
-
     public String getNumeroOrden() {
         return numeroOrden;
     }
@@ -327,10 +315,6 @@ public class OmsOrdenDto {
         return destinatarioContactoEmail;
     }
 
-    public EstadoSolicitudActualizacionDatosMaestrosType getEstadoSolicitudActualizacionDatosContactoDestinatario() {
-        return estadoSolicitudActualizacionDatosContactoDestinatario;
-    }
-
     public String getDestinatarioCiudadNombreAlterno() {
         return destinatarioCiudadNombreAlterno;
     }
@@ -401,10 +385,6 @@ public class OmsOrdenDto {
 
     public String getDestinoContactoEmail() {
         return destinoContactoEmail;
-    }
-
-    public EstadoSolicitudActualizacionDatosMaestrosType getEstadoSolicitudActualizacionDatosContactoDestino() {
-        return estadoSolicitudActualizacionDatosContactoDestino;
     }
 
     public String getDestinoCiudadNombreAlterno() {
@@ -639,10 +619,6 @@ public class OmsOrdenDto {
         this.estadoOrden = value;
     }
 
-    public void setOrigenOrden(OrigenOrdenType value) {
-        this.origenOrden = value;
-    }
-
     public void setNumeroOrden(String value) {
         this.numeroOrden = coalesce(value, "");
     }
@@ -731,11 +707,6 @@ public class OmsOrdenDto {
         this.destinatarioContactoEmail = coalesce(value, "");
     }
 
-    public void setEstadoSolicitudActualizacionDatosContactoDestinatario(
-            EstadoSolicitudActualizacionDatosMaestrosType value) {
-        this.estadoSolicitudActualizacionDatosContactoDestinatario = value;
-    }
-
     public void setDestinatarioCiudadNombreAlterno(String value) {
         this.destinatarioCiudadNombreAlterno = coalesce(value, "");
     }
@@ -806,11 +777,6 @@ public class OmsOrdenDto {
 
     public void setDestinoContactoEmail(String value) {
         this.destinoContactoEmail = coalesce(value, "");
-    }
-
-    public void setEstadoSolicitudActualizacionDatosContactoDestino(
-            EstadoSolicitudActualizacionDatosMaestrosType value) {
-        this.estadoSolicitudActualizacionDatosContactoDestino = value;
     }
 
     public void setDestinoCiudadNombreAlterno(String value) {
@@ -1135,12 +1101,9 @@ public class OmsOrdenDto {
 				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
 				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
 				+ (estadoOrden != null ? "estadoOrden=" + estadoOrden + ", " : "")
-				+ (origenOrden != null ? "origenOrden=" + origenOrden + ", " : "")
-				+ (numeroOrden != null
-						? "numeroOrden=" + numeroOrden + ", " : "")
+				+ (numeroOrden != null ? "numeroOrden=" + numeroOrden + ", " : "")
 				+ (consolidadoId != null ? "consolidadoId=" + consolidadoId + ", " : "")
-				+ (numeroConsolidado != null
-						? "numeroDocumentoConsolidadoCliente=" + numeroConsolidado + ", " : "")
+				+ (numeroConsolidado != null ? "numeroConsolidado=" + numeroConsolidado + ", " : "")
 				+ (canalId != null ? "canalId=" + canalId + ", " : "")
 				+ (canalCodigo != null ? "canalCodigo=" + canalCodigo + ", " : "")
 				+ (canalNombre != null ? "canalNombre=" + canalNombre + ", " : "")
@@ -1171,10 +1134,6 @@ public class OmsOrdenDto {
 						? "destinatarioContactoTelefonos=" + destinatarioContactoTelefonos + ", " : "")
 				+ (destinatarioContactoEmail != null ? "destinatarioContactoEmail=" + destinatarioContactoEmail + ", "
 						: "")
-				+ (estadoSolicitudActualizacionDatosContactoDestinatario != null
-						? "estadoSolicitudActualizacionDatosContactoDestinatario="
-								+ estadoSolicitudActualizacionDatosContactoDestinatario + ", "
-						: "")
 				+ (destinatarioCiudadNombreAlterno != null
 						? "destinatarioCiudadNombreAlterno=" + destinatarioCiudadNombreAlterno + ", " : "")
 				+ (destinoId != null ? "destinoId=" + destinoId + ", " : "")
@@ -1198,10 +1157,6 @@ public class OmsOrdenDto {
 				+ (destinoContactoTelefonos != null ? "destinoContactoTelefonos=" + destinoContactoTelefonos + ", "
 						: "")
 				+ (destinoContactoEmail != null ? "destinoContactoEmail=" + destinoContactoEmail + ", " : "")
-				+ (estadoSolicitudActualizacionDatosContactoDestino != null
-						? "estadoSolicitudActualizacionDatosContactoDestino="
-								+ estadoSolicitudActualizacionDatosContactoDestino + ", "
-						: "")
 				+ (destinoCiudadNombreAlterno != null
 						? "destinoCiudadNombreAlterno=" + destinoCiudadNombreAlterno + ", " : "")
 				+ "requiereServicioDistribucion=" + requiereServicioDistribucion + ", "
@@ -1294,19 +1249,4 @@ public class OmsOrdenDto {
 				+ (causalAnulacionId != null ? "causalAnulacionId=" + causalAnulacionId + ", " : "")
 				+ (causalAnulacionNombre != null ? "causalAnulacionNombre=" + causalAnulacionNombre : "") + "]";
 	}
-
-    private String toString(Collection<?> collection, int maxLen) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
-        int i = 0;
-        for (Iterator<?> iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++) {
-            if (i > 0) {
-                builder.append(", ");
-            }
-            builder.append(iterator.next());
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-
 }

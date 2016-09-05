@@ -1,7 +1,5 @@
 package com.tacticlogistics.infrastructure.persistence.geo;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,10 +39,10 @@ public interface CiudadRepository extends JpaRepository<Ciudad, Integer> {
 //            + " SELECT DISTINCT b" 
 //            + " FROM DestinoOrigen a, Ciudad b"
 //            + " WHERE a.direccion.ciudadId = b.id"
-//            + " AND a.destinatarioRemitenteId = :destinatarioRemitenteId" 
+//            + " AND a.destinatarioId = :destinatarioId" 
 //            + " ORDER BY b.ordinal")
-//    List<Ciudad> findByDestinatarioRemitenteIdAndTipoServicioId(
-//            @Param("destinatarioRemitenteId") Integer destinatarioRemitenteId);
+//    List<Ciudad> findByDestinatarioIdAndTipoServicioId(
+//            @Param("destinatarioId") Integer destinatarioId);
 //
 //    @Query(""
 //        + " SELECT c"

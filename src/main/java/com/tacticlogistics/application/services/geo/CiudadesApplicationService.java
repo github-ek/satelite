@@ -34,10 +34,10 @@ public class CiudadesApplicationService {
     	return new ArrayList<>(); 
     }
 
-    public List<Map<String, Object>> findCiudadesPorDestinatarioRemitentePorTipoServicio(
-            Integer destinatarioRemitenteId, Integer tipoServicioId) throws DataAccessException {
+    public List<Map<String, Object>> findCiudadesPorDestinatarioPorTipoServicio(
+            Integer destinatarioId, Integer tipoServicioId) throws DataAccessException {
 //        List<Ciudad> entityList = ciudadRepository
-//                .findByDestinatarioRemitenteIdAndTipoServicioId(destinatarioRemitenteId);
+//                .findByDestinatarioIdAndTipoServicioId(destinatarioId);
 //
 //        List<Map<String, Object>> list = new ArrayList<>();
 //        entityList.forEach(a -> {
@@ -106,11 +106,11 @@ public class CiudadesApplicationService {
         o.put("ciudad", entity.getCiudadId());
         o.put("direccion", entity.getDireccion());
         o.put("indicacionesDireccion", entity.getIndicacionesDireccion());
-        if (entity.getLongitud() != null) {
-            o.put("longitud", entity.getLongitud().toPlainString());
+        if (entity.getCx() != null) {
+            o.put("longitud", entity.getCx().toPlainString());
         }
-        if (entity.getLatitud() != null) {
-            o.put("latitud", entity.getLatitud().toPlainString());
+        if (entity.getCy() != null) {
+            o.put("latitud", entity.getCy().toPlainString());
         }
         o.put("direccionEstandarizada", entity.getDireccionEstandarizada());
 

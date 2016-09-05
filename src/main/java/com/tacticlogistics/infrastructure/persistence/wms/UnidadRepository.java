@@ -25,24 +25,4 @@ public interface UnidadRepository extends JpaRepository<Unidad, Integer> {
 			+ " ORDER BY a.nivel")
 	List<ProductoUnidadAssociation> findAllByProductoId(
 			@Param("productoId") Integer productoId);
-
-
-	   //TODO
-    @Query(""
-            + " SELECT c"
-            + " FROM Unidad c"
-            + " WHERE "
-            + " c.id IN "
-            + " ("
-            + " SELECT a.unidadId"
-            + " FROM ClienteUnidadAssociation a"
-            + " WHERE "
-            + "     a.clienteId = :clienteId"
-            + " AND a.codigoAlterno = :codigoAlterno"
-            + " )"
-            + " AND c.activo = true")
-    Unidad findByClienteIdAndByCodigoAlterno(
-            @Param("clienteId") Integer clienteId,
-            @Param("codigoAlterno") String codigoAlterno);
-
 }

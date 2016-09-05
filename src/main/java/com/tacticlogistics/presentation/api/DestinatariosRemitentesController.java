@@ -14,25 +14,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.application.dto.crm.DestinatarioRemitenteDto;
-import com.tacticlogistics.application.dto.oms.OmsDestinatarioRemitenteDto;
-import com.tacticlogistics.application.services.crm.DestinatariosRemitentesApplicationService;
+import com.tacticlogistics.application.dto.crm.DestinatarioDto;
+import com.tacticlogistics.application.dto.oms.OmsDestinatarioDto;
+import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
 import com.tacticlogistics.domain.model.common.SeveridadType;
-import com.tacticlogistics.domain.model.crm.DestinatarioRemitente;
+import com.tacticlogistics.domain.model.crm.Destinatario;
 
 @CrossOrigin
 @RestController()
 @RequestMapping("/destinatarios_remitentes")
 public class DestinatariosRemitentesController {
 	@Autowired
-	private DestinatariosRemitentesApplicationService destinatariosRemitentesService;
+	private DestinatariosApplicationService destinatariosService;
 	
 	@RequestMapping("/tipos_identificacion")
 	public List<Object> getAllTipoIdentificacion() {
 		List<Object> list = new ArrayList<>();
 
 		try {
-			list = destinatariosRemitentesService.findAllTipoIdentificacion();
+			list = destinatariosService.findAllTipoIdentificacion();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -44,7 +44,7 @@ public class DestinatariosRemitentesController {
 		List<Object> list = new ArrayList<>();
 
 		try {
-			list = destinatariosRemitentesService.findCanales();
+			list = destinatariosService.findCanales();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,12 +55,12 @@ public class DestinatariosRemitentesController {
     // -- Get One
     // ----------------------------------------------------------------------------------------------------------------
     @RequestMapping(path = "/{id}", method = { RequestMethod.GET, RequestMethod.POST })
-    public OmsDestinatarioRemitenteDto getPorId(
+    public OmsDestinatarioDto getPorId(
             @PathVariable Integer id) {
-        OmsDestinatarioRemitenteDto dto = null;
+        OmsDestinatarioDto dto = null;
 
         try {
-            dto = destinatariosRemitentesService.findOnePorId(id);
+            dto = destinatariosService.findOnePorId(id);
         } catch (Exception e) {
             // TODO e.printStackTrace()
             e.printStackTrace();
@@ -72,12 +72,12 @@ public class DestinatariosRemitentesController {
 	// -- Save
 	// ----------------------------------------------------------------------------------------------------------------
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public Map<String, Object> save(@RequestBody DestinatarioRemitenteDto dto) {
+	public Map<String, Object> save(@RequestBody DestinatarioDto dto) {
 		Map<String, Object> respuesta = new HashMap<>();
 		MensajesDto mensajes = new MensajesDto();
 		try {
-			DestinatarioRemitente model = this.destinatariosRemitentesService.save(dto);
-			respuesta.put("destinatarioRemitente", this.destinatariosRemitentesService.destinatarioRemitenteToDto(model));
+			Destinatario model = this.destinatariosService.save(dto);
+			respuesta.put("destinatario", this.destinatariosService.destinatarioToDto(model));
 			mensajes.addMensaje(SeveridadType.INFO, "");
 		} catch (Exception e) {
 			mensajes.addMensaje(e);

@@ -198,7 +198,7 @@ public class ETLLineaOrdenDto {
 		return requerimientoOrigen;
 	}
 	
-	protected String getRequerimientoPinado() {
+	public String getRequerimientoPinado() {
 		return requerimientoPinado;
 	}
 
@@ -326,7 +326,7 @@ public class ETLLineaOrdenDto {
 		this.requerimientoOrigen = substringSafe(coalesce(value, "").trim(), 0, 30);
 	}
 
-	protected void setRequerimientoPinado(String value) {
+	public void setRequerimientoPinado(String value) {
 		this.requerimientoPinado = normalizarRequerimientoSN(value);
 	}
 

@@ -22,7 +22,7 @@ public class ClienteCanalAssociation implements Serializable {
     @Column(nullable = false, length = 50)
     private String codigoAlterno;
 
-    @Column(name = "id_segmento", nullable = false, insertable = true, updatable = false)
+    @Column(name = "id_canal", nullable = false, insertable = true, updatable = false)
     private int canalId;
 
     // ---------------------------------------------------------------------------------------------------------

@@ -41,10 +41,11 @@ import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
 import com.tacticlogistics.domain.model.crm.Canal;
 import com.tacticlogistics.domain.model.crm.Cliente;
-import com.tacticlogistics.domain.model.crm.DestinatarioRemitente;
-import com.tacticlogistics.domain.model.crm.DestinoOrigen;
+import com.tacticlogistics.domain.model.crm.Destinatario;
+import com.tacticlogistics.domain.model.crm.Destino;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
+import com.tacticlogistics.domain.model.tms.EstadoCorteRutaType;
 import com.tacticlogistics.domain.model.tms.TipoVehiculo;
 
 @Entity
@@ -198,7 +199,7 @@ public class OmsOrden implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_destinatario", nullable = true)
-	private DestinatarioRemitente destinatario;
+	private Destinatario destinatario;
 
 	@Column(nullable = false, length = 20)
 	@NotNull
@@ -219,7 +220,7 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_destino", nullable = true)
-	private DestinoOrigen destino;
+	private Destino destino;
 
 	@Column(nullable = false, length = 100)
 	@NotNull
@@ -236,7 +237,7 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_origen", nullable = true)
-	private DestinoOrigen origen;
+	private Destino origen;
 
 	@Column(nullable = false, length = 100)
 	@NotNull
@@ -463,7 +464,7 @@ public class OmsOrden implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_planificacion_ruta", nullable = false, length = 50)
 	@NotNull
-	private EstadoPlanificacionRutaType estadoPlanificacionRuta;
+	private EstadoCorteRutaType estadoPlanificacionRuta;
 
 	@Column(name = "id_corte_planificacion_ruta", nullable = true)
 	private Integer cortePlanificacionRutaId;
@@ -528,12 +529,14 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	public OmsOrden() {
 		super();
-		this.setDatosOrden("", null, "", "");
 
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
 		this.setEstadoDistribucion(EstadoDistribucionType.NO_PLANIFICADA);
 		this.setEstadoAlistamiento(EstadoAlistamientoType.NO_ALERTADA);
 		this.setEstadoCumplidos(EstadoCumplidosType.NO_REPORTADOS);
+
+		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosOrden("", null, "", "");
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.setCliente(null);
@@ -593,7 +596,7 @@ public class OmsOrden implements Serializable {
 		this.requerimientosAlistamiento = new HashSet<>();
 
 		// ---------------------------------------------------------------------------------------------------------
-		this.setEstadoPlanificacionRuta(EstadoPlanificacionRutaType.SIN_SOLICITUD);
+		this.setEstadoPlanificacionRuta(EstadoCorteRutaType.SIN_SOLICITUD);
 		this.setDatosCorteRuta("", null, null);
 		this.setDatosRuta("", null, null);
 
@@ -634,7 +637,7 @@ public class OmsOrden implements Serializable {
 		this.setHoraRecogidaSugeridaMaxima(hoMa);
 	}
 
-	public void setDatosDestinatario(Canal canal, String canalCodigoAlterno, DestinatarioRemitente destinatario,
+	public void setDatosDestinatario(Canal canal, String canalCodigoAlterno, Destinatario destinatario,
 			Contacto contacto) {
 		if (contacto == null) {
 			if (destinatario != null) {
@@ -652,7 +655,7 @@ public class OmsOrden implements Serializable {
 		this.setDestinatarioContacto(contacto);
 	}
 
-	public void setDatosPuntoDestino(DestinoOrigen ubicacion, Contacto contacto) {
+	public void setDatosPuntoDestino(Destino ubicacion, Contacto contacto) {
 		if (contacto == null) {
 			if (ubicacion != null) {
 				contacto = ubicacion.getContacto();
@@ -666,7 +669,7 @@ public class OmsOrden implements Serializable {
 		this.setDestinoContacto(contacto);
 	}
 
-	public void setDatosPuntoOrigen(DestinoOrigen ubicacion, Contacto contacto) {
+	public void setDatosPuntoOrigen(Destino ubicacion, Contacto contacto) {
 		if (contacto == null) {
 			if (ubicacion != null) {
 				contacto = ubicacion.getContacto();
@@ -914,7 +917,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public DestinatarioRemitente getDestinatario() {
+	public Destinatario getDestinatario() {
 		return destinatario;
 	}
 
@@ -934,7 +937,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public DestinoOrigen getDestino() {
+	public Destino getDestino() {
 		return destino;
 	}
 
@@ -950,7 +953,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public DestinoOrigen getOrigen() {
+	public Destino getOrigen() {
 		return origen;
 	}
 
@@ -1157,7 +1160,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public EstadoPlanificacionRutaType getEstadoPlanificacionRuta() {
+	public EstadoCorteRutaType getEstadoPlanificacionRuta() {
 		return estadoPlanificacionRuta;
 	}
 
@@ -1332,7 +1335,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setDestinatario(DestinatarioRemitente destinatario) {
+	protected void setDestinatario(Destinatario destinatario) {
 		this.destinatario = destinatario;
 	}
 
@@ -1349,7 +1352,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setDestino(DestinoOrigen destino) {
+	protected void setDestino(Destino destino) {
 		this.destino = destino;
 	}
 
@@ -1362,7 +1365,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setOrigen(DestinoOrigen origen) {
+	protected void setOrigen(Destino origen) {
 		this.origen = origen;
 	}
 
@@ -1638,7 +1641,7 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setEstadoPlanificacionRuta(EstadoPlanificacionRutaType estadoPlanificacionRuta) {
+	protected void setEstadoPlanificacionRuta(EstadoCorteRutaType estadoPlanificacionRuta) {
 		this.estadoPlanificacionRuta = estadoPlanificacionRuta;
 	}
 

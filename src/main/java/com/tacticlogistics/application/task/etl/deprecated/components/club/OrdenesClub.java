@@ -8,22 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
-import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
 import com.tacticlogistics.application.task.etl.OrdenDtoAtributos;
 import com.tacticlogistics.application.task.etl.deprecated.components.ETLPDFFileStrategy;
-import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.infrastructure.services.Basic;
 
 //@Component("CLUB.FACTURAS")
 public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
-    @Autowired
-    private OrdenesApplicationService ordenesService;
-
     private DecimalFormat cantidadSolicitadaFormat = null;
     private DecimalFormat valorFormat = null;
 
@@ -230,7 +222,7 @@ public class OrdenesClub extends ETLPDFFileStrategy<ETLOrdenDto> {
         sb.append("\n\n");
         sb.append("---------------------------------------------------------------------------------------------\n");
         sb.append("---------------------------------------------------------------------------------------------\n");
-        int i = 0;
+        //int i = 0;
         for (ETLOrdenDto dto : map.values()) {
             try {
 //                Orden model = ordenesService.saveOrden(dto);

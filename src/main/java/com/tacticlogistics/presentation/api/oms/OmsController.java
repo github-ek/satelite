@@ -2,7 +2,6 @@ package com.tacticlogistics.presentation.api.oms;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +21,8 @@ import com.tacticlogistics.application.dto.common.ItemGenerico;
 import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.oms.OmsOrdenDto;
 import com.tacticlogistics.application.services.crm.ClientesApplicationService;
-import com.tacticlogistics.application.services.crm.DestinatariosRemitentesApplicationService;
-import com.tacticlogistics.application.services.crm.DestinosOrigenesApplicationService;
-import com.tacticlogistics.application.services.geo.CiudadesApplicationService;
+import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
+import com.tacticlogistics.application.services.crm.DestinosApplicationService;
 import com.tacticlogistics.application.services.oms.OmsApplicationService;
 import com.tacticlogistics.application.services.seguridad.UsuarioApplicationService;
 import com.tacticlogistics.application.services.wms.BodegasApplicationService;
@@ -44,16 +42,13 @@ public class OmsController {
 	private ClientesApplicationService clientesService;
 
 	@Autowired
-	private DestinatariosRemitentesApplicationService destinatariosRemitentesService;
+	private DestinatariosApplicationService destinatariosRemitentesService;
 
 	@Autowired
-	private DestinosOrigenesApplicationService destinosOrigenesService;
+	private DestinosApplicationService destinosService;
 
 	@Autowired
 	private ProductosApplicationService productosService;
-
-	@Autowired
-	private BodegasApplicationService bodegasService;
 
 	@Autowired
 	private OmsApplicationService omsService;
@@ -68,7 +63,6 @@ public class OmsController {
 		try {
 			dto = omsService.findOneOrdenPorId(id);
 		} catch (Exception e) {
-			// TODO e.printStackTrace()
 			e.printStackTrace();
 		}
 		return dto;
@@ -254,50 +248,6 @@ public class OmsController {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Resumen
 	// ----------------------------------------------------------------------------------------------------------------
-
-	@RequestMapping(path = "/ordenes_por_criterios", method = { RequestMethod.GET })
-	public List<Object> getOrdenesPorCriteriosVarios(@RequestParam(required = true) Integer usuarioId,
-			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
-			@RequestParam() Integer bodegaOrigenId, @RequestParam() Integer bodegaDestinoId,
-			@RequestParam() EstadoOrdenType estadoOrdenId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaConfirmacion) {
-		List<Object> list = new ArrayList<>();
-
-		try {
-			list = omsService.findOrdenesPorCriterio(usuarioId, clienteId, tipoServicioId, bodegaOrigenId,
-					bodegaDestinoId, estadoOrdenId, fechaConfirmacion);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	@RequestMapping(path = "/por_fecha_corte", method = { RequestMethod.GET })
-	public List<Object> getOrdenesFechaCorte(@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(value = "fechaDesde", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde) {
-		List<Object> list = new ArrayList<>();
-
-		try {
-			list = omsService.findOrdenesPorFechaConfirmacion(usuarioId, fechaDesde);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	@RequestMapping(value = "/por_ids", method = RequestMethod.POST)
-	public List<Object> getOrdenesPorId(@RequestBody Map<String, Object> model) {
-		List<Object> list = new ArrayList<>();
-		Integer usuarioId = (Integer) model.get("usuarioId");
-		List<Integer> ids = ((List<Integer>) model.get("ids"));
-		try {
-			list = omsService.findOrdenesPorId(usuarioId, ids);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
 	@RequestMapping(value = "/estados/orden/uso_externo", method = RequestMethod.GET)
 	public Map<EstadoOrdenType, String> getEstadosUsoExterno() {
 		Map<EstadoOrdenType, String> map = new LinkedHashMap<>();
@@ -453,13 +403,13 @@ public class OmsController {
 	// ----------------------------------------------------------------------------------------------------------------
 	// Ciudades habilitadas para un destinatario y tipo de servicio
 //	@RequestMapping(value = "/ciudades-x-destinatario_remitente-x-tipo_servicio", method = RequestMethod.GET)
-//	public List<Map<String, Object>> getCiudadesPorDestinatarioRemitentePorTipoServicio(
-//			@RequestParam(required = true) Integer destinatarioRemitenteId,
+//	public List<Map<String, Object>> getCiudadesPorDestinatarioPorTipoServicio(
+//			@RequestParam(required = true) Integer destinatarioId,
 //			@RequestParam(required = true) Integer tipoServicioId) {
 //
 //		List<Map<String, Object>> list = new ArrayList<>();
 //		try {
-//			list = ciudadesService.findCiudadesPorDestinatarioRemitentePorTipoServicio(destinatarioRemitenteId,
+//			list = ciudadesService.findCiudadesPorDestinatarioPorTipoServicio(destinatarioId,
 //					tipoServicioId);
 //		} catch (Exception e) {
 //			// TODO e.printStackTrace()
@@ -470,14 +420,14 @@ public class OmsController {
 
 	// Destinos habilitados para un destinatario, ciudad y tipo de servicio
 	@RequestMapping("/destinos_origenes-x-destinatario_remitente-x-tipo_servicio-x-ciudad")
-	public List<Map<String, Object>> getDestinosOrigenesPorDestinatarioRemitentePorTipoServicioPorCiudad(
-			@RequestParam(required = true) Integer destinatarioRemitenteId,
+	public List<Map<String, Object>> getDestinosPorDestinatarioPorTipoServicioPorCiudad(
+			@RequestParam(required = true) Integer destinatarioId,
 			@RequestParam(required = true) Integer tipoServicioId, @RequestParam(required = true) Integer ciudadId) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = destinosOrigenesService.findDestinosOrigenesPorDestinatarioRemitentePorTipoServicioPorCiudad(
-					destinatarioRemitenteId, ciudadId);
+			list = destinosService.findDestinosPorDestinatarioPorTipoServicioPorCiudad(
+					destinatarioId, ciudadId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -531,14 +481,14 @@ public class OmsController {
 	// Requerimientos de Distribución x cliente x tipo de servicio x
 	// destinatario remitente
 	@RequestMapping("/requerimientos_distribucion-x-cliente-x-tipo_servicio-x-destinatario_remitente")
-	public List<Map<String, Object>> getRequerimientosDistribucionPorClientePorTipoServicioDestinatarioRemitente(
+	public List<Map<String, Object>> getRequerimientosDistribucionPorClientePorTipoServicioDestinatario(
 			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
-			@RequestParam(required = true) Integer destinatarioRemitenteId) {
+			@RequestParam(required = true) Integer destinatarioId) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = omsService.findRequerimientosDistribucionPorClientePorTipoServicioDestinatarioRemitente(clienteId,
-					tipoServicioId, destinatarioRemitenteId);
+			list = omsService.findRequerimientosDistribucionPorClientePorTipoServicioDestinatario(clienteId,
+					tipoServicioId, destinatarioId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -550,14 +500,14 @@ public class OmsController {
 	// destinatario
 	// remitente
 	@RequestMapping("/requerimientos_alistamiento-x-cliente-x-tipo_servicio-x-destinatario_remitente")
-	public List<Map<String, Object>> getRequerimientosAlistamientoPorClientePorTipoServicioDestinatarioRemitente(
+	public List<Map<String, Object>> getRequerimientosAlistamientoPorClientePorTipoServicioDestinatario(
 			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
-			@RequestParam(required = true) Integer destinatarioRemitenteId) {
+			@RequestParam(required = true) Integer destinatarioId) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = omsService.findRequerimientosAlistamientoPorClientePorTipoServicioDestinatarioRemitente(clienteId,
-					tipoServicioId, destinatarioRemitenteId);
+			list = omsService.findRequerimientosAlistamientoPorClientePorTipoServicioDestinatario(clienteId,
+					tipoServicioId, destinatarioId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -596,64 +546,5 @@ public class OmsController {
 		}
 		return list;
 	}
-
-	// Ciudades donde existen bodegas habilitadas para un producto
-//	@RequestMapping("/ciudades-x-producto")
-//	public List<Object> getCiudadesPorProductoPorCiudad(@RequestParam(required = true) Integer productoId) {
-//		List<Object> list = new ArrayList<>();
-//
-//		try {
-//			list = ciudadesService.findCiudadesPorProducto(productoId);
-//		} catch (Exception e) {
-//			// TODO e.printStackTrace()
-//			e.printStackTrace();
-//		}
-//		return list;
-//	}
-
-	// Bodegas habilitadas para un producto y ciudad
-	@RequestMapping("/bodegas-x-producto-x-ciudad")
-	public List<Object> getBodegasPorProductoPorCiudad(@RequestParam(required = true) Integer productoId,
-			@RequestParam(required = true) Integer ciudadId) {
-		List<Object> list = new ArrayList<>();
-
-		try {
-			list = bodegasService.findBodegasPorProductoPorCiudad(productoId, ciudadId);
-		} catch (Exception e) {
-			// TODO e.printStackTrace()
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	// ----------------------------------------------------------------------------------------------------------------
-	// -- Causales
-	// ----------------------------------------------------------------------------------------------------------------
-	// Causales de Solicitud de Revision cuando lo solicte el cliente
-	@RequestMapping("/causales_solicitud_revision_cliente")
-	public List<ItemGenerico<Integer>> getCausalesSolicitudRevisionCliente() {
-		List<ItemGenerico<Integer>> list = new ArrayList<>();
-
-		try {
-			list = omsService.findCausalesSolicitudRevisionCliente();
-		} catch (Exception e) {
-			// TODO e.printStackTrace()
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	// Causales de Solicitud de Revision cuando lo solicite planeación
-	@RequestMapping("/causales_solicitud_revision_planeacion")
-	public List<ItemGenerico<Integer>> getCausalesSolicitudRevisionPlaneacion() {
-		List<ItemGenerico<Integer>> list = new ArrayList<>();
-
-		try {
-			list = omsService.findCausalesSolicitudRevisionPlaneacionLogistica();
-		} catch (Exception e) {
-			// TODO e.printStackTrace()
-			e.printStackTrace();
-		}
-		return list;
-	}
 }
+

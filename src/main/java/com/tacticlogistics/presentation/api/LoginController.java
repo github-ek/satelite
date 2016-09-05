@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.crm.ClienteDto;
-import com.tacticlogistics.application.dto.crm.ProveedorDto;
 import com.tacticlogistics.application.dto.geo.CiudadDto;
 import com.tacticlogistics.application.dto.ingresos.LineaOrdenIngreso;
 import com.tacticlogistics.application.dto.ingresos.LineaOrdenIngresoRepository;
@@ -37,7 +36,6 @@ import com.tacticlogistics.application.dto.wms.UoMDto;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteCiudadAssociation;
-import com.tacticlogistics.domain.model.crm.Proveedor;
 import com.tacticlogistics.domain.model.geo.Ciudad;
 import com.tacticlogistics.domain.model.seguridad.Usuario;
 import com.tacticlogistics.domain.model.seguridad.UsuarioBodegaAssociation;
@@ -46,7 +44,6 @@ import com.tacticlogistics.domain.model.tms.Transportadora;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
-import com.tacticlogistics.infrastructure.persistence.crm.ProveedorRepository;
 import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
 import com.tacticlogistics.infrastructure.persistence.ingresos.TipoNovedadIngresoInventarioRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
@@ -63,9 +60,6 @@ public class LoginController {
 
     @Autowired
     ClienteRepository clienteRepository;
-
-    @Autowired
-    ProveedorRepository proveedorRepository;
 
     @Autowired
     ProductoRepository productoRepository;
@@ -180,25 +174,6 @@ public class LoginController {
                             ciudad.isActivo()));
                 }
             });
-        }
-        return list;
-    }
-
-    @CrossOrigin
-    @RequestMapping("/proveedores-x-cliente")
-    public List<ProveedorDto> getProveedoresPorCliente(
-            @RequestParam(value = "cliente", defaultValue = "") String codigo) {
-
-        List<ProveedorDto> list = new ArrayList<ProveedorDto>(0);
-
-        Cliente cliente = clienteRepository.findByCodigoIgnoringCase(codigo);
-        if (cliente != null) {
-            List<Proveedor> proveedores = proveedorRepository.findAllByClienteOrderByNombre(cliente);
-
-            Comparator<Proveedor> by = (a, b) -> a.getCodigo().compareTo(b.getCodigo());
-
-            proveedores.stream().sorted(by).forEachOrdered(
-                    (p) -> list.add(new ProveedorDto(p.getId(), p.getCodigo(), p.getNombre(), p.isActivo())));
         }
         return list;
     }

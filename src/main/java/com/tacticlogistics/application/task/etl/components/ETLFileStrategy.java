@@ -24,6 +24,9 @@ import ch.qos.logback.classic.Logger;
 public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
     private static final Logger log = (Logger) LoggerFactory.getLogger(ETLFileStrategy.class);
 
+	protected static final String SI = "S";
+	protected static final String NO = "N";
+
     protected static final Pattern PATTERN_PDF = Pattern.compile("(?i:.*\\.pdf)");
     protected static final Pattern PATTERN_TXT = Pattern.compile("(?i:.*\\.(txt|rpt|csv))");
     protected static final Pattern PATTERN_XLS = Pattern.compile("(?i:.*\\.(xlsx|xls))");

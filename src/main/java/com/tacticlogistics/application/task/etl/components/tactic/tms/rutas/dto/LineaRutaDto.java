@@ -22,8 +22,9 @@ public class LineaRutaDto {
     private String destinoNombre;
 
     @JsonProperty("direccion")
-    private String destinoDireccion;
-
+    private String direccion;
+    @JsonIgnore
+    private String barrio;
     @JsonProperty("cxD")
     private float cxD;
     @JsonProperty("cyD")
@@ -53,7 +54,8 @@ public class LineaRutaDto {
         this.setNumeroDocumentoEntrega("");
         this.setSecuencia(0);
         this.setDestinoNombre("");
-        this.setDestinoDireccion("");
+        this.setDireccion("");
+        this.setBarrio("");
         this.setCxD(0);
         this.setCyD(0);
         this.setCxO("");
@@ -68,8 +70,7 @@ public class LineaRutaDto {
         this.setCorreos(null);
     }
 
-    
-    public int getOrdenId() {
+	public int getOrdenId() {
 		return ordenId;
 	}
 
@@ -86,8 +87,12 @@ public class LineaRutaDto {
     }
 
     public String getDireccion() {
-        return destinoDireccion;
+        return direccion;
     }
+
+    public String getBarrio() {
+		return barrio;
+	}
 
     public float getCxD() {
         return cxD;
@@ -153,9 +158,13 @@ public class LineaRutaDto {
         this.destinoNombre = coalesce(value,"");
     }
 
-    public void setDestinoDireccion(String value) {
-        this.destinoDireccion = coalesce(value,"");
+    public void setDireccion(String value) {
+        this.direccion = coalesce(value,"");
     }
+
+	public void setBarrio(String value) {
+		this.barrio = coalesce(value,"");
+	}
 
     public void setCxD(float cxD) {
         this.cxD = cxD;
@@ -216,8 +225,8 @@ public class LineaRutaDto {
         if (destinoNombre != null) {
             builder.append("destinoNombre=").append(destinoNombre).append(", ");
         }
-        if (destinoDireccion != null) {
-            builder.append("destinoDireccion=").append(destinoDireccion).append(", ");
+        if (direccion != null) {
+            builder.append("destinoDireccion=").append(direccion).append(", ");
         }
         builder.append("cxD=").append(cxD).append(", cyD=").append(cyD).append(", ");
         if (cxO != null) {

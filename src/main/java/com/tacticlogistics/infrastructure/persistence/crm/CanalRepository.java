@@ -18,7 +18,7 @@ public interface CanalRepository extends JpaRepository<Canal, Integer> {
 			+ " ("
 
 			+ " SELECT DISTINCT a.canalId"
-            + " FROM DestinatarioRemitente a"
+            + " FROM Destinatario a"
             + " WHERE a.clienteId = :clienteId "
             + " AND a.activo = true"
 			

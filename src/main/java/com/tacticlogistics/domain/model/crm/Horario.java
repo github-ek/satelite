@@ -41,12 +41,12 @@ public class Horario implements Serializable {
 	private Set<String> codigosCiudades = new HashSet<String>();
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_destinatario_remitente", nullable = true)
-	private DestinatarioRemitente destinatarioRemitente;
+	@JoinColumn(name = "id_destinatario", nullable = true)
+	private Destinatario destinatario;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_destino_origen", nullable = true)
-	private DestinoOrigen destinoOrigen;	
+	@JoinColumn(name = "id_destino", nullable = true)
+	private Destino destino;	
 	
 	//TODO
 	//Se buscan los horarios activos del cliente

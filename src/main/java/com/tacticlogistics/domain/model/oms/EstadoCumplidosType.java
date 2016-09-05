@@ -6,5 +6,5 @@ public enum EstadoCumplidosType {
 	PUBLICADOS,
 	ENTREGADOS,
 	NO_ENTREGADOS,
-	DECONOCIDO
+	DESCONOCIDO
 }

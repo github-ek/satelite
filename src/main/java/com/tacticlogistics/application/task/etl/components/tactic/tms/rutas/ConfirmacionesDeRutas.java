@@ -1,448 +1,407 @@
 package com.tacticlogistics.application.task.etl.components.tactic.tms.rutas;
 
-import java.io.IOException;
+import java.io.File;
+import java.sql.Time;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.tacticlogistics.application.task.etl.components.ETLFlatFileStrategy;
-import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.DocumentoDto;
 import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.LineaRutaDto;
-import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.ResultadoProgramacionRutaDto;
-import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.ResultadosProgramacionRutasDto;
 import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.RutaDto;
-import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.SuscripcionDto;
-import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.SuscriptorDto;
+import com.tacticlogistics.application.task.etl.readers.ExcelWorkSheetReader;
+import com.tacticlogistics.application.task.etl.readers.Reader;
 import com.tacticlogistics.infrastructure.services.Basic;
 
-public abstract class ConfirmacionesDeRutas extends ETLFlatFileStrategy<RutaDto> {
-    private static final Logger log = LoggerFactory.getLogger(ConfirmacionesDeRutas.class);
+@Component("TACTIC.TMS.RUTAS.TOURSOLVER")
+public class ConfirmacionesDeRutas extends ETLFlatFileStrategy<RutaDto> {
+	private static final Logger log = LoggerFactory.getLogger(ConfirmacionesDeRutas.class);
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    public static final String IDENTIFICADOR_VEHICULO = "IDENTIFICADOR";
-    public static final String SECUENCIA = "ORDEN";
-    public static final String LATITUD = "LATITUD";
-    public static final String LONGITUD = "LONGITUD";
-    public static final String IDENTIFICADOR_ENTREGA = "CLIENTE";
-    public static final String HORA = "HORA";
-    public static final String NUMERO_DOCUMENTO_ENTREGA = "NOMBRE";
-    public static final String ENTREGA_ID = "ID_SOLICITUD";
-    public static final String DESTINATARIO_NOMBRE = "NOMBRE_DESTINATARIO";
-    public static final String DESTINO_DIRECCION = "DIRECCION";
-    public static final String DESTINO_BARRIO = "BARRIO";
-    public static final String DESTINO_NOMBRE = "NOMBRE_DESTINO";
-    public static final String FECHA_ENTREGA_PLANEADA = "FECHA_ENTREGA_PLANEADA";
-    public static final String CLIENTE_CODIGO = "CODIGO_CLIENTE";
+	// ---------------------------------------------------------------------------------------------------------------------------------------
+	public static final String IDENTIFICADOR_VEHICULO = "IDENTIFICADOR";
+	public static final String SECUENCIA = "ORDEN";
+	public static final String IDENTIFICADOR_ENTREGA = "CLIENTE";
+	public static final String HORA = "HORA";
+	public static final String ENTREGA_ID = "ID_SOLICITUD";
+	public static final String DESTINO_BARRIO = "BARRIO";
 
-    public static final String IDENTIFICADOR_MOVIL = "IDENTIFICADOR_MOVIL";
-    public static final String CLIENTE_NUMERO_IDENTIFICACION = "CLIENTE_NUMERO_IDENTIFICACION";
-    public static final String FECHA_HORA_ENTREGA = "FECHA_HORA_ENTREGA";
+	// public static final String LATITUD = "LATITUD";
+	// public static final String LONGITUD = "LONGITUD";
+	// public static final String NUMERO_DOCUMENTO_ENTREGA = "NOMBRE";
+	// public static final String DESTINATARIO_NOMBRE = "NOMBRE_DESTINATARIO";
+	// public static final String DESTINO_DIRECCION = "DIRECCION";
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Value("${tms.rutas.programacion.apiUrl}")
-    private String apiUrl;
+	// public static final String DESTINO_NOMBRE = "NOMBRE_DESTINO";
+	// public static final String FECHA_ENTREGA_PLANEADA =
+	// "FECHA_ENTREGA_PLANEADA";
+	// public static final String CLIENTE_CODIGO = "CODIGO_CLIENTE";
+	//
+	// public static final String IDENTIFICADOR_MOVIL = "IDENTIFICADOR_MOVIL";
+	// public static final String CLIENTE_NUMERO_IDENTIFICACION =
+	// "CLIENTE_NUMERO_IDENTIFICACION";
+	// public static final String FECHA_HORA_ENTREGA = "FECHA_HORA_ENTREGA";
 
-    @Value("${tms.rutas.programacion.apiToken}")
-    private String apiToken;
+	// ---------------------------------------------------------------------------------------------------------------------------------------
+	@Autowired
+	private ExcelWorkSheetReader reader;
 
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	@Value("${tms.rutas.programacion.apiUrl}")
+	private String apiUrl;
 
-    public String getApiUrl() {
-        return apiUrl;
-    }
+	@Value("${tms.rutas.programacion.apiToken}")
+	private String apiToken;
 
-    public String getApiToken() {
-        return apiToken;
-    }
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public NamedParameterJdbcTemplate getJdbcTemplate() {
-        return namedParameterJdbcTemplate;
-    }
+	// ---------------------------------------------------------------------------------------------------------------------------------------
+	@Override
+	public Pattern getPattern() {
+		return PATTERN_XLS;
+	}
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    public ConfirmacionesDeRutas() {
-        super();
-    }
+	@Override
+	protected Reader<File, String> getReader() {
+		return reader;
+	}
 
-    @Override
-    protected String limpiar(String texto) {
-        return Basic.limpiarCaracterEspecialDeEspacioDeExcel(super.limpiar(texto));
-    }
+	public String getApiUrl() {
+		return apiUrl;
+	}
 
-    @Override
-    protected void adicionar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
-            Map<Integer, String> mapIndexToName) {
-        if (!map.containsKey(key)) {
-            RutaDto dto = new RutaDto(key, false);
-            map.put(key, dto);
-        }
-    }
+	public String getApiToken() {
+		return apiToken;
+	}
 
-    @Override
-    protected void modificar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
-            Map<Integer, String> mapIndexToName) {
+	public NamedParameterJdbcTemplate getJdbcTemplate() {
+		return namedParameterJdbcTemplate;
+	}
 
-        if (map.containsKey(key)) {
-            String value;
-            Integer integerValue;
-            Float floatValue;
+	// ---------------------------------------------------------------------------------------------------------------------------------------
+	public ConfirmacionesDeRutas() {
+		super();
+	}
 
-            LineaRutaDto dto = new LineaRutaDto();
+	@Override
+	protected List<String> getCamposEsperados() {
+		List<String> list = new ArrayList<>();
 
-            integerValue = null;
-            value = getValorCampo(SECUENCIA, campos, mapNameToIndex);
-            try {
-                integerValue = Basic.parseEntero(value, getFormatoEntero());
-            } catch (ParseException e) {
-                logParseException(key, SECUENCIA, value, getFormatoEntero().toPattern());
-            }
-            dto.setSecuencia(integerValue);
+		list.add(IDENTIFICADOR_VEHICULO);
+		list.add(SECUENCIA);
+		list.add(IDENTIFICADOR_ENTREGA);
+		list.add(HORA);
+		list.add(ENTREGA_ID);
+		list.add(DESTINO_BARRIO);
 
-            floatValue = null;
-            value = getValorCampo(LATITUD, campos, mapNameToIndex);
-            value = value.replace(",", ".");
-            try {
-                floatValue = getFormatoCoordenada().parse(value).floatValue();
-            } catch (ParseException e) {
-                logParseException(key, LATITUD, value, getFormatoCoordenada().toPattern());
-            }
-            dto.setCyD(floatValue);
+		return list;
+	}
 
-            floatValue = null;
-            value = getValorCampo(LONGITUD, campos, mapNameToIndex);
-            value = value.replace(",", ".");
-            try {
-                floatValue = getFormatoCoordenada().parse(value).floatValue();
-            } catch (ParseException e) {
-                logParseException(key, LONGITUD, value, getFormatoCoordenada().toPattern());
-            }
-            dto.setCxD(floatValue);
+	@Override
+	protected void preProcesarDirectorio() {
+		super.preProcesarDirectorio();
+		((ExcelWorkSheetReader) getReader()).setWorkSheetName("Informe");
+	}
 
-            value = getValorCampo(IDENTIFICADOR_ENTREGA, campos, mapNameToIndex);
-            dto.setNumeroDocumentoEntrega(value);
+	@Override
+	protected String limpiar(String texto) {
+		return Basic.limpiarCaracterEspecialDeEspacioDeExcel(super.limpiar(texto));
+	}
 
-            cargarDestinoNombre(key, dto, campos, mapNameToIndex);
+	@Override
+	protected boolean ignorarRegistroDespuesDeSerSeparadoPorCampos(String[] campos,
+			Map<String, Integer> mapNameToIndex) {
+		if (super.ignorarRegistroDespuesDeSerSeparadoPorCampos(campos, mapNameToIndex)) {
+			return true;
+		}
+		String value;
+		value = getValorCampo(IDENTIFICADOR_ENTREGA, campos, mapNameToIndex);
 
-            cargarDestinoDireccion(key, dto, campos, mapNameToIndex);
+		if (value.isEmpty() || value.equals("ESPERA") || value.equals("FIN")) {
+			return true;
+		}
 
-            cargarDatosCliente(key, dto, campos, mapNameToIndex);
+		return false;
+	}
 
-            cargarDatosVehiculo(key, dto, campos, mapNameToIndex);
+	@Override
+	protected String generarIdentificadorRegistro(String[] campos, Map<String, Integer> mapNameToIndex) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getValorCampo(IDENTIFICADOR_VEHICULO, campos, mapNameToIndex));
 
-            cargarFechaHoraEntrega(key, dto, campos, mapNameToIndex);
+		return sb.toString().toLowerCase();
+	}
 
-            dto.setRecaudo(0);
+	@Override
+	protected void adicionar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
+			Map<Integer, String> mapIndexToName) {
+		if (!map.containsKey(key)) {
+			Time timeValue;
+			String value;
 
-            map.get(key).getLineas().add(dto);
-        }
-    }
+			DateFormat format = getFormatoHoraHHmmUTC();
+			value = getValorCampo(HORA, campos, mapNameToIndex);
+			value = format.format(getValorCampoHoraTourSolver(key, HORA.toString(), value, format));
+			timeValue = getValorCampoHora(key, HORA.toString(), value, getFormatoHoraHHmm());
 
-    protected abstract void cargarDestinoNombre(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex);
+			RutaDto dto = new RutaDto(key, false, timeValue);
 
-    protected abstract void cargarDestinoDireccion(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex);
+			map.put(key, dto);
+		}
+	}
 
-    protected abstract void cargarDatosCliente(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex);
+	@Override
+	protected void modificar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
+			Map<Integer, String> mapIndexToName) {
 
-    protected abstract void cargarDatosVehiculo(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex);
+		if (map.containsKey(key)) {
+			String value;
+			Integer integerValue;
+			value = getValorCampo(IDENTIFICADOR_ENTREGA, campos, mapNameToIndex);
 
-    protected abstract void cargarFechaHoraEntrega(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex);
+			if (value.equalsIgnoreCase("INICIO")) {
+				return;
+			}
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Override
-    protected Map<String, RutaDto> preCargar(Map<String, RutaDto> map) {
-        map = super.preCargar(map);
+			LineaRutaDto dto = new LineaRutaDto();
 
-        // TODO PASAR A PRE PROCESO
-        Map<String, String> clientes = getMapClientes(getJdbcTemplate());
-        Map<String, List<SuscriptorDto>> confirmaciones = getMapSuscriptores(getJdbcTemplate(), "CONFIRMACION_ENTREGA");
-        Map<String, String> vehiculos = getMapVehiculos(getJdbcTemplate());
-        
-        
-        for (RutaDto ruta : map.values()) {
-            LineaRutaDto[] lineas = ruta.getLineas().toArray(new LineaRutaDto[0]);
+			value = getValorCampo(SECUENCIA, campos, mapNameToIndex);
+			integerValue = getValorCampoDecimal(key, SECUENCIA.toString(), value, getFormatoEntero());
+			dto.setSecuencia(integerValue);
 
-            configurarCliente(lineas, clientes);
-            configurarNotificaciones(lineas, confirmaciones);
-            configurarDocumentos(ruta);
-            configurarIdentificadorMovil(ruta, vehiculos);
-            
-            //CONSULTAR LA ORDEN
-            //SI EXISTE
-            	//COLOCAR EL VALOR DE RECAUDO A LA ENTREGA
-            	
-            			
-        }
+			value = getValorCampo(ENTREGA_ID, campos, mapNameToIndex);
+			integerValue = getValorCampoDecimal(key, ENTREGA_ID.toString(), value, getFormatoEntero());
+			dto.setOrdenId(integerValue);
 
-        return map;
-    }
+			DateFormat format = getFormatoHoraHHmmUTC();
+			value = getValorCampo(HORA, campos, mapNameToIndex);
+			Date timeValue = getValorCampoHoraTourSolver(key, HORA.toString(), value, format);
+			value = (timeValue == null) ? "" : format.format(timeValue);
+			// timeValue = getValorCampoHora(key, HORA.toString(), value,
+			// getFormatoHoraHHmm());
+			dto.setHora(value);
 
-    protected abstract void configurarCliente(LineaRutaDto[] lineas, Map<String, String> mapClientes);
+			value = getValorCampo(DESTINO_BARRIO, campos, mapNameToIndex);
 
-    public void configurarNotificaciones(LineaRutaDto[] lineas, Map<String, List<SuscriptorDto>> confirmaciones) {
+			dto.setBarrio(value);
 
-        for (int i = 0; i < lineas.length; i++) {
-            List<String> emails = getEmailsConfirmarcionEntrega(lineas[i].getClienteCodigo(), confirmaciones);
+			map.get(key).getLineas().add(dto);
+		}
+	}
 
-            SuscriptorDto suscriptor = getSuscriptorOrden(getJdbcTemplate(), lineas[i].getClienteCodigo(),
-                    lineas[i].getNumeroDocumentoEntrega());
-            if (suscriptor != null && !suscriptor.getEmail().isEmpty()) {
-                emails.add(suscriptor.getEmail());
-            }
-            SuscripcionDto suscripcion = new SuscripcionDto();
-            suscripcion.setFinalizaRuta(emails);
-            lineas[i].setCorreos(suscripcion);
-        }
+	private Date getValorCampoHoraTourSolver(String key, String campo, String value, DateFormat fmt) {
+		Date time = null;
+		value = value.replace(",", ".");
+		try {
+			Float floatValue = getFormatoCoordenada().parse(value).floatValue();
+			if (floatValue >= 1.0) {
+				throw new RuntimeException("La hora suminitrada supera las 24 horas");
+			}
+			time = new Date((long) ((24L * 60L * 60L * 1000L) * floatValue));
+		} catch (ParseException e) {
+			logParseException(key, HORA, value, getFormatoHoraHHmm().toPattern());
+		} catch (RuntimeException e) {
+			logParseException(key, HORA, value, getFormatoHoraHHmm().toPattern());
+		}
+		return time;
+	}
 
-        for (int i = 0; i < lineas.length - 1; i++) {
-            lineas[i].getCorreos().setSiguienteDestino(lineas[i + 1].getCorreos().getFinalizaRuta());
-        }
-    }
+	// ---------------------------------------------------------------------------------------------------------------------------------------
+	@Override
+	@Transactional(readOnly = false)
+	protected void cargar(Map<String, RutaDto> map) {
+		log.info("Begin cargar");
 
-    public void configurarDocumentos(RutaDto ruta) {
-        ruta.getDocumentos().add(new DocumentoDto("FACTURA", 1));
-    }
+		Date fechaAsignacionRuta = new Date();
 
-    protected abstract void configurarIdentificadorMovil(RutaDto ruta, Map<String, String> vehiculos);
+		Integer corteRutaId = null;
+		for (RutaDto ruta : map.values()) {
+			LineaRutaDto[] lineas = ruta.getLineas().toArray(new LineaRutaDto[0]);
 
-    public List<String> getEmailsConfirmarcionEntrega(String clienteCodigo,
-            Map<String, List<SuscriptorDto>> emailsConfirmacion) {
-        final List<String> emails = new ArrayList<>();
+			Integer rutaId = null;
+			for (LineaRutaDto entrega : lineas) {
+				if (corteRutaId == null) {
+					corteRutaId = getCorteRutaIdPorOrdenId(entrega.getOrdenId());
+				}
 
-        List<SuscriptorDto> list = emailsConfirmacion.get(clienteCodigo);
-        if (list != null) {
-            list.forEach(a -> {
-                emails.add(a.getEmail());
-            });
-        }
+				if (rutaId == null) {
+					rutaId = crearRuta(corteRutaId, ruta.getIdentificadorMovil(), ruta.getHoraCitaCargue(),
+							fechaAsignacionRuta);
+				}
 
-        return emails;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    public Map<String, String> getMapClientes(NamedParameterJdbcTemplate jdbcTemplate) {
-        String query = " " 
-        		+ " SELECT " 
-        		+ "      a.codigo" 
-        		+ "     ,a.numero_identificacion " 
-        		+ " FROM crm.clientes a "
-                + " ORDER BY " 
-        		+ "     a.codigo ";
-
-        List<String[]> list = jdbcTemplate.query(query, (rs, rowNum) -> new String[] {
-                rs.getString("codigo").toUpperCase(), 
-                rs.getString("numero_identificacion").toUpperCase() });
-
-        Map<String, String> map = new HashMap<>();
-        for (String[] item : list) {
-            map.put(item[0], item[1]);
-        }
-        return map;
-    }
-
-    public Map<String, List<SuscriptorDto>> getMapSuscriptores(NamedParameterJdbcTemplate jdbcTemplate,
-            String notificacionCodigo) {
-        String query = "" 
-            + " SELECT DISTINCT " 
-        		+ "      a.id_cliente " 
-        		+ "     ,a.codigo " 
-        		+ "     ,b.contacto_email "
-                + "     ,b.contacto_nombres " 
-        		+ "     ,b.contacto_telefonos " 
-                + " FROM crm.clientes a "
-                + " INNER JOIN notificaciones.suscriptores b ON " 
-                + "    b.id_cliente = a.id_cliente "
-                + " INNER JOIN notificaciones.suscriptores_notificaciones c ON "
-                + "    c.id_suscriptor = b.id_suscriptor " 
-                + " INNER JOIN notificaciones.notificaciones d ON "
-                + "    d.id_notificacion = c.id_notificacion " 
-                + " WHERE " + "    0 = 0 "
-                + " AND d.codigo = :notificacionCodigo " 
-                + " ORDER BY " 
-                + "     a.codigo" 
-                + "    ,b.contacto_email";
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("notificacionCodigo", notificacionCodigo);
-
-        List<SuscriptorDto> rows = jdbcTemplate.query(query, parameters, (rs, rowNum) -> {
-            return new SuscriptorDto(
-            		rs.getInt("id_cliente"), 
-            		rs.getString("codigo"), 
-            		rs.getString("contacto_email"),
-                    rs.getString("contacto_nombres"), 
-                    rs.getString("contacto_telefonos"));
-        });
-
-        Map<String, List<SuscriptorDto>> map = new HashMap<>();
-
-        for (SuscriptorDto dto : rows) {
-            if (!map.containsKey(dto.getClienteCodigo())) {
-                map.put(dto.getClienteCodigo(), new ArrayList<SuscriptorDto>());
-            }
-
-            map.get(dto.getClienteCodigo()).add(dto);
-        }
-
-        return map;
-    }
-
-    private Map<String, String> getMapVehiculos(NamedParameterJdbcTemplate jdbcTemplate) {
-        String query = " " + " SELECT " + "      a.Numero_Placa" + "     ,a.ID_Movil"
-                + " FROM Tactic.piloto.Configuracion_Vehiculos a " + " ORDER BY " + "   a.Numero_Placa";
-
-        List<String[]> list = jdbcTemplate.query(query, (rs, rowNum) -> new String[] {
-                rs.getString("Numero_Placa").toUpperCase(), rs.getString("ID_Movil").toLowerCase() });
-
-        Map<String, String> map = new HashMap<>();
-        for (String[] item : list) {
-            map.put(item[0], item[1]);
-        }
-        return map;
-    }
-
-    public static SuscriptorDto getSuscriptorOrden(NamedParameterJdbcTemplate jdbcTemplate, String clienteCodigo,
-            String numeroOrden) {
-        String query = "" 
-        		+ "        SELECT " 
-        		+ "            a.id_cliente, " 
-        		+ "            a.codigo, "
-                + "            b.destino_contacto_email, " 
-        		+ "            b.destino_contacto_nombres, "
-                + "            b.destino_contacto_telefonos " 
-        		+ "        FROM crm.clientes a "
-                + "        INNER JOIN ordenes.ordenes b ON " 
-        		+ "            b.id_cliente = a.id_cliente "
-                + "        WHERE " 
-        		+ "            a.codigo = :clienteCodigo "
-                + "        AND b.numero_documento_orden_cliente = :numeroOrden ";
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("clienteCodigo", clienteCodigo);
-        parameters.put("numeroOrden", numeroOrden);
-
-        List<SuscriptorDto> rows = jdbcTemplate.query(query, parameters, (rs, rowNum) -> {
-            return new SuscriptorDto(rs.getInt("id_cliente"), 
-            		rs.getString("codigo"),
-                    rs.getString("destino_contacto_email"), 
-                    rs.getString("destino_contacto_nombres"),
-                    rs.getString("destino_contacto_telefonos"));
-        });
-
-        if (rows.size() > 0) {
-            return rows.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Override
-    @Transactional(readOnly = false)
-    protected void cargar(Map<String, RutaDto> map) {
-        log.info("Begin cargar");
-        List<RutaDto> rutas = new ArrayList<>(map.values());
-        
-        try {
-            ResultadosProgramacionRutasDto result;
-            result = send(getApiUrl(), getApiToken(), rutas);
-            
-            for (RutaDto rutaDto : rutas) {
-				for (ResultadoProgramacionRutaDto resultado: result.getRutas()) {
-					if(rutaDto.getIdentificadorMovil().equals(resultado.getIdentificadorMovil())){
-						System.out.println("Identificado: "+rutaDto.getIdentificadorMovil());
-						
-					}
+				Time time;
+				try {
+					// TODO
+					time = Basic.toHora(entrega.getHora(), null, getFormatoHoraHHmm());
+					incluirOrdenEnRuta(entrega.getOrdenId(), rutaId, entrega.getSecuencia(), time);
+				} catch (ParseException e) {
+					e.printStackTrace();
 				}
 			}
-            //TODO Generar rutas
-            generarLogResultados(rutas, result);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        log.info("End cargar");
-    }
-    
+		}
+		finalizarCorteRuta(corteRutaId, fechaAsignacionRuta);
 
-    public static ResultadosProgramacionRutasDto send(String apiUrl, String apiToken, List<RutaDto> request)
-            throws IOException, JsonGenerationException, JsonMappingException {
+		log.info("End cargar");
+	}
 
-        MappingJackson2HttpMessageConverter mapping = new MappingJackson2HttpMessageConverter();
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+	private Integer getCorteRutaIdPorOrdenId(int ordenId) {
+		Map<String, Object> parameters = new HashMap<>();
+		String sql = getQueryCorteRutaIdPorOrdenId();
 
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-        headers.add("Content-Type", "application/json");
-        headers.add("token", apiToken);
+		parameters.put("ordenId", ordenId);
 
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(request, headers);
-        log.info(mapping.getObjectMapper().writeValueAsString(request));
+		List<Integer> list = namedParameterJdbcTemplate.query(sql, parameters, (rs, rowNum) -> {
+			return (Integer) rs.getObject("id_corte_ruta");
+		});
 
-        try {
-			if (false) {
-				ResultadosProgramacionRutasDto result = restTemplate.postForObject(apiUrl, requestEntity,
-						ResultadosProgramacionRutasDto.class);
-				log.info(mapping.getObjectMapper().writeValueAsString(result));
+		if (list.size() > 0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+	}
 
-				return result;
-			} else {
-				List<ResultadoProgramacionRutaDto> resultado = new LinkedList<>();
-				
-				for (RutaDto ruta : request) {
-					resultado.add(new ResultadoProgramacionRutaDto(ruta.getIdentificadorMovil(), "OK", ""));
-				}
-		
-				return new ResultadosProgramacionRutasDto("OK",resultado);
-			}
-        } catch (HttpClientErrorException hcee) {
-            log.error(hcee.getMessage());
-            throw new RuntimeException(hcee);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
+	private String getQueryCorteRutaIdPorOrdenId() {
+		return "SELECT * FROM tms.CorteRutaIdPorOrdenId(:ordenId)";
+	}
 
-    protected void generarLogResultados(List<RutaDto> rutas, ResultadosProgramacionRutasDto result) {
-        Map<String, String> mapMovilVehiculo = new HashMap<>();
-        for (RutaDto rutaDto : rutas) {
-            String value = "";
-            if (rutaDto.getLineas().size() > 0) {
-                value = rutaDto.getLineas().get(0).getIdentificadorVehiculo();
-            }
-            mapMovilVehiculo.put(rutaDto.getIdentificadorMovil(), value);
-        }
+	private Integer crearRuta(Integer corteRutaId, String placa, Time horaCitaCargue, Date fechaAsignacionRuta) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
+				.withSchemaName("tms").withProcedureName("PlanificacionRutasCrearRuta");
 
-        for (ResultadoProgramacionRutaDto dto : result.getRutas()) {
-            String key = mapMovilVehiculo.get(dto.getIdentificadorMovil());
-            if (dto.getStatus().equalsIgnoreCase("OK")) {
-                logInfo(key, "", dto.getStatus());
-            } else {
-                logError(key, "", dto.getError());
-            }
-        }
-    }
+		Map<String, Object> inParamMap = new HashMap<String, Object>();
+		inParamMap.put("corteRutaId", corteRutaId);
+		inParamMap.put("placa", placa);
+		inParamMap.put("horaCitaCargue", horaCitaCargue);
+		inParamMap.put("fechaAsignacionRuta", fechaAsignacionRuta);
+
+		SqlParameterSource in = new MapSqlParameterSource(inParamMap);
+
+		Map<String, Object> result = simpleJdbcCall.execute(in);
+
+		return (Integer) result.get("rutaId");
+	}
+
+	private void incluirOrdenEnRuta(Integer ordenId, Integer rutaId, Integer secuenciaRuta,
+			Time horaEstimadaDeEntrega) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
+				.withSchemaName("tms").withProcedureName("PlanificacionRutasIncluirOrdenEnRuta");
+
+		Map<String, Object> inParamMap = new HashMap<String, Object>();
+		inParamMap.put("ordenId", ordenId);
+		inParamMap.put("rutaId", rutaId);
+		inParamMap.put("secuenciaRuta", secuenciaRuta);
+		inParamMap.put("horaEstimadaDeEntrega", horaEstimadaDeEntrega);
+
+		SqlParameterSource in = new MapSqlParameterSource(inParamMap);
+
+		simpleJdbcCall.execute(in);
+	}
+
+	private void finalizarCorteRuta(Integer corteRutaId, Date fechaCorteFin) {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
+				.withSchemaName("tms").withProcedureName("PlanificacionRutasFinalizarCorte");
+
+		Map<String, Object> inParamMap = new HashMap<String, Object>();
+		inParamMap.put("corteRutaId", corteRutaId);
+		inParamMap.put("fechaCorteFin", fechaCorteFin);
+
+		SqlParameterSource in = new MapSqlParameterSource(inParamMap);
+
+		simpleJdbcCall.execute(in);
+	}
+
+	//
+	// public static ResultadosProgramacionRutasDto send(String apiUrl, String
+	// apiToken, List<RutaDto> request)
+	// throws IOException, JsonGenerationException, JsonMappingException {
+	//
+	// MappingJackson2HttpMessageConverter mapping = new
+	// MappingJackson2HttpMessageConverter();
+	// RestTemplate restTemplate = new RestTemplate();
+	// restTemplate.getMessageConverters().add(new
+	// MappingJackson2HttpMessageConverter());
+	//
+	// MultiValueMap<String, String> headers = new LinkedMultiValueMap<String,
+	// String>();
+	// headers.add("Content-Type", "application/json");
+	// headers.add("token", apiToken);
+	//
+	// HttpEntity<?> requestEntity = new HttpEntity<Object>(request, headers);
+	// log.info(mapping.getObjectMapper().writeValueAsString(request));
+	//
+	// try {
+	// if (false) {
+	// ResultadosProgramacionRutasDto result =
+	// restTemplate.postForObject(apiUrl, requestEntity,
+	// ResultadosProgramacionRutasDto.class);
+	// log.info(mapping.getObjectMapper().writeValueAsString(result));
+	//
+	// return result;
+	// } else {
+	// List<ResultadoProgramacionRutaDto> resultado = new LinkedList<>();
+	//
+	// for (RutaDto ruta : request) {
+	// resultado.add(new
+	// ResultadoProgramacionRutaDto(ruta.getIdentificadorMovil(), "OK", ""));
+	// }
+	//
+	// return new ResultadosProgramacionRutasDto("OK", resultado);
+	// }
+	// } catch (HttpClientErrorException hcee) {
+	// log.error(hcee.getMessage());
+	// throw new RuntimeException(hcee);
+	// } catch (Exception e) {
+	// log.error(e.getMessage());
+	// throw new RuntimeException(e);
+	// }
+	// }
+	//
+	// protected void generarLogResultados(List<RutaDto> rutas,
+	// ResultadosProgramacionRutasDto result) {
+	// Map<String, String> mapMovilVehiculo = new HashMap<>();
+	// for (RutaDto rutaDto : rutas) {
+	// String value = "";
+	// if (rutaDto.getLineas().size() > 0) {
+	// value = rutaDto.getLineas().get(0).getIdentificadorVehiculo();
+	// }
+	// mapMovilVehiculo.put(rutaDto.getIdentificadorMovil(), value);
+	// }
+	//
+	// for (ResultadoProgramacionRutaDto dto : result.getRutas()) {
+	// String key = mapMovilVehiculo.get(dto.getIdentificadorMovil());
+	// if (dto.getStatus().equalsIgnoreCase("OK")) {
+	// logInfo(key, "", dto.getStatus());
+	// } else {
+	// logError(key, "", dto.getError());
+	// }
+	// }
+	// }
+	private SimpleDateFormat formatoHoraHHmmUTC = null;
+
+	protected SimpleDateFormat getFormatoHoraHHmmUTC() {
+		if (formatoHoraHHmmUTC == null) {
+			formatoHoraHHmmUTC = new SimpleDateFormat("HH:mm");
+			formatoHoraHHmmUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+		}
+		return formatoHoraHHmmUTC;
+	}
 }

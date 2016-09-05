@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import com.tacticlogistics.common.ddd.AssertionConcern;
+import com.tacticlogistics.domain.model.geo.EstadoGeoReferenciacionType;
 
 @Embeddable
 public class OmsDireccionGeoreferenciada extends AssertionConcern {

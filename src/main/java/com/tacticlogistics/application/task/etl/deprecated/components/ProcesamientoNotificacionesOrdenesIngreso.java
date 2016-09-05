@@ -1,4 +1,4 @@
-package com.tacticlogistics.application.task;
+package com.tacticlogistics.application.task.etl.deprecated.components;
 
 import java.util.Date;
 import java.util.HashMap;

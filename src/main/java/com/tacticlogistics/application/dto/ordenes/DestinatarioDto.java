@@ -17,9 +17,6 @@ public class DestinatarioDto {
     private String nombreCliente;
 
     // ---------------------------------------------------------------------------------------------------------
-    // TODO consolidado
-
-    // ---------------------------------------------------------------------------------------------------------
     private String numeroOrden;
     private EstadoOrdenType estadoOrdenType;
 

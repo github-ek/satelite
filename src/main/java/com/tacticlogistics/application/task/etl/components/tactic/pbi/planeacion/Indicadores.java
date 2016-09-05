@@ -1,6 +1,5 @@
 package com.tacticlogistics.application.task.etl.components.tactic.pbi.planeacion;
 
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.VALOR_RECAUDO;
 import static com.tacticlogistics.infrastructure.services.Basic.substringSafe;
 
 import java.io.File;
@@ -21,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

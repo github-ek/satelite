@@ -4,53 +4,37 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import com.tacticlogistics.domain.model.common.IdentificacionType;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
-import com.tacticlogistics.domain.model.wms.DestinatarioRemitenteUnidadAssociation;
 
 @Entity
-@Table(name = "destinatarios_remitentes", catalog = "crm", uniqueConstraints = {
+@Table(name = "destinatarios", catalog = "crm", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "id_cliente", "numeroIdentificacion" }) })
-public class DestinatarioRemitente implements Serializable {
+public class Destinatario implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_destinatario_remitente", unique = true, nullable = false)
+    @Column(name = "id_destinatario", unique = true, nullable = false)
     private Integer id;
 
     @Column(name = "id_cliente", nullable = false, insertable = true, updatable = false)
     private Integer clienteId;
 
-    @Column(name = "id_segmento", nullable = false, insertable = true, updatable = false)
-    private Integer canalId;
-
     @Column(nullable = false, length = 20)
     private String codigo;
-
-    @Column(nullable = false, length = 2)
-    @Enumerated(EnumType.STRING)
-    private IdentificacionType identificacionType;
 
     @Column(nullable = false, length = 20)
     private String numeroIdentificacion;
@@ -64,11 +48,14 @@ public class DestinatarioRemitente implements Serializable {
     @Column(nullable = false, length = 100)
     private String nombreComercial;
 
-    @Embedded
-    private OmsDireccion direccion;
+    @Column(name = "id_canal", nullable = false, insertable = true, updatable = false)
+    private Integer canalId;
 
     @Embedded
     private Contacto contacto;
+
+    @Embedded
+    private OmsDireccion direccion;
 
     private boolean activo;
 
@@ -80,16 +67,8 @@ public class DestinatarioRemitente implements Serializable {
     private String usuarioActualizacion;
 
     // ---------------------------------------------------------------------------------------------------------
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "destinatarioRemitenteId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<DestinoOrigen> destinosOrigenesAssociation = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "destinatarioRemitenteId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<DestinatarioRemitenteUnidadAssociation> destinatarioRemitenteUnidadAssociation = new HashSet<>();
-
-    // ---------------------------------------------------------------------------------------------------------
-    public DestinatarioRemitente() {
+    public Destinatario() {
         this.setCodigo("");
-        this.setIdentificacionType(IdentificacionType.NI);
         this.setNumeroIdentificacion("");
         this.setDigitoVerificacion("");
         this.setNombre("");
@@ -106,16 +85,8 @@ public class DestinatarioRemitente implements Serializable {
         return clienteId;
     }
 
-    public Integer getCanalId() {
-        return canalId;
-    }
-
     public String getCodigo() {
         return codigo;
-    }
-
-    public IdentificacionType getIdentificacionType() {
-        return identificacionType;
     }
 
     public String getNumeroIdentificacion() {
@@ -134,12 +105,16 @@ public class DestinatarioRemitente implements Serializable {
         return nombreComercial;
     }
 
-    public OmsDireccion getDireccion() {
-        return direccion;
+    public Integer getCanalId() {
+        return canalId;
     }
 
     public Contacto getContacto() {
         return contacto;
+    }
+
+    public OmsDireccion getDireccion() {
+        return direccion;
     }
 
     public boolean isActivo() {
@@ -154,34 +129,17 @@ public class DestinatarioRemitente implements Serializable {
         return usuarioActualizacion;
     }
 
-    public Set<DestinoOrigen> getDestinosOrigenesAssociation() {
-        return destinosOrigenesAssociation;
-    }
-
-    public Set<DestinatarioRemitenteUnidadAssociation> getDestinatarioRemitenteUnidadAssociation() {
-        return destinatarioRemitenteUnidadAssociation;
-    }
-
     // ---------------------------------------------------------------------------------------------------------
     protected void setId(Integer id) {
         this.id = id;
     }
 
-    // TODO
     public void setClienteId(Integer value) {
         this.clienteId = value;
     }
 
-    public void setCanalId(Integer value) {
-        this.canalId = value;
-    }
-
     public void setCodigo(String value) {
         this.codigo = coalesce(value, "");
-    }
-
-    public void setIdentificacionType(IdentificacionType value) {
-        this.identificacionType = value;
     }
 
     public void setNumeroIdentificacion(String value) {
@@ -200,11 +158,8 @@ public class DestinatarioRemitente implements Serializable {
         this.nombreComercial = coalesce(value, "");
     }
 
-    public void setDireccion(OmsDireccion value) {
-        if (value == null) {
-            value = new OmsDireccion();
-        }
-        this.direccion = value;
+    public void setCanalId(Integer value) {
+        this.canalId = value;
     }
 
     public void setContacto(Contacto value) {
@@ -212,6 +167,13 @@ public class DestinatarioRemitente implements Serializable {
             value = new Contacto();
         }
         this.contacto = value;
+    }
+
+    public void setDireccion(OmsDireccion value) {
+        if (value == null) {
+            value = new OmsDireccion();
+        }
+        this.direccion = value;
     }
 
     public void setActivo(boolean activo) {
@@ -224,15 +186,6 @@ public class DestinatarioRemitente implements Serializable {
 
     public void setUsuarioActualizacion(String value) {
         this.usuarioActualizacion = coalesce(value, "");
-    }
-
-    protected void setDestinosOrigenesAssociation(Set<DestinoOrigen> destinosOrigenesAssociation) {
-        this.destinosOrigenesAssociation = destinosOrigenesAssociation;
-    }
-
-    protected void setDestinatarioRemitenteUnidadAssociation(
-            Set<DestinatarioRemitenteUnidadAssociation> destinatarioRemitenteUnidadAssociation) {
-        this.destinatarioRemitenteUnidadAssociation = destinatarioRemitenteUnidadAssociation;
     }
 
     @Override
@@ -252,7 +205,7 @@ public class DestinatarioRemitente implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        DestinatarioRemitente other = (DestinatarioRemitente) obj;
+        Destinatario other = (Destinatario) obj;
         if (clienteId == null) {
             if (other.clienteId != null)
                 return false;
@@ -267,25 +220,18 @@ public class DestinatarioRemitente implements Serializable {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("DestinatarioRemitente [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (clienteId != null) {
-            builder.append("clienteId=").append(clienteId).append(", ");
-        }
-        if (canalId != null) {
-            builder.append("canalId=").append(canalId).append(", ");
-        }
-        if (numeroIdentificacion != null) {
-            builder.append("numeroIdentificacion=").append(numeroIdentificacion).append(", ");
-        }
-        if (nombre != null) {
-            builder.append("nombre=").append(nombre);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "Destinatario [" + (id != null ? "id=" + id + ", " : "")
+				+ (clienteId != null ? "clienteId=" + clienteId + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "")
+				+ (numeroIdentificacion != null ? "numeroIdentificacion=" + numeroIdentificacion + ", " : "")
+				+ (digitoVerificacion != null ? "digitoVerificacion=" + digitoVerificacion + ", " : "")
+				+ (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (nombreComercial != null ? "nombreComercial=" + nombreComercial + ", " : "")
+				+ (canalId != null ? "canalId=" + canalId + ", " : "")
+				+ (contacto != null ? "contacto=" + contacto + ", " : "")
+				+ (direccion != null ? "direccion=" + direccion + ", " : "") + "activo=" + activo + ", "
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
+	}
 }

@@ -2,8 +2,6 @@ package com.tacticlogistics.presentation.api.oms;
 
 import java.util.List;
 
-import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
-
 public class AnularOrdenDto {
 	private Integer usuarioId;
 	private List<Integer> ids;

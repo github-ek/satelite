@@ -30,10 +30,10 @@ public class OmsDireccion extends AssertionConcern {
     private String direccionEstandarizada;
 
     @Column(nullable = true, precision = 18, scale = 15)
-    private BigDecimal longitud;
+    private BigDecimal cx;
 
     @Column(nullable = true, precision = 18, scale = 15)
-    private BigDecimal latitud;
+    private BigDecimal cy;
 
     // ---------------------------------------------------------------------------------------------------------
     public OmsDireccion() {
@@ -46,8 +46,8 @@ public class OmsDireccion extends AssertionConcern {
         this.setDireccion(direccion);
         this.setIndicacionesDireccion(indicacionesDireccion);
         this.setDireccionEstandarizada("");
-        this.setLongitud(null);
-        this.setLatitud(null);
+        this.setCx(null);
+        this.setCy(null);
     }
 
     public OmsDireccion(OmsDireccion model) {
@@ -57,8 +57,8 @@ public class OmsDireccion extends AssertionConcern {
         this.setDireccion(model.getDireccion());
         this.setIndicacionesDireccion(model.getIndicacionesDireccion());
         this.setDireccionEstandarizada(model.getDireccionEstandarizada());
-        this.setLongitud(model.getLongitud());
-        this.setLatitud(model.getLatitud());
+        this.setCx(model.getCx());
+        this.setCy(model.getCy());
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -78,12 +78,12 @@ public class OmsDireccion extends AssertionConcern {
         return direccionEstandarizada;
     }
 
-    public BigDecimal getLongitud() {
-        return longitud;
+    public BigDecimal getCx() {
+        return cx;
     }
 
-    public BigDecimal getLatitud() {
-        return latitud;
+    public BigDecimal getCy() {
+        return cy;
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -103,12 +103,12 @@ public class OmsDireccion extends AssertionConcern {
         this.direccionEstandarizada = coalesce(value, "");;
     }
 
-    protected void setLongitud(BigDecimal longitud) {
-        this.longitud = longitud;
+    protected void setCx(BigDecimal cx) {
+        this.cx = cx;
     }
 
-    protected void setLatitud(BigDecimal latitud) {
-        this.latitud = latitud;
+    protected void setCy(BigDecimal cy) {
+        this.cy = cy;
     }
 
     @Override

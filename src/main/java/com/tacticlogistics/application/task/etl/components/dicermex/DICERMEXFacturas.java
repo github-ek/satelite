@@ -1,21 +1,20 @@
 package com.tacticlogistics.application.task.etl.components.dicermex;
 
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_CANAL_CODIGO_ALTERNO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_NOMBRE;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CIUDAD_CODIGO;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_NOMBRE;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CONTACTO_EMAIL;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CONTACTO_TELEFONOS;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_DIRECCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_NOMBRE;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_MINIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_MINIMA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NOTAS;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.PREFIJO_NUMERO_ORDEN;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.REQUERIMIENTOS_DISTRIBUCION;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MINIMA;
 
 import java.io.File;
 import java.sql.Time;
@@ -36,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
-import com.tacticlogistics.application.task.etl.components.ETLFileStrategy;
 import com.tacticlogistics.application.task.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.task.etl.readers.FlatFileReaderUTF16;
 import com.tacticlogistics.application.task.etl.readers.Reader;
@@ -47,6 +45,11 @@ import com.tacticlogistics.infrastructure.persistence.calendario.CalendarioRepos
 import com.tacticlogistics.infrastructure.services.Basic;
 
 import ch.qos.logback.classic.Logger;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CIUDAD_NOMBRE_ALTERNO;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MINIMA;
 
 @Component("DICERMEX.")
 public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
@@ -134,7 +137,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         list.add(DESTINO_CONTACTO_EMAIL.toString());
 
         list.add(DESTINO_DIRECCION.toString());
-        list.add(DESTINO_CIUDAD_CODIGO.toString());
+        list.add(DESTINO_CIUDAD_NOMBRE_ALTERNO.toString());
 
         list.add(REQUERIMIENTOS_DISTRIBUCION.toString());
         list.add(IGNORAR);
@@ -204,7 +207,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
             value = getValorCampo(DESTINO_DIRECCION, campos, mapNameToIndex);
             dto.setDestinoDireccion(value);
 
-            value = getValorCampo(DESTINO_CIUDAD_CODIGO, campos, mapNameToIndex);
+            value = getValorCampo(DESTINO_CIUDAD_NOMBRE_ALTERNO, campos, mapNameToIndex);
             dto.setDestinoCiudadNombreAlterno(value);
 
             value = getValorCampo(REQUERIMIENTOS_DISTRIBUCION, campos, mapNameToIndex);
@@ -301,7 +304,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             dateValue = Basic.toFecha(campos[2], null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_MAXIMA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaEntregaSugeridaMaxima(dateValue);
         dto.setFechaEntregaSugeridaMinima(dto.getFechaEntregaSugeridaMaxima());
@@ -310,7 +313,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(campos[0], null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_MINIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_MINIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -318,7 +321,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(campos[1], null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMaxima(timeValue);
     }
@@ -335,7 +338,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             dateValue = Basic.toFecha(campos[1], null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_MAXIMA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaEntregaSugeridaMaxima(dateValue);
 
@@ -343,7 +346,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             dateValue = Basic.toFecha(campos[0], null, getFormatoFechaCorta());
         } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_MINIMA, value, getFormatoFechaCorta().toPattern());
+            logParseException(key, FECHA_MINIMA, value, getFormatoFechaCorta().toPattern());
         }
         dto.setFechaEntregaSugeridaMinima(dateValue);
     }
@@ -413,7 +416,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(horaMinima, null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_MINIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_MINIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -421,7 +424,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
         try {
             timeValue = Basic.toHora(horaMaxima, null, getFormatoHoraHHmm());
         } catch (ParseException e) {
-            logParseException(key, HORA_ENTREGA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
+            logParseException(key, HORA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
         }
         dto.setHoraEntregaSugeridaMaxima(timeValue);
     }

@@ -1,4 +1,4 @@
-package com.tacticlogistics.domain.model.oms;
+package com.tacticlogistics.domain.model.geo;
 
 public enum EstadoGeoReferenciacionType {
     SIN_SOLICITUD,

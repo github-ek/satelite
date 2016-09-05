@@ -2,24 +2,24 @@ package com.tacticlogistics.application.task.etl.components.gws;
 
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_CANAL_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CIUDAD_CODIGO_ALTERNO;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CIUDAD_NOMBRE_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_DIRECCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_NOMBRE;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_ENTREGA_MINIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_ENTREGA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MAXIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MINIMA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_BODEGA_DESTINO_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_CANTIDAD_SOLICITADA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_DESCRIPCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PREDISTRIBUCION_DESTINO_FINAL;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PREDISTRIBUCION_ROTULO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PRODUCTO_CODIGO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_PRODUCTO_DESCRIPCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.LINEA_VALOR_DECLARADO_POR_UNIDAD;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NOTAS;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_CONSOLIDADO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN_COMPRA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.PREFIJO_NUMERO_ORDEN;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.REQUIERE_RECAUDO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.TIPO_SERVICIO_CODIGO_ALTERNO;
@@ -57,15 +57,18 @@ import ch.qos.logback.classic.Logger;
 public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	private static final Logger log = (Logger) LoggerFactory.getLogger(GWSFacturas.class);
 
-	@Autowired
-	private CharsetDetectorFileReader reader;
+	protected static final String CODIGO_SERVICIO_DESPACHOS_SECUNDARIA = "VENTAS";
+	protected static final String CODIGO_CANAL_PREDETERMINADO = "OTROS";
 
 	@Autowired
 	private OrdenesApplicationService ordenesService;
 
+	@Autowired
+	private CharsetDetectorFileReader reader;
+
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	protected String getTipoServicioCodigo() {
-		return "OVP-PRODUCTOS";
+		return CODIGO_SERVICIO_DESPACHOS_SECUNDARIA;
 	}
 
 	protected String getClienteCodigo() {
@@ -89,7 +92,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		List<String> list = new ArrayList<>();
 
 		list.add(TIPO_SERVICIO_CODIGO_ALTERNO.toString());
-		list.add(NUMERO_CONSOLIDADO.toString());
+		list.add(NUMERO_ORDEN_COMPRA.toString());
 		list.add(PREFIJO_NUMERO_ORDEN.toString());
 		list.add(NUMERO_ORDEN.toString());
 
@@ -98,18 +101,18 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 		list.add(DESTINO_NOMBRE.toString());
 		list.add(DESTINO_DIRECCION.toString());
-		list.add(DESTINO_CIUDAD_CODIGO_ALTERNO.toString());
+		list.add(DESTINO_CIUDAD_NOMBRE_ALTERNO.toString());
 
 		list.add(IGNORAR);
-		list.add(FECHA_ENTREGA_MINIMA.toString());
-		list.add(FECHA_ENTREGA_MAXIMA.toString());
-		list.add(HORA_ENTREGA_MINIMA.toString());
-		list.add(HORA_ENTREGA_MAXIMA.toString());
+		list.add(FECHA_MINIMA.toString());
+		list.add(FECHA_MAXIMA.toString());
+		list.add(HORA_MINIMA.toString());
+		list.add(HORA_MAXIMA.toString());
 
 		list.add(NOTAS.toString());
 
 		list.add(LINEA_PRODUCTO_CODIGO.toString());
-		list.add(LINEA_PRODUCTO_DESCRIPCION.toString());
+		list.add(LINEA_DESCRIPCION.toString());
 		list.add(LINEA_CANTIDAD_SOLICITADA.toString());
 		list.add(LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO.toString());
 		list.add(LINEA_BODEGA_DESTINO_CODIGO_ALTERNO.toString());
@@ -163,8 +166,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			dto.setTipoServicioCodigo(getTipoServicioCodigo());
 			dto.setTipoServicioCodigoAlterno(getValorCampo(TIPO_SERVICIO_CODIGO_ALTERNO, campos, mapNameToIndex));
 
-			value = getValorCampo(NUMERO_CONSOLIDADO, campos, mapNameToIndex);
-			dto.setNumeroConsolidado(value);
+			value = getValorCampo(NUMERO_ORDEN_COMPRA, campos, mapNameToIndex);
+			dto.setNumeroOrdenCompra(value);
 
 			dto.setNumeroOrden(key);
 
@@ -179,49 +182,49 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			dto.setDestinoNombre(value);
 
 			value = GWSMaestroClientes
-					.decodeCiudadNombreAlterno(getValorCampo(DESTINO_CIUDAD_CODIGO_ALTERNO, campos, mapNameToIndex));
+					.decodeCiudadNombreAlterno(getValorCampo(DESTINO_CIUDAD_NOMBRE_ALTERNO, campos, mapNameToIndex));
 			dto.setDestinoCiudadNombreAlterno(value);
 
 			value = getValorCampo(DESTINO_DIRECCION, campos, mapNameToIndex);
 			dto.setDestinoDireccion(value);
 
 			dateValue = null;
-			value = getValorCampo(FECHA_ENTREGA_MINIMA, campos, mapNameToIndex);
+			value = getValorCampo(FECHA_MINIMA, campos, mapNameToIndex);
 			value = substringSafe(value, 0, 10);
 			try {
 				dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
 			} catch (ParseException e) {
-				logParseException(key, FECHA_ENTREGA_MINIMA, value, getFormatoFechaCorta().toPattern());
+				logParseException(key, FECHA_MINIMA, value, getFormatoFechaCorta().toPattern());
 			}
 			dto.setFechaEntregaSugeridaMinima(dateValue);
 
 			dateValue = null;
-			value = getValorCampo(FECHA_ENTREGA_MAXIMA, campos, mapNameToIndex);
+			value = getValorCampo(FECHA_MAXIMA, campos, mapNameToIndex);
 			value = substringSafe(value, 0, 10);
 			try {
 				dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
 			} catch (ParseException e) {
-				logParseException(key, FECHA_ENTREGA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+				logParseException(key, FECHA_MAXIMA, value, getFormatoFechaCorta().toPattern());
 			}
 			dto.setFechaEntregaSugeridaMaxima(dateValue);
 
 			timeValue = null;
-			value = getValorCampo(HORA_ENTREGA_MINIMA, campos, mapNameToIndex);
+			value = getValorCampo(HORA_MINIMA, campos, mapNameToIndex);
 			value = substringSafe(value, 0, 5);
 			try {
 				timeValue = Basic.toHora(value, null, getFormatoHoraHHmm());
 			} catch (ParseException e) {
-				logParseException(key, HORA_ENTREGA_MINIMA, value, getFormatoHoraHHmm().toPattern());
+				logParseException(key, HORA_MINIMA, value, getFormatoHoraHHmm().toPattern());
 			}
 			dto.setHoraEntregaSugeridaMinima(timeValue);
 
 			timeValue = null;
-			value = getValorCampo(HORA_ENTREGA_MAXIMA, campos, mapNameToIndex);
+			value = getValorCampo(HORA_MAXIMA, campos, mapNameToIndex);
 			value = substringSafe(value, 0, 5);
 			try {
 				timeValue = Basic.toHora(value, null, getFormatoHoraHHmm());
 			} catch (ParseException e) {
-				logParseException(key, HORA_ENTREGA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
+				logParseException(key, HORA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
 			}
 			dto.setHoraEntregaSugeridaMaxima(timeValue);
 
@@ -256,7 +259,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 			ETLLineaOrdenDto dto = new ETLLineaOrdenDto();
 
-			value = getValorCampo(LINEA_PRODUCTO_DESCRIPCION, campos, mapNameToIndex);
+			value = getValorCampo(LINEA_DESCRIPCION, campos, mapNameToIndex);
 			dto.setDescripcion(value);
 
 			integerValue = null;

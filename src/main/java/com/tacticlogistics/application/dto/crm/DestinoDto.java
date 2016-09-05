@@ -5,9 +5,9 @@ import java.util.Date;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import com.tacticlogistics.domain.model.crm.DestinoOrigen;
+import com.tacticlogistics.domain.model.crm.Destino;
 
-public class DestinoOrigenDto  {
+public class DestinoDto  {
     private Integer id;
 
     private Integer clienteId;
@@ -18,10 +18,10 @@ public class DestinoOrigenDto  {
     private String canalCodigo;
     private String canalNombre;
 
-    private Integer destinatarioRemitenteId;
-    private String destinatarioRemitenteCodigo;
-    private String destinatarioRemitenteNumeroIdentificacion;
-    private String destinatarioRemitenteNombre;
+    private Integer destinatarioId;
+    private String destinatarioCodigo;
+    private String destinatarioNumeroIdentificacion;
+    private String destinatarioNombre;
 
     private String codigo;
     private String nombre;
@@ -44,11 +44,11 @@ public class DestinoOrigenDto  {
     private String usuarioActualizacion;
 
     
-    public DestinoOrigenDto() {
+    public DestinoDto() {
         super();
     }
 
-    public DestinoOrigenDto(DestinoOrigen model) {
+    public DestinoDto(Destino model) {
         super();
         throw new NotImplementedException();
     }
@@ -81,20 +81,20 @@ public class DestinoOrigenDto  {
         return canalNombre;
     }
 
-    public Integer getDestinatarioRemitenteId() {
-        return destinatarioRemitenteId;
+    public Integer getDestinatarioId() {
+        return destinatarioId;
     }
 
-    public String getDestinatarioRemitenteCodigo() {
-        return destinatarioRemitenteCodigo;
+    public String getDestinatarioCodigo() {
+        return destinatarioCodigo;
     }
 
-    public String getDestinatarioRemitenteNumeroIdentificacion() {
-        return destinatarioRemitenteNumeroIdentificacion;
+    public String getDestinatarioNumeroIdentificacion() {
+        return destinatarioNumeroIdentificacion;
     }
 
-    public String getDestinatarioRemitenteNombre() {
-        return destinatarioRemitenteNombre;
+    public String getDestinatarioNombre() {
+        return destinatarioNombre;
     }
 
     public String getCodigo() {
@@ -189,20 +189,20 @@ public class DestinoOrigenDto  {
         this.canalNombre = canalNombre;
     }
 
-    public void setDestinatarioRemitenteId(Integer destinatarioRemitenteId) {
-        this.destinatarioRemitenteId = destinatarioRemitenteId;
+    public void setDestinatarioId(Integer destinatarioId) {
+        this.destinatarioId = destinatarioId;
     }
 
-    public void setDestinatarioRemitenteCodigo(String destinatarioRemitenteCodigo) {
-        this.destinatarioRemitenteCodigo = destinatarioRemitenteCodigo;
+    public void setDestinatarioCodigo(String destinatarioCodigo) {
+        this.destinatarioCodigo = destinatarioCodigo;
     }
 
-    public void setDestinatarioRemitenteNumeroIdentificacion(String destinatarioRemitenteNumeroIdentificacion) {
-        this.destinatarioRemitenteNumeroIdentificacion = destinatarioRemitenteNumeroIdentificacion;
+    public void setDestinatarioNumeroIdentificacion(String destinatarioNumeroIdentificacion) {
+        this.destinatarioNumeroIdentificacion = destinatarioNumeroIdentificacion;
     }
 
-    public void setDestinatarioRemitenteNombre(String destinatarioRemitenteNombre) {
-        this.destinatarioRemitenteNombre = destinatarioRemitenteNombre;
+    public void setDestinatarioNombre(String destinatarioNombre) {
+        this.destinatarioNombre = destinatarioNombre;
     }
 
     public void setCodigo(String codigo) {
@@ -270,92 +270,33 @@ public class DestinoOrigenDto  {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("DestinoOrigenDto [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (clienteId != null) {
-            builder.append("clienteId=").append(clienteId).append(", ");
-        }
-        if (clienteCodigo != null) {
-            builder.append("clienteCodigo=").append(clienteCodigo).append(", ");
-        }
-        if (clienteNombre != null) {
-            builder.append("clienteNombre=").append(clienteNombre).append(", ");
-        }
-        if (canalId != null) {
-            builder.append("canalId=").append(canalId).append(", ");
-        }
-        if (canalCodigo != null) {
-            builder.append("canalCodigo=").append(canalCodigo).append(", ");
-        }
-        if (canalNombre != null) {
-            builder.append("canalNombre=").append(canalNombre).append(", ");
-        }
-        if (destinatarioRemitenteId != null) {
-            builder.append("destinatarioRemitenteId=").append(destinatarioRemitenteId).append(", ");
-        }
-        if (destinatarioRemitenteCodigo != null) {
-            builder.append("destinatarioRemitenteCodigo=").append(destinatarioRemitenteCodigo).append(", ");
-        }
-        if (destinatarioRemitenteNumeroIdentificacion != null) {
-            builder.append("destinatarioRemitenteNumeroIdentificacion=")
-                    .append(destinatarioRemitenteNumeroIdentificacion).append(", ");
-        }
-        if (destinatarioRemitenteNombre != null) {
-            builder.append("destinatarioRemitenteNombre=").append(destinatarioRemitenteNombre).append(", ");
-        }
-        if (codigo != null) {
-            builder.append("codigo=").append(codigo).append(", ");
-        }
-        if (nombre != null) {
-            builder.append("nombre=").append(nombre).append(", ");
-        }
-        if (codigoAlterno != null) {
-            builder.append("codigoAlterno=").append(codigoAlterno).append(", ");
-        }
-        if (nombreAlterno != null) {
-            builder.append("nombreAlterno=").append(nombreAlterno).append(", ");
-        }
-        if (ciudadId != null) {
-            builder.append("ciudadId=").append(ciudadId).append(", ");
-        }
-        if (ciudadNombreAlterno != null) {
-            builder.append("ciudadNombreAlterno=").append(ciudadNombreAlterno).append(", ");
-        }
-        if (direccion != null) {
-            builder.append("direccion=").append(direccion).append(", ");
-        }
-        if (indicacionesDireccion != null) {
-            builder.append("indicacionesDireccion=").append(indicacionesDireccion).append(", ");
-        }
-        if (longitud != null) {
-            builder.append("longitud=").append(longitud).append(", ");
-        }
-        if (latitud != null) {
-            builder.append("latitud=").append(latitud).append(", ");
-        }
-        if (direccionEstandarizada != null) {
-            builder.append("direccionEstandarizada=").append(direccionEstandarizada).append(", ");
-        }
-        if (contactoNombres != null) {
-            builder.append("contactoNombres=").append(contactoNombres).append(", ");
-        }
-        if (contactoEmail != null) {
-            builder.append("contactoEmail=").append(contactoEmail).append(", ");
-        }
-        if (contactoTelefonos != null) {
-            builder.append("contactoTelefonos=").append(contactoTelefonos).append(", ");
-        }
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "DestinoDto [" + (id != null ? "id=" + id + ", " : "")
+				+ (clienteId != null ? "clienteId=" + clienteId + ", " : "")
+				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
+				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
+				+ (canalId != null ? "canalId=" + canalId + ", " : "")
+				+ (canalCodigo != null ? "canalCodigo=" + canalCodigo + ", " : "")
+				+ (canalNombre != null ? "canalNombre=" + canalNombre + ", " : "")
+				+ (destinatarioId != null ? "destinatarioId=" + destinatarioId + ", " : "")
+				+ (destinatarioCodigo != null ? "destinatarioCodigo=" + destinatarioCodigo + ", " : "")
+				+ (destinatarioNumeroIdentificacion != null
+						? "destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion + ", " : "")
+				+ (destinatarioNombre != null ? "destinatarioNombre=" + destinatarioNombre + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "") + (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (codigoAlterno != null ? "codigoAlterno=" + codigoAlterno + ", " : "")
+				+ (nombreAlterno != null ? "nombreAlterno=" + nombreAlterno + ", " : "")
+				+ (ciudadId != null ? "ciudadId=" + ciudadId + ", " : "")
+				+ (ciudadNombreAlterno != null ? "ciudadNombreAlterno=" + ciudadNombreAlterno + ", " : "")
+				+ (direccion != null ? "direccion=" + direccion + ", " : "")
+				+ (indicacionesDireccion != null ? "indicacionesDireccion=" + indicacionesDireccion + ", " : "")
+				+ (longitud != null ? "longitud=" + longitud + ", " : "")
+				+ (latitud != null ? "latitud=" + latitud + ", " : "")
+				+ (direccionEstandarizada != null ? "direccionEstandarizada=" + direccionEstandarizada + ", " : "")
+				+ (contactoNombres != null ? "contactoNombres=" + contactoNombres + ", " : "")
+				+ (contactoEmail != null ? "contactoEmail=" + contactoEmail + ", " : "")
+				+ (contactoTelefonos != null ? "contactoTelefonos=" + contactoTelefonos + ", " : "")
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
+	}
 }

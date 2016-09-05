@@ -30,10 +30,10 @@ public class Direccion {
     private String indicacionesDireccion;
 
     @Column(nullable = true, precision = 18, scale = 15)
-    private BigDecimal longitud;
+    private BigDecimal cx;
 
     @Column(nullable = true, precision = 18, scale = 15)
-    private BigDecimal latitud;
+    private BigDecimal cy;
 
     @Column(nullable = false, length = 150)
     @NotNull
@@ -49,7 +49,7 @@ public class Direccion {
         setCiudad(aCiudad);
         setDireccion(aDireccion);
         setIndicacionesDireccion(aIndicacionesDireccion);
-        setLongitud(null);
+        setCx(null);
         setLatitud(null);
         setDireccionEstandarizada("");
     }
@@ -76,12 +76,12 @@ public class Direccion {
         return indicacionesDireccion;
     }
 
-    public BigDecimal getLongitud() {
-        return longitud;
+    public BigDecimal getCx() {
+        return cx;
     }
 
-    public BigDecimal getLatitud() {
-        return latitud;
+    public BigDecimal getCy() {
+        return cy;
     }
 
     public String getDireccionEstandarizada() {
@@ -101,12 +101,12 @@ public class Direccion {
         indicacionesDireccion = (aIndicacionesDireccion == null) ? "" : aIndicacionesDireccion;
     }
 
-    public void setLongitud(BigDecimal aLongitud) {
-        longitud = aLongitud;
+    public void setCx(BigDecimal aCx) {
+        cx = aCx;
     }
 
-    public void setLatitud(BigDecimal aLatitud) {
-        latitud = aLatitud;
+    public void setLatitud(BigDecimal aCy) {
+        cy = aCy;
     }
 
     public void setDireccionEstandarizada(String aDireccionEstandarizada) {
@@ -146,26 +146,9 @@ public class Direccion {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("DireccionEmbeddable [");
-        if (ciudad != null) {
-            builder.append("ciudad=").append(ciudad).append(", ");
-        }
-        if (direccion != null) {
-            builder.append("direccion=").append(direccion).append(", ");
-        }
-        if (indicacionesDireccion != null) {
-            builder.append("indicacionesDireccion=").append(indicacionesDireccion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-    // TODO
-    // Barrio
-    // Localidad
-    // Zona
-    // Tipo Georeferenciacio
-    // Fecha GeoReferenciacion
-    // Usuario Georefere
+	public String toString() {
+		return "Direccion [" + (ciudad != null ? "ciudad=" + ciudad + ", " : "")
+				+ (direccion != null ? "direccion=" + direccion + ", " : "") + (cx != null ? "cx=" + cx + ", " : "")
+				+ (cy != null ? "cy=" + cy : "") + "]";
+	}
 }

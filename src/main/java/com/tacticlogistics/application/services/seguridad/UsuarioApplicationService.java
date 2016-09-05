@@ -10,13 +10,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.domain.model.common.RolUbicacionType;
-import com.tacticlogistics.domain.model.common.UbicacionType;
 import com.tacticlogistics.domain.model.crm.Cliente;
-import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.seguridad.Usuario;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
-import com.tacticlogistics.infrastructure.persistence.crm.TipoServicioRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 
 @Service
@@ -26,52 +22,50 @@ public class UsuarioApplicationService{
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private TipoServicioRepository tipoServicioRepository;
-    @Autowired
     private ClienteRepository clienteRepository;
 
     public List<Object> findAllTipoServicioPorUsuario(Integer usuarioId) throws DataAccessException {
         List<Object> list = new ArrayList<>();
 
-        List<TipoServicio> tipoServicioList = tipoServicioRepository.findByUsuarioId(usuarioId);
-        tipoServicioList.forEach(a -> {
-            Map<String, Object> o = new HashMap<String, Object>();
-
-            o.put("id", a.getId());
-            o.put("codigo", a.getCodigo());
-            o.put("nombre", a.getNombre());
-
-            o.put("admiteProductosPorLinea", a.isAdmiteProductosPorLinea());
-            o.put("admitePaquetesPorLinea", a.isAdmitePaquetesPorLinea());
-
-            RolUbicacionType rolUbicacionOrden = a.isRegistrarDestinoEnLaOrden() ? RolUbicacionType.DESTINO
-                    : RolUbicacionType.ORIGEN;
-            RolUbicacionType rolUbicacionLineaOrden = (rolUbicacionOrden == RolUbicacionType.DESTINO)
-                    ? RolUbicacionType.ORIGEN : RolUbicacionType.DESTINO;
-            UbicacionType tipoUbicacionOrden;
-            UbicacionType tipoUbicacionLineaOrden;
-
-            if (rolUbicacionOrden == RolUbicacionType.DESTINO) {
-                tipoUbicacionOrden = a.isAdmiteBodegasComoDestino() ? UbicacionType.BODEGA : UbicacionType.DIRECCION;
-            } else {
-                tipoUbicacionOrden = a.isAdmiteBodegasComoOrigen() ? UbicacionType.BODEGA : UbicacionType.DIRECCION;
-            }
-
-            if (rolUbicacionLineaOrden == RolUbicacionType.DESTINO) {
-                tipoUbicacionLineaOrden = a.isAdmiteBodegasComoDestino() ? UbicacionType.BODEGA
-                        : UbicacionType.DIRECCION;
-            } else {
-                tipoUbicacionLineaOrden = a.isAdmiteBodegasComoOrigen() ? UbicacionType.BODEGA
-                        : UbicacionType.DIRECCION;
-            }
-
-            o.put("rolUbicacionOrden", rolUbicacionOrden);
-            o.put("rolUbicacionLineaOrden", rolUbicacionLineaOrden);
-            o.put("tipoUbicacionOrden", tipoUbicacionOrden);
-            o.put("tipoUbicacionLineaOrden", tipoUbicacionLineaOrden);
-
-            list.add(o);
-        });
+//        list<tiposervicio> tiposerviciolist = tiposerviciorepository.findbyusuarioid(usuarioid);
+//        tiposerviciolist.foreach(a -> {
+//            map<string, object> o = new hashmap<string, object>();
+//
+//            o.put("id", a.getid());
+//            o.put("codigo", a.getcodigo());
+//            o.put("nombre", a.getnombre());
+//
+//            o.put("admiteproductosporlinea", a.isadmiteproductosporlinea());
+//            o.put("admitepaquetesporlinea", a.isadmitepaquetesporlinea());
+//
+//            rolubicaciontype rolubicacionorden = a.isregistrardestinoenlaorden() ? rolubicaciontype.destino
+//                    : rolubicaciontype.origen;
+//            rolubicaciontype rolubicacionlineaorden = (rolubicacionorden == rolubicaciontype.destino)
+//                    ? rolubicaciontype.origen : rolubicaciontype.destino;
+//            ubicaciontype tipoubicacionorden;
+//            ubicaciontype tipoubicacionlineaorden;
+//
+//            if (rolubicacionorden == rolubicaciontype.destino) {
+//                tipoubicacionorden = a.isadmitebodegascomodestino() ? ubicaciontype.bodega : ubicaciontype.direccion;
+//            } else {
+//                tipoubicacionorden = a.isadmitebodegascomoorigen() ? ubicaciontype.bodega : ubicaciontype.direccion;
+//            }
+//
+//            if (rolubicacionlineaorden == rolubicaciontype.destino) {
+//                tipoubicacionlineaorden = a.isadmitebodegascomodestino() ? ubicaciontype.bodega
+//                        : ubicaciontype.direccion;
+//            } else {
+//                tipoubicacionlineaorden = a.isadmitebodegascomoorigen() ? ubicaciontype.bodega
+//                        : ubicaciontype.direccion;
+//            }
+//
+//            o.put("rolubicacionorden", rolubicacionorden);
+//            o.put("rolubicacionlineaorden", rolubicacionlineaorden);
+//            o.put("tipoubicacionorden", tipoubicacionorden);
+//            o.put("tipoubicacionlineaorden", tipoubicacionlineaorden);
+//
+//            list.add(o);
+//        });
 
         return list;
     }
@@ -89,7 +83,6 @@ public class UsuarioApplicationService{
                 Map<String, Object> o = new HashMap<String, Object>();
 
                 o.put("id", a.getId());
-                o.put("identificacionType", a.getIdentificacionType());
                 o.put("numeroIdentificacion", a.getNumeroIdentificacion());
                 o.put("digitoVerificacion", a.getDigitoVerificacion());
                 o.put("codigo", a.getCodigo());

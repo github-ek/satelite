@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.springframework.stereotype.Component;
-
 import com.tacticlogistics.application.task.etl.deprecated.components.ETLPDFFileStrategy;
 
 //@Component("ordenes.ALTIPAL")

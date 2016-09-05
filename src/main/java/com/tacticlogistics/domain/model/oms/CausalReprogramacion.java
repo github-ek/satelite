@@ -13,13 +13,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "CausalesAnulacion", catalog = "oms")
-public class CausalAnulacion implements Serializable {
+@Table(name = "CausalReprogramacion", catalog = "oms")
+public class CausalReprogramacion implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_causal_anulacion", nullable = false, unique = true)
+	@Column(name = "id_causal_reprogramacion", nullable = false, unique = true)
 	private Integer id;
 
 	@Column(nullable = false, length = 100, unique = true)
@@ -28,6 +28,8 @@ public class CausalAnulacion implements Serializable {
 	@Column(nullable = false, length = 200)
 	private String descripcion;
 
+	private boolean reprograma;
+	
 	private int ordinal;
 
 	private boolean activo;
@@ -39,7 +41,7 @@ public class CausalAnulacion implements Serializable {
 	@Column(nullable = false, length = 50)
 	private String usuarioActualizacion;
 
-	protected CausalAnulacion() {
+	protected CausalReprogramacion() {
 
 	}
 
@@ -65,6 +67,14 @@ public class CausalAnulacion implements Serializable {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+	
+	public boolean isReprograma() {
+		return reprograma;
+	}
+
+	public void setReprograma(boolean reprograma) {
+		this.reprograma = reprograma;
 	}
 
 	public int getOrdinal() {

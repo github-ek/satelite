@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.etl.ETLDestinatarioRemitenteDto;
+import com.tacticlogistics.application.dto.etl.ETLDestinatarioDto;
 import com.tacticlogistics.application.dto.etl.ETLDestinoOrigenDto;
-import com.tacticlogistics.application.services.crm.DestinatariosRemitentesApplicationService;
-import com.tacticlogistics.application.services.crm.DestinosOrigenesApplicationService;
+import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
+import com.tacticlogistics.application.services.crm.DestinosApplicationService;
 import com.tacticlogistics.application.task.etl.components.ETLFlatFileStrategy;
 
 @Component("GWS.MAESTROS")
-public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioRemitenteDto> {
+public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioDto> {
 
     private static final String DESTINATARIO_NUMERO_IDENTIFICACION = "destinatarioNumeroIdentificacion";
     private static final String DESTINATARIO_NOMBRE = "destinatarioNombre";
@@ -40,10 +40,10 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioRemit
     private static Map<String, String> mapCiudades = null;
 
     @Autowired
-    private DestinatariosRemitentesApplicationService destinatariosRemitentesServices;
+    private DestinatariosApplicationService destinatariosRemitentesServices;
 
     @Autowired
-    private DestinosOrigenesApplicationService destinosOrigenesServices;
+    private DestinosApplicationService destinosOrigenesServices;
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
     @Override
@@ -53,8 +53,8 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioRemit
 
     @Override
     @Transactional(readOnly = false)
-    protected void cargar(Map<String, ETLDestinatarioRemitenteDto> map) {
-        for (ETLDestinatarioRemitenteDto dto : map.values()) {
+    protected void cargar(Map<String, ETLDestinatarioDto> map) {
+        for (ETLDestinatarioDto dto : map.values()) {
             try {
                 destinatariosRemitentesServices.save(dto);
                 logInfo(dto.getNumeroIdentificacion(), "", "OK");
@@ -109,13 +109,13 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioRemit
     }
 
     @Override
-    protected void adicionar(String key, Map<String, ETLDestinatarioRemitenteDto> map, String[] campos,
+    protected void adicionar(String key, Map<String, ETLDestinatarioDto> map, String[] campos,
             Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
 
         if (!map.containsKey(key)) {
             String value;
             
-            ETLDestinatarioRemitenteDto dto = new ETLDestinatarioRemitenteDto();
+            ETLDestinatarioDto dto = new ETLDestinatarioDto();
 
             dto.setClienteCodigo(this.getClienteCodigoAlterno());
             
@@ -145,12 +145,12 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioRemit
     }
 
     @Override
-    protected void modificar(String key, Map<String, ETLDestinatarioRemitenteDto> map, String[] campos,
+    protected void modificar(String key, Map<String, ETLDestinatarioDto> map, String[] campos,
             Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
         if (map.containsKey(key)) {
             String value;
             
-            ETLDestinatarioRemitenteDto destinatario = map.get(key);
+            ETLDestinatarioDto destinatario = map.get(key);
 
             ETLDestinoOrigenDto dto = new ETLDestinoOrigenDto();
 

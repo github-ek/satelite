@@ -2,24 +2,16 @@ package com.tacticlogistics.domain.model.crm;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import com.tacticlogistics.domain.model.requerimientos.RequerimientoClienteAssociation;
-import com.tacticlogistics.domain.model.requerimientos.RequerimientoTipoServicioAssociation;
 
 @Entity
 @Table(name = "TiposServicios", catalog = "crm")
@@ -27,7 +19,6 @@ public class TipoServicio implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_tipo_servicio", nullable = false, unique = true)
 	private Integer id;
 
@@ -40,15 +31,13 @@ public class TipoServicio implements Serializable {
 	@Column(nullable = false, length = 200)
 	private String descripcion;
 
-	private boolean admiteBodegasComoDestino;
-
 	private boolean admiteBodegasComoOrigen;
 
-	private boolean registrarDestinoEnLaOrden;
+	private boolean admiteBodegasComoDestino;
 
-	private boolean admiteProductosPorLinea;
+	private boolean admiteDireccionesComoOrigen;
 
-	private boolean admitePaquetesPorLinea;
+	private boolean admiteDireccionesComoDestino;
 
 	private int ordinal;
 
@@ -65,12 +54,6 @@ public class TipoServicio implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_tipo_distribucion", nullable = true)
 	private TipoDistribucion tipoDistribucion;
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoServicio")
-	private Set<RequerimientoTipoServicioAssociation> requerimientoTipoServicioAssociation = new HashSet<RequerimientoTipoServicioAssociation>();
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoServicio")
-	private Set<RequerimientoClienteAssociation> requerimientoClienteAssociation = new HashSet<RequerimientoClienteAssociation>();
 
 	public TipoServicio() {
 
@@ -108,44 +91,36 @@ public class TipoServicio implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	public boolean isAdmiteBodegasComoDestino() {
-		return admiteBodegasComoDestino;
-	}
-
-	public void setAdmiteBodegasComoDestino(boolean admiteBodegasComoDestino) {
-		this.admiteBodegasComoDestino = admiteBodegasComoDestino;
-	}
-
-	public boolean isAdmiteBodegasComoOrigen() {
+	protected boolean isAdmiteBodegasComoOrigen() {
 		return admiteBodegasComoOrigen;
 	}
 
-	public void setAdmiteBodegasComoOrigen(boolean admiteBodegasComoOrigen) {
+	protected void setAdmiteBodegasComoOrigen(boolean admiteBodegasComoOrigen) {
 		this.admiteBodegasComoOrigen = admiteBodegasComoOrigen;
 	}
 
-	public boolean isRegistrarDestinoEnLaOrden() {
-		return registrarDestinoEnLaOrden;
+	protected boolean isAdmiteBodegasComoDestino() {
+		return admiteBodegasComoDestino;
 	}
 
-	public void setRegistrarDestinoEnLaOrden(boolean registrarDestinoEnLaOrden) {
-		this.registrarDestinoEnLaOrden = registrarDestinoEnLaOrden;
+	protected void setAdmiteBodegasComoDestino(boolean admiteBodegasComoDestino) {
+		this.admiteBodegasComoDestino = admiteBodegasComoDestino;
 	}
 
-	public boolean isAdmiteProductosPorLinea() {
-		return admiteProductosPorLinea;
+	protected boolean isAdmiteDireccionesComoOrigen() {
+		return admiteDireccionesComoOrigen;
 	}
 
-	public void setAdmiteProductosPorLinea(boolean admiteProductosPorLinea) {
-		this.admiteProductosPorLinea = admiteProductosPorLinea;
+	protected void setAdmiteDireccionesComoOrigen(boolean admiteDireccionesComoOrigen) {
+		this.admiteDireccionesComoOrigen = admiteDireccionesComoOrigen;
 	}
 
-	public boolean isAdmitePaquetesPorLinea() {
-		return admitePaquetesPorLinea;
+	protected boolean isAdmiteDireccionesComoDestino() {
+		return admiteDireccionesComoDestino;
 	}
 
-	public void setAdmitePaquetesPorLinea(boolean admitePaquetesPorLinea) {
-		this.admitePaquetesPorLinea = admitePaquetesPorLinea;
+	protected void setAdmiteDireccionesComoDestino(boolean admiteDireccionesComoDestino) {
+		this.admiteDireccionesComoDestino = admiteDireccionesComoDestino;
 	}
 
 	public int getOrdinal() {
@@ -186,24 +161,6 @@ public class TipoServicio implements Serializable {
 
 	public void setTipoDistribucion(TipoDistribucion tipoDistribucion) {
 		this.tipoDistribucion = tipoDistribucion;
-	}
-
-	public Set<RequerimientoTipoServicioAssociation> getRequerimientoTipoServicioAssociation() {
-		return requerimientoTipoServicioAssociation;
-	}
-
-	public void setRequerimientoTipoServicioAssociation(
-			Set<RequerimientoTipoServicioAssociation> requerimientoTipoServicioAssociation) {
-		this.requerimientoTipoServicioAssociation = requerimientoTipoServicioAssociation;
-	}
-
-	public Set<RequerimientoClienteAssociation> getRequerimientoClienteAssociation() {
-		return requerimientoClienteAssociation;
-	}
-
-	public void setRequerimientoClienteAssociation(
-			Set<RequerimientoClienteAssociation> requerimientoClienteAssociation) {
-		this.requerimientoClienteAssociation = requerimientoClienteAssociation;
 	}
 
 	@Override

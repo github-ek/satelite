@@ -13,13 +13,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "Segmentos", catalog = "crm")
+@Table(name = "Canales", catalog = "crm")
 public class Canal implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_segmento", unique = true, nullable = false)
+	@Column(name = "id_canal", unique = true, nullable = false)
 	private Integer id;
 
 	@Column(nullable = false, length = 20, unique = true)
@@ -147,15 +147,11 @@ public class Canal implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Segmento [");
-		if (id != null)
-			builder.append("id=").append(id).append(", ");
-		if (codigo != null)
-			builder.append("codigo=").append(codigo).append(", ");
-		if (nombre != null)
-			builder.append("nombre=").append(nombre);
-		builder.append("]");
-		return builder.toString();
+		return "Canal [" + (id != null ? "id=" + id + ", " : "") + (codigo != null ? "codigo=" + codigo + ", " : "")
+				+ (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (descripcion != null ? "descripcion=" + descripcion + ", " : "") + "predeterminado=" + predeterminado
+				+ ", ordinal=" + ordinal + ", activo=" + activo + ", "
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
 	}
 }

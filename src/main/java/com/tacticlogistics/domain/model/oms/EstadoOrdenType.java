@@ -6,15 +6,15 @@ public enum EstadoOrdenType {
 	ACEPTADA("ACEPTADA",false,true),
 	
 	EJECUCION("EJECUCION",false,false), 
-	
-	ENTREGADA("ENTREGADA",false,false),
+
 	NO_ENTREGADA("NO_ENTREGADA",false,false),
-	NOVEDADES("NOVEDADES",false,false),
-	
-	FINALIZADA("FINALIZADA",false,true), 
+
+	ENTREGADA("ENTREGADA",false,false),
 	REPROGRAMADA("REPROGRAMADA",true,true),
 	NO_REPROGRAMADA("NO REPROGRAMADA",true,true),
-	
+	NOVEDADES("NOVEDADES",false,false),
+
+	FINALIZADA("FINALIZADA",false,true), 
 	ANULADA("ANULADA",true,true),
 	
 	EN_EJECCUCION("EN EJECCUCION", false,false)

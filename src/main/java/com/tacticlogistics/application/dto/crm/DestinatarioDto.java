@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.tacticlogistics.domain.model.common.IdentificacionType;
 
-public class DestinatarioRemitenteDto {
+public class DestinatarioDto {
 	private Integer id;
 
 	private Integer clienteId;
@@ -157,61 +157,23 @@ public class DestinatarioRemitenteDto {
 	}
 
     @Override
-    public String toString() {
-        final int maxLen = 5;
-        StringBuilder builder = new StringBuilder();
-        builder.append("DestinatarioRemitenteDto [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (clienteId != null) {
-            builder.append("clienteId=").append(clienteId).append(", ");
-        }
-        if (clienteCodigo != null) {
-            builder.append("clienteCodigo=").append(clienteCodigo).append(", ");
-        }
-        if (clienteNombre != null) {
-            builder.append("clienteNombre=").append(clienteNombre).append(", ");
-        }
-        if (identificacionType != null) {
-            builder.append("identificacionType=").append(identificacionType).append(", ");
-        }
-        if (numeroIdentificacion != null) {
-            builder.append("numeroIdentificacion=").append(numeroIdentificacion).append(", ");
-        }
-        if (digitoVerificacion != null) {
-            builder.append("digitoVerificacion=").append(digitoVerificacion).append(", ");
-        }
-        if (codigo != null) {
-            builder.append("codigo=").append(codigo).append(", ");
-        }
-        if (nombre != null) {
-            builder.append("nombre=").append(nombre).append(", ");
-        }
-        if (nombreComercial != null) {
-            builder.append("nombreComercial=").append(nombreComercial).append(", ");
-        }
-        if (contactoNombres != null) {
-            builder.append("contactoNombres=").append(contactoNombres).append(", ");
-        }
-        if (contactoEmail != null) {
-            builder.append("contactoEmail=").append(contactoEmail).append(", ");
-        }
-        if (contactoTelefonos != null) {
-            builder.append("contactoTelefonos=").append(contactoTelefonos).append(", ");
-        }
-        if (canales != null) {
-            builder.append("canales=").append(canales.subList(0, Math.min(canales.size(), maxLen))).append(", ");
-        }
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "DestinatarioDto [" + (id != null ? "id=" + id + ", " : "")
+				+ (clienteId != null ? "clienteId=" + clienteId + ", " : "")
+				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
+				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
+				+ (identificacionType != null ? "identificacionType=" + identificacionType + ", " : "")
+				+ (numeroIdentificacion != null ? "numeroIdentificacion=" + numeroIdentificacion + ", " : "")
+				+ (digitoVerificacion != null ? "digitoVerificacion=" + digitoVerificacion + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "") + (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (nombreComercial != null ? "nombreComercial=" + nombreComercial + ", " : "")
+				+ (contactoNombres != null ? "contactoNombres=" + contactoNombres + ", " : "")
+				+ (contactoEmail != null ? "contactoEmail=" + contactoEmail + ", " : "")
+				+ (contactoTelefonos != null ? "contactoTelefonos=" + contactoTelefonos + ", " : "")
+				+ (canales != null ? "canales=" + canales + ", " : "")
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
+	}
 	
 	
 }

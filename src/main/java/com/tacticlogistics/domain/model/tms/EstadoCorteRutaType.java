@@ -1,6 +1,6 @@
-package com.tacticlogistics.domain.model.oms;
+package com.tacticlogistics.domain.model.tms;
 
-public enum EstadoPlanificacionRutaType {
+public enum EstadoCorteRutaType {
     SIN_SOLICITUD,
     EN_CURSO,
     RUTA_ASIGNADA

@@ -5,12 +5,8 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +23,6 @@ import javax.validation.constraints.NotNull;
 
 import com.tacticlogistics.domain.model.common.TipoContenido;
 import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
-import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.domain.model.wms.Unidad;
@@ -57,13 +52,13 @@ public class LineaOrden implements Serializable {
 	@Column(nullable = false, name = "cantidad")
 	@NotNull
 	private int cantidadSolicitada;
-	private int cantidadPlanificada;
-	private int cantidadAlistada;
-	private int cantidadEntregada;
-	private int cantidadNoEntregada;
-	private int cantidadNoEntregadaLegalizada;
-	private int cantidadSobrante;
-	private int cantidadSobranteLegalizada;
+	private Integer cantidadPlanificada;
+	private Integer cantidadAlistada;
+	private Integer cantidadEntregada;
+	private Integer cantidadNoEntregada;
+	private Integer cantidadNoEntregadaLegalizada;
+	private Integer cantidadSobrante;
+	private Integer cantidadSobranteLegalizada;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -73,8 +68,8 @@ public class LineaOrden implements Serializable {
 	@Column(nullable = false, length = 50, name = "codigo_producto")
 	private String productoCodigo;
 
-	@Column(nullable = false, length = 50, name = "codigo_alterno_producto")
-	private String productoCodigoAlterno;
+//	@Column(nullable = false, length = 50, name = "codigo_alterno_producto")
+//	private String productoCodigoAlterno;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -85,8 +80,8 @@ public class LineaOrden implements Serializable {
 	@NotNull
 	private String unidadCodigo;
 
-	@Column(nullable = false, length = 50, name = "codigo_alterno_unidad")
-	private String unidadCodigoAlterno;
+//	@Column(nullable = false, length = 50, name = "codigo_alterno_unidad")
+//	private String unidadCodigoAlterno;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -97,9 +92,9 @@ public class LineaOrden implements Serializable {
 	@NotNull
 	private String tipoContenidoCodigo;
 
-	@Column(nullable = false, length = 50)
-	@NotNull
-	private String tipoContenidoCodigoAlterno;
+//	@Column(nullable = false, length = 50)
+//	@NotNull
+//	private String tipoContenidoCodigoAlterno;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Embedded
@@ -192,6 +187,10 @@ public class LineaOrden implements Serializable {
 	@NotNull
 	private String requerimientoOrigen;
 
+	@Column(nullable = false, length = 30)
+	@NotNull
+	private String requerimientoPinado;
+
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, length = 100)
 	private String predistribucionDestinoFinal;
@@ -226,11 +225,6 @@ public class LineaOrden implements Serializable {
 	private String usuarioActualizacion;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@ElementCollection
-	@CollectionTable(name = "lineas_ordenes_mensajes", catalog = "ordenes", joinColumns = @JoinColumn(name = "id_linea_orden", referencedColumnName = "id_linea_orden"))
-	private Set<MensajeEmbeddable> mensajes = new HashSet<MensajeEmbeddable>();
-
-	// ---------------------------------------------------------------------------------------------------------
 	public LineaOrden() {
 		super();
 		this.setId(null);
@@ -246,13 +240,13 @@ public class LineaOrden implements Serializable {
 		this.setCantidadSobranteLegalizada(0);
 		this.setProducto(null);
 		this.setProductoCodigo("");
-		this.setProductoCodigoAlterno("");
+		//this.setProductoCodigoAlterno("");
 		this.setUnidad(null);
 		this.setUnidadCodigo("");
-		this.setUnidadCodigoAlterno("");
+		//this.setUnidadCodigoAlterno("");
 		this.setTipoContenido(null);
 		this.setTipoContenidoCodigo("");
-		this.setTipoContenidoCodigoAlterno("");
+		//this.setTipoContenidoCodigoAlterno("");
 		this.setDimensiones(null);
 		this.setBodegaOrigen(null);
 		this.setBodegaOrigenCodigo("");
@@ -275,6 +269,7 @@ public class LineaOrden implements Serializable {
 		this.setRequerimientoBl("");
 		this.setRequerimientoFondoCuenta("");
 		this.setRequerimientoOrigen("");
+		this.setRequerimientoPinado("");
 		this.setPredistribucionDestinoFinal("");
 		this.setPredistribucionRotulo("");
 		this.setValorDeclaradoPorUnidad(null);
@@ -283,8 +278,6 @@ public class LineaOrden implements Serializable {
 		this.setUsuarioCreacion("");
 		this.setFechaActualizacion(null);
 		this.setUsuarioActualizacion("");
-
-		this.mensajes = new HashSet<>();
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -309,31 +302,31 @@ public class LineaOrden implements Serializable {
 		return cantidadSolicitada;
 	}
 
-	public int getCantidadPlanificada() {
+	public Integer getCantidadPlanificada() {
 		return cantidadPlanificada;
 	}
 
-	public int getCantidadAlistada() {
+	public Integer getCantidadAlistada() {
 		return cantidadAlistada;
 	}
 
-	public int getCantidadEntregada() {
+	public Integer getCantidadEntregada() {
 		return cantidadEntregada;
 	}
 
-	public int getCantidadNoEntregada() {
+	public Integer getCantidadNoEntregada() {
 		return cantidadNoEntregada;
 	}
 
-	public int getCantidadNoEntregadaLegalizada() {
+	public Integer getCantidadNoEntregadaLegalizada() {
 		return cantidadNoEntregadaLegalizada;
 	}
 
-	public int getCantidadSobrante() {
+	public Integer getCantidadSobrante() {
 		return cantidadSobrante;
 	}
 
-	public int getCantidadSobranteLegalizada() {
+	public Integer getCantidadSobranteLegalizada() {
 		return cantidadSobranteLegalizada;
 	}
 
@@ -346,9 +339,9 @@ public class LineaOrden implements Serializable {
 		return productoCodigo;
 	}
 
-	public String getProductoCodigoAlterno() {
-		return productoCodigoAlterno;
-	}
+//	public String getProductoCodigoAlterno() {
+//		return productoCodigoAlterno;
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public Unidad getUnidad() {
@@ -359,9 +352,9 @@ public class LineaOrden implements Serializable {
 		return unidadCodigo;
 	}
 
-	public String getUnidadCodigoAlterno() {
-		return unidadCodigoAlterno;
-	}
+//	public String getUnidadCodigoAlterno() {
+//		return unidadCodigoAlterno;
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public TipoContenido getTipoContenido() {
@@ -372,9 +365,9 @@ public class LineaOrden implements Serializable {
 		return tipoContenidoCodigo;
 	}
 
-	public String getTipoContenidoCodigoAlterno() {
-		return tipoContenidoCodigoAlterno;
-	}
+//	public String getTipoContenidoCodigoAlterno() {
+//		return tipoContenidoCodigoAlterno;
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public BigDecimal getLargoPorUnidad() {
@@ -492,6 +485,10 @@ public class LineaOrden implements Serializable {
 		return requerimientoOrigen;
 	}
 
+	public String getRequerimientoPinado() {
+		return requerimientoPinado;
+	}
+
 	// ---------------------------------------------------------------------------------------------------------
 	public String getPredistribucionDestinoFinal() {
 		return predistribucionDestinoFinal;
@@ -525,10 +522,6 @@ public class LineaOrden implements Serializable {
 
 	public String getUsuarioActualizacion() {
 		return usuarioActualizacion;
-	}
-
-	public Set<MensajeEmbeddable> getMensajes() {
-		return mensajes;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -591,9 +584,9 @@ public class LineaOrden implements Serializable {
 		this.productoCodigo = coalesce(value, "");
 	}
 
-	public void setProductoCodigoAlterno(String value) {
-		this.productoCodigoAlterno = coalesce(value, "");
-	}
+//	public void setProductoCodigoAlterno(String value) {
+//		this.productoCodigoAlterno = coalesce(value, "");
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public void setUnidad(Unidad unidad) {
@@ -604,9 +597,9 @@ public class LineaOrden implements Serializable {
 		this.unidadCodigo = coalesce(value, "");
 	}
 
-	public void setUnidadCodigoAlterno(String value) {
-		this.unidadCodigoAlterno = coalesce(value, "");
-	}
+//	public void setUnidadCodigoAlterno(String value) {
+//		this.unidadCodigoAlterno = coalesce(value, "");
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public void setTipoContenido(TipoContenido tipoContenido) {
@@ -617,9 +610,9 @@ public class LineaOrden implements Serializable {
 		this.tipoContenidoCodigo = coalesce(value, "");
 	}
 
-	public void setTipoContenidoCodigoAlterno(String value) {
-		this.tipoContenidoCodigoAlterno = coalesce(value, "");
-	}
+//	public void setTipoContenidoCodigoAlterno(String value) {
+//		this.tipoContenidoCodigoAlterno = coalesce(value, "");
+//	}
 
 	// ---------------------------------------------------------------------------------------------------------
 	public void setDimensiones(Dimensiones dimensiones) {
@@ -714,6 +707,10 @@ public class LineaOrden implements Serializable {
 		this.requerimientoOrigen = coalesce(value, "");
 	}
 
+	public void setRequerimientoPinado(String value) {
+		this.requerimientoPinado = coalesce(value, "");
+	}
+
 	// ---------------------------------------------------------------------------------------------------------
 	public void setPredistribucionDestinoFinal(String value) {
 		this.predistribucionDestinoFinal = coalesce(value, "");
@@ -750,11 +747,6 @@ public class LineaOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setMensajes(Set<MensajeEmbeddable> mensajes) {
-		this.mensajes = mensajes;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -785,29 +777,54 @@ public class LineaOrden implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LineaOrden [" + (id != null ? "id=" + id + ", " : "") + "numeroItem=" + numeroItem + ", "
-				+ (descripcion != null ? "descripcion=" + descripcion + ", " : "") + "cantidadSolicitada="
-				+ cantidadSolicitada + ", cantidadEntregada=" + cantidadEntregada + ", "
+		return "LineaOrden [" + (id != null ? "id=" + id + ", " : "") + (orden != null ? "orden=" + orden + ", " : "")
+				+ "numeroItem=" + numeroItem + ", " + (descripcion != null ? "descripcion=" + descripcion + ", " : "")
+				+ "cantidadSolicitada=" + cantidadSolicitada + ", "
+				+ (cantidadPlanificada != null ? "cantidadPlanificada=" + cantidadPlanificada + ", " : "")
+				+ (cantidadAlistada != null ? "cantidadAlistada=" + cantidadAlistada + ", " : "")
+				+ (cantidadEntregada != null ? "cantidadEntregada=" + cantidadEntregada + ", " : "")
+				+ (cantidadNoEntregada != null ? "cantidadNoEntregada=" + cantidadNoEntregada + ", " : "")
+				+ (cantidadNoEntregadaLegalizada != null
+						? "cantidadNoEntregadaLegalizada=" + cantidadNoEntregadaLegalizada + ", " : "")
+				+ (cantidadSobrante != null ? "cantidadSobrante=" + cantidadSobrante + ", " : "")
+				+ (cantidadSobranteLegalizada != null
+						? "cantidadSobranteLegalizada=" + cantidadSobranteLegalizada + ", " : "")
+				+ (producto != null ? "producto=" + producto + ", " : "")
 				+ (productoCodigo != null ? "productoCodigo=" + productoCodigo + ", " : "")
-				+ (productoCodigoAlterno != null ? "productoCodigoAlterno=" + productoCodigoAlterno + ", " : "")
+				+ (unidad != null ? "unidad=" + unidad + ", " : "")
 				+ (unidadCodigo != null ? "unidadCodigo=" + unidadCodigo + ", " : "")
-				+ (unidadCodigoAlterno != null ? "unidadCodigoAlterno=" + unidadCodigoAlterno + ", " : "")
+				+ (tipoContenido != null ? "tipoContenido=" + tipoContenido + ", " : "")
 				+ (tipoContenidoCodigo != null ? "tipoContenidoCodigo=" + tipoContenidoCodigo + ", " : "")
-				+ (tipoContenidoCodigoAlterno != null
-						? "tipoContenidoCodigoAlterno=" + tipoContenidoCodigoAlterno + ", " : "")
 				+ (dimensiones != null ? "dimensiones=" + dimensiones + ", " : "")
+				+ (bodegaOrigen != null ? "bodegaOrigen=" + bodegaOrigen + ", " : "")
 				+ (bodegaOrigenCodigo != null ? "bodegaOrigenCodigo=" + bodegaOrigenCodigo + ", " : "")
 				+ (bodegaOrigenCodigoAlterno != null ? "bodegaOrigenCodigoAlterno=" + bodegaOrigenCodigoAlterno + ", "
 						: "")
 				+ (estadoInventarioOrigenId != null ? "estadoInventarioOrigenId=" + estadoInventarioOrigenId + ", "
 						: "")
 				+ (numeroOrdenWmsOrigen != null ? "numeroOrdenWmsOrigen=" + numeroOrdenWmsOrigen + ", " : "")
+				+ (bodegaDestino != null ? "bodegaDestino=" + bodegaDestino + ", " : "")
 				+ (bodegaDestinoCodigo != null ? "bodegaDestinoCodigo=" + bodegaDestinoCodigo + ", " : "")
 				+ (bodegaDestinoCodigoAlterno != null
 						? "bodegaDestinoCodigoAlterno=" + bodegaDestinoCodigoAlterno + ", " : "")
 				+ (estadoInventarioDestinoId != null ? "estadoInventarioDestinoId=" + estadoInventarioDestinoId + ", "
 						: "")
 				+ (numeroOrdenWmsDestino != null ? "numeroOrdenWmsDestino=" + numeroOrdenWmsDestino + ", " : "")
+				+ (lote != null ? "lote=" + lote + ", " : "") + (serial != null ? "serial=" + serial + ", " : "")
+				+ (cosecha != null ? "cosecha=" + cosecha + ", " : "")
+				+ (requerimientoEstampillado != null ? "requerimientoEstampillado=" + requerimientoEstampillado + ", "
+						: "")
+				+ (requerimientoSalud != null ? "requerimientoSalud=" + requerimientoSalud + ", " : "")
+				+ (requerimientoImporte != null ? "requerimientoImporte=" + requerimientoImporte + ", " : "")
+				+ (requerimientoDistribuido != null ? "requerimientoDistribuido=" + requerimientoDistribuido + ", "
+						: "")
+				+ (requerimientoNutricional != null ? "requerimientoNutricional=" + requerimientoNutricional + ", "
+						: "")
+				+ (requerimientoBl != null ? "requerimientoBl=" + requerimientoBl + ", " : "")
+				+ (requerimientoFondoCuenta != null ? "requerimientoFondoCuenta=" + requerimientoFondoCuenta + ", "
+						: "")
+				+ (requerimientoOrigen != null ? "requerimientoOrigen=" + requerimientoOrigen + ", " : "")
+				+ (requerimientoPinado != null ? "requerimientoPinado=" + requerimientoPinado + ", " : "")
 				+ (predistribucionDestinoFinal != null
 						? "predistribucionDestinoFinal=" + predistribucionDestinoFinal + ", " : "")
 				+ (predistribucionRotulo != null ? "predistribucionRotulo=" + predistribucionRotulo + ", " : "")

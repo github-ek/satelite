@@ -1,227 +1,115 @@
 package com.tacticlogistics.application.task.etl.components.tactic.tms.rutas;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.DocumentoDto;
 import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.LineaRutaDto;
 import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.RutaDto;
-import com.tacticlogistics.application.task.etl.readers.ExcelWorkSheetReader;
-import com.tacticlogistics.application.task.etl.readers.Reader;
-import com.tacticlogistics.infrastructure.services.Basic;
+import com.tacticlogistics.application.task.etl.components.tactic.tms.rutas.dto.SuscriptorDto;
 
-@Component("TACTIC.TMS.RUTAS.TOURSOLVER")
-public class RutasTourSolver extends ConfirmacionesDeRutas {
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Autowired
-    private ExcelWorkSheetReader reader;
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Override
-    public Pattern getPattern() {
-        return PATTERN_XLS;
-    }
+public class RutasTourSolver  {
 
-    @Override
-    protected Reader<File, String> getReader() {
-        return reader;
-    }
+	public void configurarNotificaciones(LineaRutaDto[] lineas, Map<String, List<SuscriptorDto>> confirmaciones) {
 
-    @Override
-    protected List<String> getCamposEsperados() {
-        List<String> list = new ArrayList<>();
+//		for (int i = 0; i < lineas.length; i++) {
+//			List<String> emails = getEmailsConfirmarcionEntrega(lineas[i].getClienteCodigo(), confirmaciones);
+//
+//			SuscriptorDto suscriptor = getSuscriptorOrden(getJdbcTemplate(), lineas[i].getClienteCodigo(),
+//					lineas[i].getNumeroDocumentoEntrega());
+//			if (suscriptor != null && !suscriptor.getEmail().isEmpty()) {
+//				emails.add(suscriptor.getEmail());
+//			}
+//			SuscripcionDto suscripcion = new SuscripcionDto();
+//			suscripcion.setFinalizaRuta(emails);
+//			lineas[i].setCorreos(suscripcion);
+//		}
 
-        list.add(IDENTIFICADOR_VEHICULO);
-        list.add(SECUENCIA);
-        list.add(LATITUD);
-        list.add(LONGITUD);
-        list.add(IDENTIFICADOR_ENTREGA);
-        list.add(HORA);
-        list.add(NUMERO_DOCUMENTO_ENTREGA);
-        list.add(ENTREGA_ID);
-        list.add(DESTINATARIO_NOMBRE);
-        list.add(DESTINO_DIRECCION);
-        list.add(DESTINO_BARRIO);
-        list.add(DESTINO_NOMBRE);
-        list.add(FECHA_ENTREGA_PLANEADA);
-        list.add(CLIENTE_CODIGO);
+		for (int i = 0; i < lineas.length - 1; i++) {
+			lineas[i].getCorreos().setSiguienteDestino(lineas[i + 1].getCorreos().getFinalizaRuta());
+		}
+	}
 
-        return list;
-    }
+	public void configurarDocumentos(RutaDto ruta) {
+		ruta.getDocumentos().add(new DocumentoDto("FACTURA", 1));
+	}
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Override
-    protected void preProcesarDirectorio() {
-        super.preProcesarDirectorio();
-        ((ExcelWorkSheetReader) getReader()).setWorkSheetName("Informe");
-    }
 
-    @Override
-    protected boolean ignorarRegistroDespuesDeSerSeparadoPorCampos(String[] campos,
-            Map<String, Integer> mapNameToIndex) {
-        if (super.ignorarRegistroDespuesDeSerSeparadoPorCampos(campos, mapNameToIndex)) {
-            return true;
-        }
-        String value;
-        value = getValorCampo(IDENTIFICADOR_ENTREGA, campos, mapNameToIndex);
+	public List<String> getEmailsConfirmarcionEntrega(String clienteCodigo,
+			Map<String, List<SuscriptorDto>> emailsConfirmacion) {
+		final List<String> emails = new ArrayList<>();
 
-        if (value.isEmpty() || value.equals("INICIO") || value.equals("ESPERA") || value.equals("FIN")) {
-            return true;
-        }
+		List<SuscriptorDto> list = emailsConfirmacion.get(clienteCodigo);
+		if (list != null) {
+			list.forEach(a -> {
+				emails.add(a.getEmail());
+			});
+		}
 
-        return false;
-    }
+		return emails;
+	}
 
-    @Override
-    protected String generarIdentificadorRegistro(String[] campos, Map<String, Integer> mapNameToIndex) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(getValorCampo(IDENTIFICADOR_VEHICULO, campos, mapNameToIndex));
+	public Map<String, List<SuscriptorDto>> getMapSuscriptores(NamedParameterJdbcTemplate jdbcTemplate,
+			String notificacionCodigo) {
+		String query = "" + " SELECT DISTINCT " + "      a.id_cliente " + "     ,a.codigo " + "     ,b.contacto_email "
+				+ "     ,b.contacto_nombres " + "     ,b.contacto_telefonos " + " FROM crm.clientes a "
+				+ " INNER JOIN notificaciones.suscriptores b ON " + "    b.id_cliente = a.id_cliente "
+				+ " INNER JOIN notificaciones.suscriptores_notificaciones c ON "
+				+ "    c.id_suscriptor = b.id_suscriptor " + " INNER JOIN notificaciones.notificaciones d ON "
+				+ "    d.id_notificacion = c.id_notificacion " + " WHERE " + "    0 = 0 "
+				+ " AND d.codigo = :notificacionCodigo " + " ORDER BY " + "     a.codigo" + "    ,b.contacto_email";
 
-        return sb.toString().toLowerCase();
-    }
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("notificacionCodigo", notificacionCodigo);
 
-    @Override
-    protected void cargarDestinoNombre(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex) {
-        String value;
-        StringBuffer sb;
+		List<SuscriptorDto> rows = jdbcTemplate.query(query, parameters, (rs, rowNum) -> {
+			return new SuscriptorDto(rs.getInt("id_cliente"), rs.getString("codigo"), rs.getString("contacto_email"),
+					rs.getString("contacto_nombres"), rs.getString("contacto_telefonos"));
+		});
 
-        sb = new StringBuffer(getValorCampo(DESTINATARIO_NOMBRE, campos, mapNameToIndex));
-        value = getValorCampo(DESTINO_NOMBRE, campos, mapNameToIndex);
-        if (sb.length() + value.length() > 0) {
-            sb.append(" - ");
-        }
-        sb.append(value);
-        dto.setDestinoNombre(sb.toString());
-    }
+		Map<String, List<SuscriptorDto>> map = new HashMap<>();
 
-    @Override
-    protected void cargarDestinoDireccion(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex) {
-        String value;
-        StringBuffer sb;
+		for (SuscriptorDto dto : rows) {
+			if (!map.containsKey(dto.getClienteCodigo())) {
+				map.put(dto.getClienteCodigo(), new ArrayList<SuscriptorDto>());
+			}
 
-        sb = new StringBuffer(getValorCampo(DESTINO_DIRECCION, campos, mapNameToIndex));
-        value = getValorCampo(DESTINO_BARRIO, campos, mapNameToIndex);
-        if (sb.length() + value.length() > 0) {
-            sb.append(" - ");
-        }
-        sb.append(value);
-        dto.setDestinoDireccion(sb.toString());
-    }
-    
-    @Override
-    protected void cargarDatosCliente(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex) {
-        String value;
-        value = getValorCampo(CLIENTE_CODIGO, campos, mapNameToIndex);
-        dto.setClienteCodigo(value);
-        
-        Integer integerValue;
+			map.get(dto.getClienteCodigo()).add(dto);
+		}
 
-        integerValue = null;
-        value = getValorCampo(ENTREGA_ID, campos, mapNameToIndex);
-        try {
-            integerValue = Basic.parseEntero(value, getFormatoEntero());
-        } catch (ParseException e) {
-            logParseException(key, ENTREGA_ID, value, getFormatoEntero().toPattern());
-        }
-        dto.setOrdenId(integerValue);
-    }
+		return map;
+	}
 
-    @Override
-    protected void cargarDatosVehiculo(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex) {
-        String value;
-        value = getValorCampo(IDENTIFICADOR_VEHICULO, campos, mapNameToIndex);
-        dto.setIdentificadorVehiculo(value);
-    }
 
-    @Override
-    protected void cargarFechaHoraEntrega(String key, LineaRutaDto dto, String[] campos,
-            Map<String, Integer> mapNameToIndex) {
-        String value;
-        Float floatValue;
-        Date dateValue;
-        floatValue = null;
+	public static SuscriptorDto getSuscriptorOrden(NamedParameterJdbcTemplate jdbcTemplate, String clienteCodigo,
+			String numeroOrden) {
+		String query = "" + "        SELECT " + "            a.id_cliente, " + "            a.codigo, "
+				+ "            b.destino_contacto_email, " + "            b.destino_contacto_nombres, "
+				+ "            b.destino_contacto_telefonos " + "        FROM crm.clientes a "
+				+ "        INNER JOIN ordenes.ordenes b ON " + "            b.id_cliente = a.id_cliente "
+				+ "        WHERE " + "            a.codigo = :clienteCodigo "
+				+ "        AND b.numero_documento_orden_cliente = :numeroOrden ";
 
-        value = getValorCampo(HORA, campos, mapNameToIndex);
-        value = value.replace(",", ".");
-        try {
-            DateFormat format = new SimpleDateFormat("HH:mm");
-            format.setTimeZone(TimeZone.getTimeZone("UTC"));
-            floatValue = getFormatoCoordenada().parse(value).floatValue();
-            if (floatValue >= 1.0) {
-                throw new RuntimeException("La hora suminitrada supera las 24 horas");
-            }
-            Date time = new Date((long) ((24L * 60L * 60L * 1000L) * floatValue));
-            value = format.format(time);
-        } catch (ParseException e) {
-            value = "";
-            logParseException(key, HORA, value, getFormatoHoraHHmm().toPattern());
-        } catch (RuntimeException e) {
-            value = "";
-            logParseException(key, HORA, value, getFormatoHoraHHmm().toPattern());
-        }
-        dto.setHora(value);
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("clienteCodigo", clienteCodigo);
+		parameters.put("numeroOrden", numeroOrden);
 
-        dateValue = null;
-        value = getValorCampo(FECHA_ENTREGA_PLANEADA, campos, mapNameToIndex);
-        try {
-            dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
-        } catch (ParseException e) {
-            logParseException(key, FECHA_ENTREGA_PLANEADA, value, getFormatoFechaCorta().toPattern());
-        }
-        dto.setFechaFinal(dateValue);
-        dto.setFechaInicial(dateValue);
-    }
+		List<SuscriptorDto> rows = jdbcTemplate.query(query, parameters, (rs, rowNum) -> {
+			return new SuscriptorDto(rs.getInt("id_cliente"), rs.getString("codigo"),
+					rs.getString("destino_contacto_email"), rs.getString("destino_contacto_nombres"),
+					rs.getString("destino_contacto_telefonos"));
+		});
 
-    private SimpleDateFormat formatoFechaCorta = null;
+		if (rows.size() > 0) {
+			return rows.get(0);
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    protected SimpleDateFormat getFormatoFechaCorta() {
-        if (formatoFechaCorta == null) {
-            formatoFechaCorta = new SimpleDateFormat("yyyy-MM-dd");
-        }
-        return formatoFechaCorta;
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------------------------------
-    @Override
-    protected void configurarCliente(LineaRutaDto[] lineas, Map<String, String> mapClientes) {
-        for (int i = 0; i < lineas.length; i++) {
-            for (Entry<String, String> keyValue : mapClientes.entrySet()) {
-                if (keyValue.getKey().equals(lineas[i].getClienteCodigo())) {
-                    lineas[i].setClienteCodigo(keyValue.getKey());
-                    lineas[i].setClienteNumeroIdentificacion(keyValue.getValue());
-                    break;
-                } else {
-                    if (keyValue.getValue().equals(lineas[i].getClienteCodigo())) {
-                        lineas[i].setClienteCodigo(keyValue.getKey());
-                        lineas[i].setClienteNumeroIdentificacion(keyValue.getValue());
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    
-    @Override
-    protected void configurarIdentificadorMovil(RutaDto ruta, Map<String, String> vehiculos) {
-        String numeroPlaca = ruta.getIdentificadorMovil().toUpperCase();
-        if (vehiculos.containsKey(numeroPlaca)) {
-            ruta.setIdentificadorMovil(vehiculos.get(numeroPlaca));
-        }
-    }
 }

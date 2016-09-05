@@ -12,7 +12,8 @@ import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 
 public class ETLOrdenDto {
 	private String numeroOrden;
-	private String numeroConsolidado;
+	private Date fechaOrden;
+	private String numeroOrdenCompra;
 
 	private String clienteCodigo;
 	private String tipoServicioCodigo;
@@ -48,11 +49,13 @@ public class ETLOrdenDto {
 	private String destinatarioContactoEmail;
 	private String destinatarioContactoTelefonos;
 
+	private String destinoCodigo;
 	private String destinoNombre;
 	private String destinoContactoNombres;
 	private String destinoContactoEmail;
 	private String destinoContactoTelefonos;
 
+	private String origenCodigo;
 	private String origenNombre;
 	private String origenContactoNombres;
 	private String origenContactoEmail;
@@ -76,7 +79,8 @@ public class ETLOrdenDto {
 		super();
 
 		setNumeroOrden("");
-		setNumeroConsolidado("");
+		setFechaOrden(null);
+		setNumeroOrdenCompra("");
 
 		setClienteCodigo("");
 
@@ -113,11 +117,13 @@ public class ETLOrdenDto {
 		setDestinatarioContactoEmail("");
 		setDestinatarioContactoTelefonos("");
 
+		setDestinoCodigo("");
 		setDestinoNombre("");
 		setDestinoContactoNombres("");
 		setDestinoContactoEmail("");
 		setDestinoContactoTelefonos("");
 
+		setOrigenCodigo("");
 		setOrigenNombre("");
 		setOrigenContactoNombres("");
 		setOrigenContactoEmail("");
@@ -144,8 +150,12 @@ public class ETLOrdenDto {
 		return numeroOrden;
 	}
 
-	public String getNumeroConsolidado() {
-		return numeroConsolidado;
+	public Date getFechaOrden() {
+		return fechaOrden;
+	}
+
+	public String getNumeroOrdenCompra() {
+		return numeroOrdenCompra;
 	}
 
 	public String getClienteCodigo() {
@@ -257,6 +267,10 @@ public class ETLOrdenDto {
 		return destinatarioContactoTelefonos;
 	}
 
+	public String getDestinoCodigo() {
+		return destinoCodigo;
+	}
+
 	public String getDestinoNombre() {
 		return destinoNombre;
 	}
@@ -277,6 +291,10 @@ public class ETLOrdenDto {
 		return destinoContactoTelefonos;
 	}
 
+	public String getOrigenCodigo() {
+		return origenCodigo;
+	}
+	
 	public String getOrigenNombre() {
 		return origenNombre;
 	}
@@ -337,8 +355,12 @@ public class ETLOrdenDto {
 		this.numeroOrden = substringSafe(coalesce(value, "").trim(), 0, 20);
 	}
 
-	public void setNumeroConsolidado(String value) {
-		this.numeroConsolidado = substringSafe(coalesce(value, "").trim(), 0, 20);
+	public void setFechaOrden(Date fechaOrden) {
+		this.fechaOrden = fechaOrden;
+	}
+	
+	public void setNumeroOrdenCompra(String value) {
+		this.numeroOrdenCompra = substringSafe(coalesce(value, "").trim(), 0, 20);
 	}
 
 	public void setClienteCodigo(String value) {
@@ -451,6 +473,10 @@ public class ETLOrdenDto {
 		this.destinatarioContactoTelefonos = substringSafe(coalesce(value, "").trim(), 0, 50);
 	}
 
+	public void setDestinoCodigo(String value) {
+		this.destinoCodigo = substringSafe(coalesce(value, "").trim(), 0, 20);
+	}
+
 	public void setDestinoNombre(String value) {
 		this.destinoNombre = substringSafe(coalesce(value, "").trim(), 0, 100);
 	}
@@ -473,21 +499,25 @@ public class ETLOrdenDto {
 		this.destinoContactoTelefonos = substringSafe(coalesce(value, "").trim(), 0, 50);
 	}
 
+	public void setOrigenCodigo(String value) {
+		this.origenCodigo = substringSafe(coalesce(value, "").trim(), 0, 20);
+	}
+
+	public void setOrigenNombre(String value) {
+		this.origenNombre = substringSafe(coalesce(value, "").trim(), 0, 100);
+	}
+
 	public void setOrigenContacto(Contacto contacto){
 		this.setOrigenContactoNombres(contacto.getNombres());
 		this.setOrigenContactoEmail(contacto.getEmail());
 		this.setOrigenContactoTelefonos(contacto.getTelefonos());
 	}
 
-	protected void setOrigenNombre(String value) {
-		this.origenNombre = substringSafe(coalesce(value, "").trim(), 0, 100);
-	}
-
-	protected void setOrigenContactoNombres(String value) {
+	public void setOrigenContactoNombres(String value) {
 		this.origenContactoNombres = substringSafe(coalesce(value, "").trim(), 0, 100);
 	}
 
-	protected void setOrigenContactoEmail(String value) {
+	public void setOrigenContactoEmail(String value) {
 		this.origenContactoEmail = substringSafe(coalesce(value, "").trim(), 0, 100);
 	}
 
@@ -553,15 +583,20 @@ public class ETLOrdenDto {
 	@Override
 	public String toString() {
 		return "ETLOrdenDto [" + (numeroOrden != null ? "numeroOrden=" + numeroOrden + ", " : "")
+				+ (numeroOrdenCompra != null ? "numeroOrdenCompra=" + numeroOrdenCompra + ", " : "")
 				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
 				+ (tipoServicioCodigo != null ? "tipoServicioCodigo=" + tipoServicioCodigo + ", " : "")
+				+ (tipoServicioCodigoAlterno != null ? "tipoServicioCodigoAlterno=" + tipoServicioCodigoAlterno + ", "
+						: "")
 				+ "requiereServicioDistribucion=" + requiereServicioDistribucion + ", "
 				+ (destinoCiudadNombreAlterno != null
 						? "destinoCiudadNombreAlterno=" + destinoCiudadNombreAlterno + ", " : "")
 				+ (destinoDireccion != null ? "destinoDireccion=" + destinoDireccion + ", " : "")
+				+ (destinoIndicaciones != null ? "destinoIndicaciones=" + destinoIndicaciones + ", " : "")
 				+ (origenCiudadNombreAlterno != null ? "origenCiudadNombreAlterno=" + origenCiudadNombreAlterno + ", "
 						: "")
 				+ (origenDireccion != null ? "origenDireccion=" + origenDireccion + ", " : "")
+				+ (origenIndicaciones != null ? "origenIndicaciones=" + origenIndicaciones + ", " : "")
 				+ "requiereConfirmacionCitaEntrega=" + requiereConfirmacionCitaEntrega + ", "
 				+ (fechaEntregaSugeridaMinima != null
 						? "fechaEntregaSugeridaMinima=" + fechaEntregaSugeridaMinima + ", " : "")
@@ -584,8 +619,29 @@ public class ETLOrdenDto {
 				+ (destinatarioNumeroIdentificacion != null
 						? "destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion + ", " : "")
 				+ (destinatarioNombre != null ? "destinatarioNombre=" + destinatarioNombre + ", " : "")
+				+ (destinatarioContactoNombres != null
+						? "destinatarioContactoNombres=" + destinatarioContactoNombres + ", " : "")
+				+ (destinatarioContactoEmail != null ? "destinatarioContactoEmail=" + destinatarioContactoEmail + ", "
+						: "")
+				+ (destinatarioContactoTelefonos != null
+						? "destinatarioContactoTelefonos=" + destinatarioContactoTelefonos + ", " : "")
+				+ (destinoNombre != null ? "destinoNombre=" + destinoNombre + ", " : "")
+				+ (destinoContactoNombres != null ? "destinoContactoNombres=" + destinoContactoNombres + ", " : "")
+				+ (destinoContactoEmail != null ? "destinoContactoEmail=" + destinoContactoEmail + ", " : "")
+				+ (destinoContactoTelefonos != null ? "destinoContactoTelefonos=" + destinoContactoTelefonos + ", "
+						: "")
 				+ (origenNombre != null ? "origenNombre=" + origenNombre + ", " : "")
 				+ (origenContactoNombres != null ? "origenContactoNombres=" + origenContactoNombres + ", " : "")
+				+ (origenContactoEmail != null ? "origenContactoEmail=" + origenContactoEmail + ", " : "")
+				+ (origenContactoTelefonos != null ? "origenContactoTelefonos=" + origenContactoTelefonos + ", " : "")
+				+ (requerimientosDistribucion != null
+						? "requerimientosDistribucion=" + requerimientosDistribucion + ", " : "")
+				+ (notasRequerimientosDistribucion != null
+						? "notasRequerimientosDistribucion=" + notasRequerimientosDistribucion + ", " : "")
+				+ (requerimientosAlistamiento != null
+						? "requerimientosAlistamiento=" + requerimientosAlistamiento + ", " : "")
+				+ (notasRequerimientosAlistamiento != null
+						? "notasRequerimientosAlistamiento=" + notasRequerimientosAlistamiento + ", " : "")
 				+ (valorRecaudo != null ? "valorRecaudo=" + valorRecaudo + ", " : "")
 				+ (notasConfirmacion != null ? "notasConfirmacion=" + notasConfirmacion + ", " : "")
 				+ (usuarioConfirmacion != null ? "usuarioConfirmacion=" + usuarioConfirmacion + ", " : "")

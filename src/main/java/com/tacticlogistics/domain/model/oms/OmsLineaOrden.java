@@ -4,17 +4,9 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,7 +15,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,8 +23,6 @@ import javax.validation.constraints.NotNull;
 
 import com.tacticlogistics.domain.model.common.TipoContenido;
 import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
-import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
-import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.domain.model.wms.Unidad;
@@ -242,19 +231,6 @@ public class OmsLineaOrden implements Serializable {
 	private String usuarioActualizacion;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@ElementCollection
-	@CollectionTable(name = "lineas_orden_requerimientos_distribucion", catalog = "oms", joinColumns = @JoinColumn(name = "id_linea_orden", referencedColumnName = "id_linea_orden"))
-	private Set<OmsOrdenRequerimientoDistribucionAssociation> requerimientosDistribucion;
-
-	@ElementCollection
-	@CollectionTable(name = "lineas_orden_requerimientos_alistamiento", catalog = "oms", joinColumns = @JoinColumn(name = "id_linea_orden", referencedColumnName = "id_linea_orden"))
-	private Set<OmsOrdenRequerimientoAlistamientoAssociation> requerimientosAlistamiento;
-
-	@ElementCollection
-	@CollectionTable(name = "lineas_orden_mensajes", catalog = "oms", joinColumns = @JoinColumn(name = "id_linea_orden", referencedColumnName = "id_linea_orden"))
-	private Set<MensajeEmbeddable> mensajes = new HashSet<MensajeEmbeddable>();
-
-	// ---------------------------------------------------------------------------------------------------------
 
 	public OmsLineaOrden() {
 		super();
@@ -310,10 +286,6 @@ public class OmsLineaOrden implements Serializable {
 		this.setUsuarioCreacion("");
 		this.setFechaActualizacion(null);
 		this.setUsuarioActualizacion("");
-
-		this.mensajes = new HashSet<>();
-		this.requerimientosDistribucion = new HashSet<>();
-		this.requerimientosAlistamiento = new HashSet<>();
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -564,18 +536,6 @@ public class OmsLineaOrden implements Serializable {
 		return usuarioActualizacion;
 	}
 
-	public Set<MensajeEmbeddable> getMensajes() {
-		return mensajes;
-	}
-
-	public Set<OmsOrdenRequerimientoDistribucionAssociation> getRequerimientosDistribucion() {
-		return requerimientosDistribucion;
-	}
-
-	public Set<OmsOrdenRequerimientoAlistamientoAssociation> getRequerimientosAlistamiento() {
-		return requerimientosAlistamiento;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
 	protected void setId(Integer id) {
 		this.id = id;
@@ -803,21 +763,6 @@ public class OmsLineaOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setMensajes(Set<MensajeEmbeddable> mensajes) {
-		this.mensajes = mensajes;
-	}
-
-	public void setRequerimientosDistribucion(
-			Set<OmsOrdenRequerimientoDistribucionAssociation> requerimientosDistribucion) {
-		this.requerimientosDistribucion = requerimientosDistribucion;
-	}
-
-	public void setRequerimientosAlistamiento(
-			Set<OmsOrdenRequerimientoAlistamientoAssociation> requerimientosAlistamiento) {
-		this.requerimientosAlistamiento = requerimientosAlistamiento;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
 	public void cambiarDimensiones(BigDecimal largoPorUnidad, BigDecimal anchoPorUnidad, BigDecimal altoPorUnidad,
 			BigDecimal pesoBrutoPorUnidad) {
 		this.setDimensiones(new Dimensiones(largoPorUnidad, anchoPorUnidad, altoPorUnidad, pesoBrutoPorUnidad));
@@ -894,21 +839,4 @@ public class OmsLineaOrden implements Serializable {
 				+ (predistribucionRotulo != null ? "predistribucionRotulo=" + predistribucionRotulo + ", " : "")
 				+ (valorDeclaradoPorUnidad != null ? "valorDeclaradoPorUnidad=" + valorDeclaradoPorUnidad : "") + "]";
 	}
-
-	private String toString(Collection<?> collection, int maxLen) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[");
-		int i = 0;
-		for (Iterator<?> iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++) {
-			if (i > 0) {
-				builder.append(", ");
-			}
-			builder.append(iterator.next());
-		}
-		builder.append("]");
-		return builder.toString();
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-
 }

@@ -62,7 +62,7 @@ public class Basic {
 		if (texto != null) {
 			if (!texto.isEmpty()) {
 				format.setParseBigDecimal(true);
-				Number n = format.parse(texto);
+				//Number n = format.parse(texto);
 				value = format.parse(texto).intValue();
 			}
 		}

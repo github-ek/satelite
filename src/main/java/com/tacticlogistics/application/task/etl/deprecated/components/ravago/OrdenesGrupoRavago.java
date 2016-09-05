@@ -54,9 +54,9 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                         if (!encontradoDestinoCiudadNombreAlterno) {
                             encontradoDestinoCiudadNombreAlterno = true;
 
-                            lineas[i] = reduce(lineas[i]);
-                            sb.append(OrdenDtoAtributos.DESTINO_CIUDAD_CODIGO_ALTERNO.toString()).append("\t")
-                                    .append(lineas[i]).append("\n");
+//                            lineas[i] = reduce(lineas[i]);
+//                            sb.append(OrdenDtoAtributos.DESTINO_CIUDAD_CODIGO_ALTERNO.toString()).append("\t")
+//                                    .append(lineas[i]).append("\n");
 
                             index = 0;
                         } else {
@@ -85,8 +85,8 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                                             sb.append("USUARIO_CONFIRMACION_CLIENTE")
                                             .append("\t").append(usuarioAprobacionCliente).append("\n");
 
-                                            sb.append(OrdenDtoAtributos.FECHA_ENTREGA_MAXIMA.toString())
-                                            .append("\t").append(fechaSugeridaEntregaMaxima).append("\n");
+//                                            sb.append(OrdenDtoAtributos.FECHA_ENTREGA_MAXIMA.toString())
+//                                            .append("\t").append(fechaSugeridaEntregaMaxima).append("\n");
                                         }
                                     }else{
                                         if(!encontradoInicioLineas){

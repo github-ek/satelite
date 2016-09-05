@@ -3,8 +3,6 @@ package com.tacticlogistics.application.task.etl.deprecated.components.club;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
-
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.task.etl.OrdenDtoAtributos;
 import com.tacticlogistics.application.task.etl.deprecated.components.ETLPDFFileStrategy;

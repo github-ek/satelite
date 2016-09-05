@@ -20,19 +20,17 @@ import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
 
 @Entity
-@Table(name = "DestinosOrigenes", catalog = "crm"
-/*, uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "id_destinatario_remitente", "id_ciudad", "direccion" }) }*/)
-public class DestinoOrigen implements Serializable {
+@Table(name = "destinos", catalog = "crm")
+public class Destino implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_destino_origen", unique = true, nullable = false)
+    @Column(name = "id_destino", unique = true, nullable = false)
     private Integer id;
 
-    @Column(name = "id_destinatario_remitente", nullable = false, insertable = true, updatable = false)
-    private Integer destinatarioRemitenteId;
+    @Column(name = "id_destinatario", nullable = false, insertable = true, updatable = false)
+    private Integer destinatarioId;
 
     @Column(nullable = false, length = 20)
     private String codigo;
@@ -45,10 +43,10 @@ public class DestinoOrigen implements Serializable {
     private UsoUbicacionType usoUbicacionType;
 
     @Embedded
-    private OmsDireccion direccion;
+    private Contacto contacto;
 
     @Embedded
-    private Contacto contacto;
+    private OmsDireccion direccion;
 
     private boolean activo;
 
@@ -60,7 +58,7 @@ public class DestinoOrigen implements Serializable {
     private String usuarioActualizacion;
 
 	// ---------------------------------------------------------------------------------------------------------
-    public DestinoOrigen() {
+    public Destino() {
         setActivo(true);
     }
 
@@ -68,8 +66,8 @@ public class DestinoOrigen implements Serializable {
         return id;
     }
 
-    public Integer getDestinatarioRemitenteId() {
-        return destinatarioRemitenteId;
+    public Integer getDestinatarioId() {
+        return destinatarioId;
     }
 
     public String getCodigo() {
@@ -111,13 +109,12 @@ public class DestinoOrigen implements Serializable {
     }
 
     // ---------------------------------------------------------------------------------------------------------
-    //TODO
     protected void setId(Integer id) {
         this.id = id;
     }
 
-    public void setDestinatarioRemitenteId(Integer destinatarioRemitenteId) {
-        this.destinatarioRemitenteId = destinatarioRemitenteId;
+    public void setDestinatarioId(Integer destinatarioId) {
+        this.destinatarioId = destinatarioId;
     }
 
     public void setCodigo(String codigo) {
@@ -157,7 +154,7 @@ public class DestinoOrigen implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((codigo == null) ? 0 : codigo.hashCode());
-        result = prime * result + ((destinatarioRemitenteId == null) ? 0 : destinatarioRemitenteId.hashCode());
+        result = prime * result + ((destinatarioId == null) ? 0 : destinatarioId.hashCode());
         result = prime * result + ((direccion == null) ? 0 : direccion.hashCode());
         return result;
     }
@@ -170,16 +167,16 @@ public class DestinoOrigen implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        DestinoOrigen other = (DestinoOrigen) obj;
+        Destino other = (Destino) obj;
         if (codigo == null) {
             if (other.codigo != null)
                 return false;
         } else if (!codigo.equals(other.codigo))
             return false;
-        if (destinatarioRemitenteId == null) {
-            if (other.destinatarioRemitenteId != null)
+        if (destinatarioId == null) {
+            if (other.destinatarioId != null)
                 return false;
-        } else if (!destinatarioRemitenteId.equals(other.destinatarioRemitenteId))
+        } else if (!destinatarioId.equals(other.destinatarioId))
             return false;
         if (direccion == null) {
             if (other.direccion != null)
@@ -190,38 +187,14 @@ public class DestinoOrigen implements Serializable {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("DestinoOrigen [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (destinatarioRemitenteId != null) {
-            builder.append("destinatarioRemitenteId=").append(destinatarioRemitenteId).append(", ");
-        }
-        if (codigo != null) {
-            builder.append("codigo=").append(codigo).append(", ");
-        }
-        if (nombre != null) {
-            builder.append("nombre=").append(nombre).append(", ");
-        }
-        if (usoUbicacionType != null) {
-            builder.append("usoUbicacionType=").append(usoUbicacionType).append(", ");
-        }
-        if (direccion != null) {
-            builder.append("direccion=").append(direccion).append(", ");
-        }
-        if (contacto != null) {
-            builder.append("contacto=").append(contacto).append(", ");
-    }
-        builder.append("activo=").append(activo).append(", ");
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "Destino [" + (id != null ? "id=" + id + ", " : "")
+				+ (destinatarioId != null ? "destinatarioId=" + destinatarioId + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "") + (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (usoUbicacionType != null ? "usoUbicacionType=" + usoUbicacionType + ", " : "")
+				+ (contacto != null ? "contacto=" + contacto + ", " : "")
+				+ (direccion != null ? "direccion=" + direccion + ", " : "") + "activo=" + activo + ", "
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
+	}
 }

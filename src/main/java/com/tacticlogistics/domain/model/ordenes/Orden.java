@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
@@ -40,14 +38,15 @@ import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
-import com.tacticlogistics.domain.model.common.valueobjects.Direccion;
 import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
 import com.tacticlogistics.domain.model.crm.Canal;
 import com.tacticlogistics.domain.model.crm.Cliente;
-import com.tacticlogistics.domain.model.crm.DestinatarioRemitente;
-import com.tacticlogistics.domain.model.crm.DestinoOrigen;
+import com.tacticlogistics.domain.model.crm.Destinatario;
+import com.tacticlogistics.domain.model.crm.Destino;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
+import com.tacticlogistics.domain.model.oms.CausalAnulacion;
+import com.tacticlogistics.domain.model.oms.CausalReprogramacion;
 import com.tacticlogistics.domain.model.oms.EstadoAlistamientoType;
 import com.tacticlogistics.domain.model.oms.EstadoCumplidosType;
 import com.tacticlogistics.domain.model.oms.EstadoDistribucionType;
@@ -65,7 +64,7 @@ public class Orden implements Serializable {
 	@Column(name = "id_orden", unique = true, nullable = false)
 	private Integer id;
 
-	@Column(nullable = false, length = 20, name = "numero_documento_orden_cliente")
+	@Column(nullable = false, length = 20)
 	@NotNull
 	private String numeroOrden;
 
@@ -77,10 +76,6 @@ public class Orden implements Serializable {
 	@NotNull
 	private String numeroOrdenCompra;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_consolidado", nullable = true)
-	private Consolidado consolidado;
-
 	// ---------------------------------------------------------------------------------------------------------
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_orden", nullable = false, length = 50)
@@ -88,14 +83,14 @@ public class Orden implements Serializable {
 	private EstadoOrdenType estadoOrden;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "id_estado_distribucion", nullable = false, length = 50)
-	@NotNull
-	private EstadoDistribucionType estadoDistribucion;
-
-	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_alistamiento", nullable = false, length = 50)
 	@NotNull
 	private EstadoAlistamientoType estadoAlistamiento;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "id_estado_distribucion", nullable = false, length = 50)
+	@NotNull
+	private EstadoDistribucionType estadoDistribucion;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_cumplidos", nullable = false, length = 50)
@@ -108,7 +103,7 @@ public class Orden implements Serializable {
 	@NotNull
 	private Cliente cliente;
 
-	@Column(name = "cliente_codigo", nullable = false, length = 20)
+	@Column(nullable = false, length = 20)
 	@NotNull
 	private String clienteCodigo;
 
@@ -124,40 +119,23 @@ public class Orden implements Serializable {
 	private boolean requiereServicioDistribucion;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Embedded
-	@AttributeOverrides({
-			@AttributeOverride(name = "direccion", column = @Column(name = "destino_direccion", nullable = true, length = 150)),
-			@AttributeOverride(name = "indicacionesDireccion", column = @Column(name = "destino_indicaciones_direccion", nullable = true, length = 150)),
-			@AttributeOverride(name = "longitud", column = @Column(name = "destino_longitud", nullable = true, precision = 18, scale = 15)),
-			@AttributeOverride(name = "latitud", column = @Column(name = "destino_latitud", nullable = true, precision = 18, scale = 15)),
-			@AttributeOverride(name = "direccionEstandarizada", column = @Column(name = "destino_direccion_estandarizada", nullable = true, length = 150)) })
-	@AssociationOverrides({
-			@AssociationOverride(name = "ciudad", joinColumns = @JoinColumn(name = "id_ciudad_destino", nullable = true)) })
-	private Direccion destinoDireccion;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "id_ciudad_destino", nullable = true)
+	private Ciudad ciudadDestino;
 
 	@Column(nullable = false, length = 100, name = "destino_ciudad_nombre_alterno")
 	@NotNull
 	private String destinoCiudadNombre;
 
-	// ---------------------------------------------------------------------------------------------------------
-	@Embedded
-	@AttributeOverrides({
-			@AttributeOverride(name = "direccion", column = @Column(name = "origen_direccion", nullable = true, length = 150)),
-			@AttributeOverride(name = "indicacionesDireccion", column = @Column(name = "origen_indicaciones_direccion", nullable = true, length = 150)),
-			@AttributeOverride(name = "longitud", column = @Column(name = "origen_longitud", nullable = true, precision = 18, scale = 15)),
-			@AttributeOverride(name = "latitud", column = @Column(name = "origen_latitud", nullable = true, precision = 18, scale = 15)),
-			@AttributeOverride(name = "direccionEstandarizada", column = @Column(name = "origen_direccion_estandarizada", nullable = true, length = 150)) })
-	@AssociationOverrides({
-			@AssociationOverride(name = "ciudad", joinColumns = @JoinColumn(name = "id_ciudad_origen", nullable = true)) })
-	private Direccion origenDireccion;
-
-	@Column(nullable = false, length = 100, name = "origen_ciudad_nombre_alterno")
+	@Column(nullable = false, length = 150)
 	@NotNull
-	private String origenCiudadNombre;
+	private String destinoDireccion;
+
+	@Column(nullable = false, length = 150)
+	@NotNull
+	private String destinoIndicaciones;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(name = "requiere_confirmacion_cita")
-	@NotNull
 	private boolean requiereConfirmacionCitaEntrega;
 
 	@Column(nullable = true, columnDefinition = "DATE")
@@ -173,6 +151,23 @@ public class Orden implements Serializable {
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaEntregaSugeridaMaxima;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "id_ciudad_origen", nullable = true)
+	private Ciudad ciudadOrigen;
+
+	@Column(nullable = false, length = 100, name = "origen_ciudad_nombre_alterno")
+	@NotNull
+	private String origenCiudadNombre;
+
+	@Column(nullable = false, length = 150)
+	@NotNull
+	private String origenDireccion;
+
+	@Column(nullable = false, length = 150)
+	@NotNull
+	private String origenIndicaciones;
 
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaRecogida;
@@ -193,22 +188,22 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_segmento", nullable = true)
+	@JoinColumn(name = "id_canal", nullable = true)
 	private Canal canal;
 
-	@Column(name = "segmento_codigo_alterno", length = 50, nullable = false)
+	@Column(length = 50, nullable = false)
 	@NotNull
 	private String canalCodigoAlterno;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_destinatario_remitente_destinatario", nullable = true)
-	private DestinatarioRemitente destinatario;
+	@JoinColumn(name = "id_destinatario", nullable = true)
+	private Destinatario destinatario;
 
-	@Column(nullable = false, length = 20, name = "destinatario_numeroIdentificacion_alterno")
+	@Column(nullable = false, length = 20)
 	@NotNull
 	private String destinatarioNumeroIdentificacion;
 
-	@Column(nullable = false, length = 100, name = "destinatario_nombre_alterno")
+	@Column(nullable = false, length = 100)
 	@NotNull
 	private String destinatarioNombre;
 
@@ -222,10 +217,14 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_destino_origen_destino", nullable = true)
-	private DestinoOrigen destino;
+	@JoinColumn(name = "id_destino", nullable = true)
+	private Destino destino;
 
-	@Column(nullable = false, length = 100, name = "destino_nombre_alterno")
+	@Column(nullable = false, length = 20)
+	@NotNull
+	private String destinoCodigo;
+
+	@Column(nullable = false, length = 100)
 	@NotNull
 	private String destinoNombre;
 
@@ -239,7 +238,11 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "id_origen", nullable = true)
-	private DestinoOrigen origen;
+	private Destino origen;
+
+	@Column(nullable = false, length = 20)
+	@NotNull
+	private String origenCodigo;
 
 	@Column(nullable = false, length = 100)
 	@NotNull
@@ -253,11 +256,19 @@ public class Orden implements Serializable {
 	private Contacto origenContacto;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, name = "valor_declarado")
+	// @Column(length = 200, nullable = false)
+	// @NotNull
+	// private String notasRequerimientosDistribucion;
+	//
+	// @Column(length = 200, nullable = false)
+	// @NotNull
+	// private String notasRequerimientosAlistamiento;
+
+	@Column(nullable = true)
 	private Integer valorRecaudo;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(length = 200, nullable = false, name = "notas")
+	@Column(length = 200, nullable = false)
 	@NotNull
 	private String notasConfirmacion;
 
@@ -269,6 +280,8 @@ public class Orden implements Serializable {
 	@NotNull
 	private String usuarioConfirmacion;
 
+	// ---------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -324,9 +337,45 @@ public class Orden implements Serializable {
 	private String usuarioAceptacion;
 
 	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, name = "id_corte_ruta")
+	private Integer corteRutaId;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaCorteRuta;
+
+	@Column(nullable = false, length = 50)
+	@NotNull
+	private String usuarioCorteRuta;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, name = "id_ruta")
+	private Integer rutaId;
+
+	@Column(nullable = true)
+	private Integer secuenciaRuta;
+
+	@Column(nullable = true)
+	private Integer numeroCajas;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaAsignacionRuta;
+
+	@Column(nullable = false, length = 50)
+	@NotNull
+	private String usuarioAsignacionRuta;
+
+	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaEntrega;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaEntregaLlegadaEstimada;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaEntregaLlegada;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaEntregaInicio;
@@ -334,10 +383,19 @@ public class Orden implements Serializable {
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaEntregaFin;
 
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaEntregaSalida;
+
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaRecogida;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaRecogidaLlegadaEstimada;
+
+	@Column(nullable = true, columnDefinition = "TIME(0)")
+	private Time horaRecogidaLlegada;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaRecogidaInicio;
@@ -345,27 +403,8 @@ public class Orden implements Serializable {
 	@Column(nullable = true, columnDefinition = "TIME(0)")
 	private Time horaRecogidaFin;
 
-	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCargue;
-
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCargueInicio;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCargueFin;
-
-	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaDescargue;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaDescargueInicio;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaDescargueFin;
+	private Time horaRecogidaSalida;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
@@ -384,8 +423,8 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_causal_anulacion_orden", nullable = true)
-	private CausalAnulacionOrden causalAnulacion;
+	@JoinColumn(name = "id_causal_anulacion", nullable = true)
+	private CausalAnulacion causalAnulacion;
 
 	@Column(length = 200, nullable = false)
 	@NotNull
@@ -399,18 +438,50 @@ public class Orden implements Serializable {
 	private String usuarioAnulacion;
 
 	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, name = "id_orden_original")
+	private Integer ordenOriginalId;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "id_causal_reprogramacion", nullable = true)
+	private CausalReprogramacion causalReprogramacion;
+
+	@Column(length = 200, nullable = false)
+	@NotNull
+	private String notasReprogramacion;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaReprogramacion;
+
+	@Column(nullable = false, length = 50)
+	private String usuarioReprogramacion;
+
+	// ---------------------------------------------------------------------------------------------------------
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<LineaOrden> lineas;
 
-	// TODO DOCUMENTOS
-
-	// TODO REQUERIMIENTOS
-
+	// TODO AGREGAR LA LINEA ORDEN Y ELIMINAR DE LINEAS
 	@ElementCollection
 	@CollectionTable(name = "ordenes_mensajes", catalog = "ordenes", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
 	private Set<MensajeEmbeddable> mensajes;
 
-	// ---------------------------------------------------------------------------------------------------------
+	// TODO DOCUMENTOS
+
+	// TODO REQUERIMIENTOS
+	// @ElementCollection
+	// @CollectionTable(name = "ordenes_requerimientos_distribucion", catalog =
+	// "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName
+	// = "id_orden"))
+	// private Set<OmsOrdenRequerimientoDistribucionAssociation>
+	// requerimientosDistribucion;
+	//
+	// @ElementCollection
+	// @CollectionTable(name = "ordenes_requerimientos_alistamiento", catalog =
+	// "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName
+	// = "id_orden"))
+	// private Set<OmsOrdenRequerimientoAlistamientoAssociation>
+	// requerimientosAlistamiento;
+
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
@@ -446,7 +517,7 @@ public class Orden implements Serializable {
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void anular(String usuario, Date fecha, String notas, CausalAnulacionOrden causal) {
+	public void anular(String usuario, Date fecha, String notas, CausalAnulacion causal) {
 		this.setDatosAnulacion(usuario, fecha, notas, causal);
 		this.setEstadoOrden(EstadoOrdenType.ANULADA);
 		this.setDatosActualizacion(usuario, fecha);
@@ -477,16 +548,15 @@ public class Orden implements Serializable {
 		this.setEstadoCumplidos(EstadoCumplidosType.NO_REPORTADOS);
 
 		// ---------------------------------------------------------------------------------------------------------
-		this.setDatosOrden("", null, "", null, null, null, "", true);
+		this.setDatosOrden("", null, "", null, null, "", true);
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.setDatosDireccionDestino(null, "", "");
-		this.setDatosDireccionOrigen(null, "", "");
-
-		// ---------------------------------------------------------------------------------------------------------
 		this.setRequiereConfirmacionCitaEntrega(false);
 		this.setDatosCitaEntregaSugerida(null, null, null, null);
 
+		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosDireccionOrigen(null, "", "");
 		this.setRequiereConfirmacionCitaRecogida(false);
 		this.setDatosCitaRecogidaSugerida(null, null, null, null);
 
@@ -510,27 +580,25 @@ public class Orden implements Serializable {
 
 		this.setDatosEntrega(null, null, null);
 		this.setDatosRecogida(null, null, null);
-		this.setDatosCargue(null, null, null);
-		this.setDatosDescargue(null, null, null);
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.setDatosCreacion("", null);
 		this.setDatosActualizacion("", null);
 		this.setDatosAnulacion("", null, "", null);
-
+		this.setDatosReprogramacion("", null, "", null);
+		
 		// ---------------------------------------------------------------------------------------------------------
 		this.lineas = new HashSet<>();
 		this.mensajes = new HashSet<>();
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setDatosOrden(String numeroOrden, Date fechaOrden, String numeroOrdenCompra, Consolidado consolidado,
-			Cliente cliente, TipoServicio tipoServicio, String tipoServicioCodigoAlterno,
-			boolean requiereServicioDistribucion) {
+	public void setDatosOrden(String numeroOrden, Date fechaOrden, String numeroOrdenCompra, Cliente cliente,
+			TipoServicio tipoServicio, String tipoServicioCodigoAlterno, boolean requiereServicioDistribucion) {
 		this.setNumeroOrden(numeroOrden);
 		this.setFechaOrden(fechaOrden);
 		this.setNumeroOrdenCompra(numeroOrdenCompra);
-		this.setConsolidado(consolidado);
+
 		this.setCliente(cliente);
 		this.setTipoServicio(tipoServicio);
 		this.setTipoServicioCodigoAlterno(tipoServicioCodigoAlterno);
@@ -538,13 +606,10 @@ public class Orden implements Serializable {
 	}
 
 	public void setDatosDireccionDestino(Ciudad ciudad, String direccion, String indicaciones) {
-		this.setDestinoDireccion(new Direccion(ciudad, direccion, indicaciones));
+		this.setCiudadDestino(ciudad);
 		this.setDestinoCiudadNombre((ciudad == null) ? "" : ciudad.getNombreAlterno());
-	}
-
-	public void setDatosDireccionOrigen(Ciudad ciudad, String direccion, String indicaciones) {
-		this.setOrigenDireccion(new Direccion(ciudad, direccion, indicaciones));
-		this.setOrigenCiudadNombre((ciudad == null) ? "" : ciudad.getNombreAlterno());
+		this.setDestinoDireccion(direccion);
+		this.setDestinoIndicaciones(indicaciones);
 	}
 
 	public void setDatosCitaEntregaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
@@ -554,6 +619,13 @@ public class Orden implements Serializable {
 		this.setHoraEntregaSugeridaMaxima(hoMa);
 	}
 
+	public void setDatosDireccionOrigen(Ciudad ciudad, String direccion, String indicaciones) {
+		this.setCiudadOrigen(ciudad);
+		this.setOrigenCiudadNombre((ciudad == null) ? "" : ciudad.getNombreAlterno());
+		this.setOrigenDireccion(direccion);
+		this.setOrigenIndicaciones(indicaciones);
+	}
+
 	public void setDatosCitaRecogidaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
 		this.setFechaRecogidaSugeridaMinima(feMi);
 		this.setFechaRecogidaSugeridaMaxima(feMa);
@@ -561,7 +633,7 @@ public class Orden implements Serializable {
 		this.setHoraRecogidaSugeridaMaxima(hoMa);
 	}
 
-	public void setDatosDestinatario(Canal canal, String canalCodigoAlterno, DestinatarioRemitente destinatario,
+	public void setDatosDestinatario(Canal canal, String canalCodigoAlterno, Destinatario destinatario,
 			Contacto contacto) {
 		if (contacto == null) {
 			if (destinatario != null) {
@@ -579,38 +651,40 @@ public class Orden implements Serializable {
 		this.setDestinatarioContacto(contacto);
 	}
 
-	public void setDatosPuntoDestino(DestinoOrigen ubicacion, Contacto contacto) {
+	public void setDatosPuntoDestino(Destino punto, Contacto contacto) {
 		if (contacto == null) {
-			if (ubicacion != null) {
-				contacto = ubicacion.getContacto();
+			if (punto != null) {
+				contacto = punto.getContacto();
 			}
 			if (contacto == null) {
 				contacto = new Contacto();
 			}
 		}
-		this.setDestino(ubicacion);
-		this.setDestinoNombre((ubicacion == null) ? "" : ubicacion.getNombre());
+		this.setDestino(punto);
+		this.setDestinoCodigo((punto == null) ? "" : punto.getCodigo());
+		this.setDestinoNombre((punto == null) ? "" : punto.getNombre());
 		this.setDestinoContacto(contacto);
 	}
 
-	public void setDatosPuntoOrigen(DestinoOrigen ubicacion, Contacto contacto) {
+	public void setDatosPuntoOrigen(Destino punto, Contacto contacto) {
 		if (contacto == null) {
-			if (ubicacion != null) {
-				contacto = ubicacion.getContacto();
+			if (punto != null) {
+				contacto = punto.getContacto();
 			}
 			if (contacto == null) {
 				contacto = new Contacto();
 			}
 		}
-		this.setOrigen(ubicacion);
-		this.setOrigenNombre((ubicacion == null) ? "" : ubicacion.getNombre());
+		this.setOrigen(punto);
+		this.setOrigenCodigo((punto == null) ? "" : punto.getCodigo());
+		this.setOrigenNombre((punto == null) ? "" : punto.getNombre());
 		this.setOrigenContacto(contacto);
 	}
 
 	public void setDatosConfirmacion(String usuario, Date fecha, String notas) {
-		this.setUsuarioConfirmacion(usuario);
-		this.setFechaConfirmacion(fecha);
 		this.setNotasConfirmacion(notas);
+		this.setFechaConfirmacion(fecha);
+		this.setUsuarioConfirmacion(usuario);
 	}
 
 	public void setDatosCitaEntrega(Date fecha, Time hoMi, Time hoMa) {
@@ -637,33 +711,41 @@ public class Orden implements Serializable {
 	}
 
 	public void setDatosAceptacion(String usuario, Date fecha, String notas) {
-		this.setUsuarioAceptacion(usuario);
-		this.setFechaAceptacion(fecha);
 		this.setNotasAceptacion(notas);
+		this.setFechaAceptacion(fecha);
+		this.setUsuarioAceptacion(usuario);
 	}
 
+	public void setDatosCorteRuta(Integer corteRutaId, String usuario, Date fecha) {
+		this.setCorteRutaId(corteRutaId);
+		this.setFechaCorteRuta(fecha);
+		this.setUsuarioCorteRuta(usuario);
+	}
+
+	public void setDatosRuta(Integer rutaId, Integer secuenciaRuta, Integer numeroCajas, String usuario, Date fecha) {
+		this.setRutaId(rutaId);
+		this.setSecuenciaRuta(secuenciaRuta);
+		this.setNumeroCajas(numeroCajas);
+		this.setFechaAsignacionRuta(fecha);
+		this.setUsuarioAsignacionRuta(usuario);
+	}
+
+	// TODO HORA DE LLEGADA ESTIMADA
+	// TODO HORA ESTIMADA
+	// TODO HORA SALIDA
 	public void setDatosEntrega(Date fecha, Time hoMi, Time hoMa) {
 		this.setFechaEntrega(fecha);
 		this.setHoraEntregaInicio(hoMi);
 		this.setHoraEntregaFin(hoMa);
 	}
 
+	// TODO HORA DE LLEGADA ESTIMADA
+	// TODO HORA ESTIMADA
+	// TODO HORA SALIDA
 	public void setDatosRecogida(Date fecha, Time hoMi, Time hoMa) {
 		this.setFechaRecogida(fecha);
 		this.setHoraRecogidaInicio(hoMi);
 		this.setHoraRecogidaFin(hoMa);
-	}
-
-	public void setDatosCargue(Date fecha, Time hoMi, Time hoMa) {
-		this.setFechaCargue(fecha);
-		this.setHoraCargueInicio(hoMi);
-		this.setHoraCargueFin(hoMa);
-	}
-
-	public void setDatosDescargue(Date fecha, Time hoMi, Time hoMa) {
-		this.setFechaDescargue(fecha);
-		this.setHoraDescargueInicio(hoMi);
-		this.setHoraDescargueFin(hoMa);
 	}
 
 	public void setDatosCreacion(String usuario, Date fecha) {
@@ -676,12 +758,22 @@ public class Orden implements Serializable {
 		this.setFechaActualizacion(fecha);
 	}
 
-	public void setDatosAnulacion(String usuario, Date fecha, String notas, CausalAnulacionOrden causal) {
+	protected void setDatosAnulacion(String usuario, Date fecha, String notas, CausalAnulacion causal) {
 		this.setUsuarioAnulacion(usuario);
 		this.setFechaAnulacion(fecha);
 		this.setNotasAnulacion(notas);
 		this.setCausalAnulacion(causal);
 	}
+
+	//TODO ORDEN ORIGINAL
+	protected void setDatosReprogramacion(String usuario, Date fecha, String notas, CausalReprogramacion causal) {
+		this.setUsuarioReprogramacion(usuario);
+		this.setFechaReprogramacion(fecha);
+		this.setNotasReprogramacion(notas);
+		this.setCausalReprogramacion(causal);
+	}
+
+	// TODO DATOS REPROGRAMACION
 
 	// ---------------------------------------------------------------------------------------------------------
 	public Integer getId() {
@@ -698,10 +790,6 @@ public class Orden implements Serializable {
 
 	public String getNumeroOrdenCompra() {
 		return numeroOrdenCompra;
-	}
-
-	public Consolidado getConsolidado() {
-		return consolidado;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -744,29 +832,20 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Direccion getDestinoDireccion() {
-		if (this.destinoDireccion == null) {
-			this.destinoDireccion = new Direccion();
-		}
-
-		return destinoDireccion;
+	public Ciudad getCiudadDestino() {
+		return ciudadDestino;
 	}
 
 	public String getDestinoCiudadNombre() {
 		return destinoCiudadNombre;
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
-	public Direccion getOrigenDireccion() {
-		if (this.origenDireccion == null) {
-			this.origenDireccion = new Direccion();
-		}
-
-		return origenDireccion;
+	public String getDestinoDireccion() {
+		return destinoDireccion;
 	}
 
-	public String getOrigenCiudadNombre() {
-		return origenCiudadNombre;
+	public String getDestinoIndicaciones() {
+		return destinoIndicaciones;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -788,6 +867,23 @@ public class Orden implements Serializable {
 
 	public Time getHoraEntregaSugeridaMaxima() {
 		return horaEntregaSugeridaMaxima;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Ciudad getCiudadOrigen() {
+		return ciudadOrigen;
+	}
+
+	public String getOrigenCiudadNombre() {
+		return origenCiudadNombre;
+	}
+
+	public String getOrigenDireccion() {
+		return origenDireccion;
+	}
+
+	public String getOrigenIndicaciones() {
+		return origenIndicaciones;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -821,7 +917,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public DestinatarioRemitente getDestinatario() {
+	public Destinatario getDestinatario() {
 		return destinatario;
 	}
 
@@ -841,8 +937,12 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public DestinoOrigen getDestino() {
+	public Destino getDestino() {
 		return destino;
+	}
+
+	public String getDestinoCodigo() {
+		return destinoCodigo;
 	}
 
 	public String getDestinoNombre() {
@@ -858,8 +958,12 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public DestinoOrigen getOrigen() {
+	public Destino getOrigen() {
 		return origen;
+	}
+
+	public String getOrigenCodigo() {
+		return origenCodigo;
 	}
 
 	public String getOrigenNombre() {
@@ -954,8 +1058,50 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	public Integer getCorteRutaId() {
+		return corteRutaId;
+	}
+
+	public Date getFechaCorteRuta() {
+		return fechaCorteRuta;
+	}
+
+	public String getUsuarioCorteRuta() {
+		return usuarioCorteRuta;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public Integer getRutaId() {
+		return rutaId;
+	}
+
+	public Integer getSecuenciaRuta() {
+		return secuenciaRuta;
+	}
+
+	public Integer getNumeroCajas() {
+		return numeroCajas;
+	}
+
+	public Date getFechaAsignacionRuta() {
+		return fechaAsignacionRuta;
+	}
+
+	public String getUsuarioAsignacionRuta() {
+		return usuarioAsignacionRuta;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
 	public Date getFechaEntrega() {
 		return fechaEntrega;
+	}
+
+	public Time getHoraEntregaLlegadaEstimada() {
+		return horaEntregaLlegadaEstimada;
+	}
+
+	public Time getHoraEntregaLlegada() {
+		return horaEntregaLlegada;
 	}
 
 	public Time getHoraEntregaInicio() {
@@ -966,9 +1112,21 @@ public class Orden implements Serializable {
 		return horaEntregaFin;
 	}
 
+	public Time getHoraEntregaSalida() {
+		return horaEntregaSalida;
+	}
+
 	// ---------------------------------------------------------------------------------------------------------
 	public Date getFechaRecogida() {
 		return fechaRecogida;
+	}
+
+	public Time getHoraRecogidaLlegadaEstimada() {
+		return horaRecogidaLlegadaEstimada;
+	}
+
+	public Time getHoraRecogidaLlegada() {
+		return horaRecogidaLlegada;
 	}
 
 	public Time getHoraRecogidaInicio() {
@@ -979,30 +1137,8 @@ public class Orden implements Serializable {
 		return horaRecogidaFin;
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCargue() {
-		return fechaCargue;
-	}
-
-	public Time getHoraCargueInicio() {
-		return horaCargueInicio;
-	}
-
-	public Time getHoraCargueFin() {
-		return horaCargueFin;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaDescargue() {
-		return fechaDescargue;
-	}
-
-	public Time getHoraDescargueInicio() {
-		return horaDescargueInicio;
-	}
-
-	public Time getHoraDescargueFin() {
-		return horaDescargueFin;
+	public Time getHoraRecogidaSalida() {
+		return horaRecogidaSalida;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -1023,7 +1159,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public CausalAnulacionOrden getCausalAnulacion() {
+	public CausalAnulacion getCausalAnulacion() {
 		return causalAnulacion;
 	}
 
@@ -1040,6 +1176,26 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	public Integer getOrdenOriginalId() {
+		return ordenOriginalId;
+	}
+
+	public CausalReprogramacion getCausalReprogramacion() {
+		return causalReprogramacion;
+	}
+
+	public String getNotasReprogramacion() {
+		return notasReprogramacion;
+	}
+
+	public Date getFechaReprogramacion() {
+		return fechaReprogramacion;
+	}
+
+	public String getUsuarioReprogramacion() {
+		return usuarioReprogramacion;
+	}
+
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
@@ -1055,20 +1211,16 @@ public class Orden implements Serializable {
 		this.numeroOrdenCompra = coalesce(value, "");
 	}
 
-	protected void setConsolidado(Consolidado consolidado) {
-		this.consolidado = consolidado;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
 	protected void setEstadoOrden(EstadoOrdenType estadoOrden) {
 		this.estadoOrden = estadoOrden;
 	}
 
-	public void setEstadoDistribucion(EstadoDistribucionType estadoDistribucion) {
+	protected void setEstadoDistribucion(EstadoDistribucionType estadoDistribucion) {
 		this.estadoDistribucion = estadoDistribucion;
 	}
 
-	public void setEstadoAlistamiento(EstadoAlistamientoType estadoAlistamiento) {
+	protected void setEstadoAlistamiento(EstadoAlistamientoType estadoAlistamiento) {
 		this.estadoAlistamiento = estadoAlistamiento;
 	}
 
@@ -1100,21 +1252,20 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setDestinoDireccion(Direccion destinoDireccion) {
-		this.destinoDireccion = new Direccion(destinoDireccion);
+	protected void setCiudadDestino(Ciudad ciudadDestino) {
+		this.ciudadDestino = ciudadDestino;
 	}
 
-	protected void setDestinoCiudadNombre(String destinoCiudadNombre) {
-		this.destinoCiudadNombre = destinoCiudadNombre;
+	protected void setDestinoCiudadNombre(String value) {
+		this.destinoCiudadNombre = coalesce(value, "");
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setOrigenDireccion(Direccion origenDireccion) {
-		this.origenDireccion = new Direccion(origenDireccion);
+	protected void setDestinoDireccion(String value) {
+		this.destinoDireccion = coalesce(value, "");
 	}
 
-	protected void setOrigenCiudadNombre(String origenCiudadNombre) {
-		this.origenCiudadNombre = origenCiudadNombre;
+	protected void setDestinoIndicaciones(String value) {
+		this.destinoIndicaciones = coalesce(value, "");
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -1139,6 +1290,23 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	protected void setCiudadOrigen(Ciudad ciudadOrigen) {
+		this.ciudadOrigen = ciudadOrigen;
+	}
+
+	protected void setOrigenCiudadNombre(String value) {
+		this.origenCiudadNombre = coalesce(value, "");
+	}
+
+	protected void setOrigenDireccion(String value) {
+		this.origenDireccion = coalesce(value, "");
+	}
+
+	protected void setOrigenIndicaciones(String value) {
+		this.origenIndicaciones = coalesce(value, "");
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
 	public void setRequiereConfirmacionCitaRecogida(boolean requiereConfirmacionCitaRecogida) {
 		this.requiereConfirmacionCitaRecogida = requiereConfirmacionCitaRecogida;
 	}
@@ -1160,7 +1328,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setCanal(Canal canal) {
+	protected void setCanal(Canal canal) {
 		this.canal = canal;
 	}
 
@@ -1169,7 +1337,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setDestinatario(DestinatarioRemitente destinatario) {
+	protected void setDestinatario(Destinatario destinatario) {
 		this.destinatario = destinatario;
 	}
 
@@ -1181,26 +1349,34 @@ public class Orden implements Serializable {
 		this.destinatarioNombre = coalesce(value, "");
 	}
 
-	public void setDestinatarioContacto(Contacto value) {
+	protected void setDestinatarioContacto(Contacto value) {
 		this.destinatarioContacto = coalesce(value, new Contacto("", "", ""));
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setDestino(DestinoOrigen destino) {
+	protected void setDestino(Destino destino) {
 		this.destino = destino;
+	}
+
+	protected void setDestinoCodigo(String value) {
+		this.destinoCodigo = coalesce(value, "");
 	}
 
 	protected void setDestinoNombre(String value) {
 		this.destinoNombre = coalesce(value, "");
 	}
 
-	public void setDestinoContacto(Contacto value) {
+	protected void setDestinoContacto(Contacto value) {
 		this.destinoContacto = coalesce(value, new Contacto("", "", ""));
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setOrigen(DestinoOrigen origen) {
+	protected void setOrigen(Destino origen) {
 		this.origen = origen;
+	}
+
+	protected void setOrigenCodigo(String value) {
+		this.origenCodigo = coalesce(value, "");
 	}
 
 	protected void setOrigenNombre(String value) {
@@ -1217,7 +1393,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setNotasConfirmacion(String value) {
+	protected void setNotasConfirmacion(String value) {
 		this.notasConfirmacion = coalesce(value, "");
 	}
 
@@ -1278,8 +1454,8 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setNotasAceptacion(String notasAceptacion) {
-		this.notasAceptacion = notasAceptacion;
+	protected void setNotasAceptacion(String value) {
+		this.notasAceptacion = coalesce(value, "");
 	}
 
 	protected void setFechaAceptacion(Date fechaAceptacion) {
@@ -1291,8 +1467,50 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	protected void setCorteRutaId(Integer corteRutaId) {
+		this.corteRutaId = corteRutaId;
+	}
+
+	protected void setFechaCorteRuta(Date fechaCorteRuta) {
+		this.fechaCorteRuta = fechaCorteRuta;
+	}
+
+	protected void setUsuarioCorteRuta(String value) {
+		this.usuarioCorteRuta = coalesce(value, "");
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setRutaId(Integer rutaId) {
+		this.rutaId = rutaId;
+	}
+
+	protected void setSecuenciaRuta(Integer secuenciaRuta) {
+		this.secuenciaRuta = secuenciaRuta;
+	}
+
+	protected void setNumeroCajas(Integer numeroCajas) {
+		this.numeroCajas = numeroCajas;
+	}
+
+	protected void setFechaAsignacionRuta(Date fechaAsignacionRuta) {
+		this.fechaAsignacionRuta = fechaAsignacionRuta;
+	}
+
+	protected void setUsuarioAsignacionRuta(String value) {
+		this.usuarioAsignacionRuta = coalesce(value, "");
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
 	protected void setFechaEntrega(Date fechaEntrega) {
 		this.fechaEntrega = fechaEntrega;
+	}
+
+	protected void setHoraEntregaLlegada(Time horaEntregaLlegada) {
+		this.horaEntregaLlegada = horaEntregaLlegada;
+	}
+
+	protected void setHoraEntregaLlegadaEstimada(Time horaEntregaLlegadaEstimada) {
+		this.horaEntregaLlegadaEstimada = horaEntregaLlegadaEstimada;
 	}
 
 	protected void setHoraEntregaInicio(Time horaEntregaInicio) {
@@ -1303,9 +1521,21 @@ public class Orden implements Serializable {
 		this.horaEntregaFin = horaEntregaFin;
 	}
 
+	protected void setHoraEntregaSalida(Time horaEntregaSalida) {
+		this.horaEntregaSalida = horaEntregaSalida;
+	}
+
 	// ---------------------------------------------------------------------------------------------------------
 	protected void setFechaRecogida(Date fechaRecogida) {
 		this.fechaRecogida = fechaRecogida;
+	}
+
+	protected void setHoraRecogidaLlegadaEstimada(Time horaRecogidaLlegadaEstimada) {
+		this.horaRecogidaLlegadaEstimada = horaRecogidaLlegadaEstimada;
+	}
+
+	protected void setHoraRecogidaLlegada(Time horaRecogidaLlegada) {
+		this.horaRecogidaLlegada = horaRecogidaLlegada;
 	}
 
 	protected void setHoraRecogidaInicio(Time horaRecogidaInicio) {
@@ -1316,30 +1546,8 @@ public class Orden implements Serializable {
 		this.horaRecogidaFin = horaRecogidaFin;
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCargue(Date fechaCargue) {
-		this.fechaCargue = fechaCargue;
-	}
-
-	protected void setHoraCargueInicio(Time horaCargueInicio) {
-		this.horaCargueInicio = horaCargueInicio;
-	}
-
-	protected void setHoraCargueFin(Time horaCargueFin) {
-		this.horaCargueFin = horaCargueFin;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaDescargue(Date fechaDescargue) {
-		this.fechaDescargue = fechaDescargue;
-	}
-
-	protected void setHoraDescargueInicio(Time horaDescargueInicio) {
-		this.horaDescargueInicio = horaDescargueInicio;
-	}
-
-	protected void setHoraDescargueFin(Time horaDescargueFin) {
-		this.horaDescargueFin = horaDescargueFin;
+	protected void setHoraRecogidaSalida(Time horaRecogidaSalida) {
+		this.horaRecogidaSalida = horaRecogidaSalida;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -1360,7 +1568,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setCausalAnulacion(CausalAnulacionOrden causalAnulacion) {
+	protected void setCausalAnulacion(CausalAnulacion causalAnulacion) {
 		this.causalAnulacion = causalAnulacion;
 	}
 
@@ -1374,6 +1582,27 @@ public class Orden implements Serializable {
 
 	protected void setUsuarioAnulacion(String value) {
 		this.usuarioAnulacion = coalesce(value, "");
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	protected void setOrdenOriginalId(Integer ordenOriginalId) {
+		this.ordenOriginalId = ordenOriginalId;
+	}
+
+	protected void setCausalReprogramacion(CausalReprogramacion causalReprogramacion) {
+		this.causalReprogramacion = causalReprogramacion;
+	}
+
+	protected void setNotasReprogramacion(String notasReprogramacion) {
+		this.notasReprogramacion = notasReprogramacion;
+	}
+
+	protected void setFechaReprogramacion(Date fechaReprogramacion) {
+		this.fechaReprogramacion = fechaReprogramacion;
+	}
+
+	protected void setUsuarioReprogramacion(String usuarioReprogramacion) {
+		this.usuarioReprogramacion = usuarioReprogramacion;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------

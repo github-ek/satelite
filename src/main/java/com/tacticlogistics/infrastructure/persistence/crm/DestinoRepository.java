@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tacticlogistics.domain.model.crm.DestinoOrigen;
+import com.tacticlogistics.domain.model.crm.Destino;
 
-public interface DestinoOrigenRepository extends JpaRepository<DestinoOrigen, Integer> {
-	List<DestinoOrigen> findAllByDestinatarioRemitenteIdAndDireccionCiudadIdOrderByCodigoAscNombreAsc(Integer destinatarioRemitenteId,Integer ciudadId);
+public interface DestinoRepository extends JpaRepository<Destino, Integer> {
+	List<Destino> findAllByDestinatarioIdAndDireccionCiudadIdOrderByCodigoAscNombreAsc(Integer destinatarioId,Integer ciudadId);
 
-	List<DestinoOrigen> findAllByDestinatarioRemitenteIdAndDireccionCiudadIdAndDireccionDireccionOrderByCodigoAscNombreAsc(Integer destinatarioRemitenteId,Integer ciudadId,String direccion);
+	List<Destino> findAllByDestinatarioIdAndDireccionCiudadIdAndDireccionDireccionOrderByCodigoAscNombreAsc(Integer destinatarioId,Integer ciudadId,String direccion);
 
-	List<DestinoOrigen> findAllByDestinatarioRemitenteIdAndDireccionDireccionOrderByCodigoAscNombreAsc(Integer destinatarioRemitenteId,String direccion);
+	List<Destino> findAllByDestinatarioIdAndDireccionDireccionOrderByCodigoAscNombreAsc(Integer destinatarioId,String direccion);
 }

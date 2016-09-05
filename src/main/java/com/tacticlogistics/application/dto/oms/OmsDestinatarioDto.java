@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.tacticlogistics.domain.model.common.IdentificacionType;
 
-public class OmsDestinatarioRemitenteDto {
+public class OmsDestinatarioDto {
     private Integer id;
 
     private Integer clienteId;
@@ -40,7 +40,7 @@ public class OmsDestinatarioRemitenteDto {
     private String usuarioActualizacion;
 
     // ---------------------------------------------------------------------------------------------------------
-    public OmsDestinatarioRemitenteDto() {
+    public OmsDestinatarioDto() {
         super();
         this.setClienteCodigo("");
         this.setClienteNombre("");
@@ -277,7 +277,7 @@ public class OmsDestinatarioRemitenteDto {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        OmsDestinatarioRemitenteDto other = (OmsDestinatarioRemitenteDto) obj;
+        OmsDestinatarioDto other = (OmsDestinatarioDto) obj;
         if (clienteId == null) {
             if (other.clienteId != null)
                 return false;
@@ -292,77 +292,30 @@ public class OmsDestinatarioRemitenteDto {
     }
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("OmsDestinatarioRemitenteDto [");
-        if (id != null) {
-            builder.append("id=").append(id).append(", ");
-        }
-        if (clienteId != null) {
-            builder.append("clienteId=").append(clienteId).append(", ");
-        }
-        if (clienteCodigo != null) {
-            builder.append("clienteCodigo=").append(clienteCodigo).append(", ");
-        }
-        if (clienteNombre != null) {
-            builder.append("clienteNombre=").append(clienteNombre).append(", ");
-        }
-        if (canalId != null) {
-            builder.append("canalId=").append(canalId).append(", ");
-        }
-        if (canalCodigo != null) {
-            builder.append("canalCodigo=").append(canalCodigo).append(", ");
-        }
-        if (canalNombre != null) {
-            builder.append("canalNombre=").append(canalNombre).append(", ");
-        }
-        if (codigo != null) {
-            builder.append("codigo=").append(codigo).append(", ");
-        }
-        if (identificacionType != null) {
-            builder.append("identificacionType=").append(identificacionType).append(", ");
-        }
-        if (numeroIdentificacion != null) {
-            builder.append("numeroIdentificacion=").append(numeroIdentificacion).append(", ");
-        }
-        if (digitoVerificacion != null) {
-            builder.append("digitoVerificacion=").append(digitoVerificacion).append(", ");
-        }
-        if (nombre != null) {
-            builder.append("nombre=").append(nombre).append(", ");
-        }
-        if (nombreComercial != null) {
-            builder.append("nombreComercial=").append(nombreComercial).append(", ");
-        }
-        if (direccionCiudadId != null) {
-            builder.append("direccionCiudadId=").append(direccionCiudadId).append(", ");
-        }
-        if (direccionCiudadNombre != null) {
-            builder.append("direccionCiudadNombre=").append(direccionCiudadNombre).append(", ");
-        }
-        if (direccionDireccion != null) {
-            builder.append("direccionDireccion=").append(direccionDireccion).append(", ");
-        }
-        if (direccionIndicacionesDireccion != null) {
-            builder.append("direccionIndicacionesDireccion=").append(direccionIndicacionesDireccion).append(", ");
-        }
-        if (contactoNombres != null) {
-            builder.append("contactoNombres=").append(contactoNombres).append(", ");
-        }
-        if (contactoEmail != null) {
-            builder.append("contactoEmail=").append(contactoEmail).append(", ");
-        }
-        if (contactoTelefonos != null) {
-            builder.append("contactoTelefonos=").append(contactoTelefonos).append(", ");
-        }
-        builder.append("activo=").append(activo).append(", ");
-        if (fechaActualizacion != null) {
-            builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-        }
-        if (usuarioActualizacion != null) {
-            builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		return "OmsDestinatarioDto [" + (id != null ? "id=" + id + ", " : "")
+				+ (clienteId != null ? "clienteId=" + clienteId + ", " : "")
+				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
+				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
+				+ (canalId != null ? "canalId=" + canalId + ", " : "")
+				+ (canalCodigo != null ? "canalCodigo=" + canalCodigo + ", " : "")
+				+ (canalNombre != null ? "canalNombre=" + canalNombre + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "")
+				+ (identificacionType != null ? "identificacionType=" + identificacionType + ", " : "")
+				+ (numeroIdentificacion != null ? "numeroIdentificacion=" + numeroIdentificacion + ", " : "")
+				+ (digitoVerificacion != null ? "digitoVerificacion=" + digitoVerificacion + ", " : "")
+				+ (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (nombreComercial != null ? "nombreComercial=" + nombreComercial + ", " : "")
+				+ (direccionCiudadId != null ? "direccionCiudadId=" + direccionCiudadId + ", " : "")
+				+ (direccionCiudadNombre != null ? "direccionCiudadNombre=" + direccionCiudadNombre + ", " : "")
+				+ (direccionDireccion != null ? "direccionDireccion=" + direccionDireccion + ", " : "")
+				+ (direccionIndicacionesDireccion != null
+						? "direccionIndicacionesDireccion=" + direccionIndicacionesDireccion + ", " : "")
+				+ (contactoNombres != null ? "contactoNombres=" + contactoNombres + ", " : "")
+				+ (contactoEmail != null ? "contactoEmail=" + contactoEmail + ", " : "")
+				+ (contactoTelefonos != null ? "contactoTelefonos=" + contactoTelefonos + ", " : "") + "activo="
+				+ activo + ", " + (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion + ", " : "")
+				+ (canales != null ? "canales=" + canales : "") + "]";
+	}
 }
