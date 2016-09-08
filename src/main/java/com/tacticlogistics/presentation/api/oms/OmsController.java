@@ -25,7 +25,6 @@ import com.tacticlogistics.application.services.crm.DestinatariosApplicationServ
 import com.tacticlogistics.application.services.crm.DestinosApplicationService;
 import com.tacticlogistics.application.services.oms.OmsApplicationService;
 import com.tacticlogistics.application.services.seguridad.UsuarioApplicationService;
-import com.tacticlogistics.application.services.wms.BodegasApplicationService;
 import com.tacticlogistics.application.services.wms.ProductosApplicationService;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.oms.OmsOrden;

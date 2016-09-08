@@ -80,7 +80,7 @@ public class OrdenesGrupoRavago extends ETLPDFFileStrategy<ETLOrdenDto> {
                                         if (index == 5) {
                                             encontradoUsuarioAprobacionCliente = true;
                                             String usuarioAprobacionCliente = lineas[i].substring(0, lineas[i].length() - 8);
-                                            String fechaSugeridaEntregaMaxima =  lineas[i].substring(lineas[i].length() - 8);
+                                            //String fechaSugeridaEntregaMaxima =  lineas[i].substring(lineas[i].length() - 8);
                                             
                                             sb.append("USUARIO_CONFIRMACION_CLIENTE")
                                             .append("\t").append(usuarioAprobacionCliente).append("\n");

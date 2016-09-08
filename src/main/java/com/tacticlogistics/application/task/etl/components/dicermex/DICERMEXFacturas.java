@@ -3,18 +3,19 @@ package com.tacticlogistics.application.task.etl.components.dicermex;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_CANAL_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_IDENTIFICACION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINATARIO_NOMBRE;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CIUDAD_NOMBRE_ALTERNO;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CONTACTO_EMAIL;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CONTACTO_TELEFONOS;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_DIRECCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_NOMBRE;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NOTAS;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.PREFIJO_NUMERO_ORDEN;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.REQUERIMIENTOS_DISTRIBUCION;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MAXIMA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MINIMA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MAXIMA;
 import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MINIMA;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NOTAS;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.NUMERO_ORDEN;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.PREFIJO_NUMERO_ORDEN;
+import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.REQUERIMIENTOS_DISTRIBUCION;
 
 import java.io.File;
 import java.sql.Time;
@@ -45,11 +46,7 @@ import com.tacticlogistics.infrastructure.persistence.calendario.CalendarioRepos
 import com.tacticlogistics.infrastructure.services.Basic;
 
 import ch.qos.logback.classic.Logger;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.DESTINO_CIUDAD_NOMBRE_ALTERNO;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.FECHA_MINIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MAXIMA;
-import static com.tacticlogistics.application.task.etl.OrdenDtoAtributos.HORA_MINIMA;
+
 
 @Component("DICERMEX.")
 public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
@@ -271,15 +268,20 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
     @Override
     @Transactional(readOnly = false)
     protected void cargar(Map<String, ETLOrdenDto> map) {
-        for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
-            ETLOrdenDto dto = entry.getValue();
-            try {
-                Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
-                logInfo(dto.getNumeroOrden(), "", "OK");
-            } catch (Exception e) {
-                logError(dto.getNumeroOrden(), "", e.getMessage());
-            }
-        }
+		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
+			ETLOrdenDto dto = entry.getValue();
+			try {
+				Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
+				if (orden != null) {
+					logInfo(dto.getNumeroOrden(), "", "OK");
+				} else {
+					logWarning(dto.getNumeroOrden(), "",
+							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.");
+				}
+			} catch (Exception e) {
+				logError(dto.getNumeroOrden(), "", e.getMessage());
+			}
+		}
     }
 
     @Override

@@ -314,7 +314,12 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			ETLOrdenDto dto = entry.getValue();
 			try {
 				Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
-				logInfo(dto.getNumeroOrden(), "", "OK");
+				if (orden != null) {
+					logInfo(dto.getNumeroOrden(), "", "OK");
+				} else {
+					logWarning(dto.getNumeroOrden(), "",
+							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.");
+				}
 			} catch (Exception e) {
 				logError(dto.getNumeroOrden(), "", e.getMessage());
 			}

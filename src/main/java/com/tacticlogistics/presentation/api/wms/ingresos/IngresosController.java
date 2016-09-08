@@ -31,6 +31,7 @@ import com.tacticlogistics.presentation.api.wms.ingresos.dto.ListItemTipoVehicul
 import com.tacticlogistics.presentation.api.wms.ingresos.dto.ListItemTransportadoraDto;
 import com.tacticlogistics.presentation.api.wms.ingresos.dto.LlegadaDto;
 
+@Deprecated
 @CrossOrigin
 @RestController
 @RequestMapping("/wms/ingresos")
