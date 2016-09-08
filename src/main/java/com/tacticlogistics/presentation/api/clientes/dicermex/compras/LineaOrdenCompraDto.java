@@ -1,4 +1,4 @@
-package com.tacticlogistics.presentation.api.clientes.dicermex;
+package com.tacticlogistics.presentation.api.clientes.dicermex.compras;
 
 import java.util.Date;
 
