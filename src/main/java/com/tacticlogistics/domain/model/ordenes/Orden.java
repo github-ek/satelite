@@ -582,11 +582,15 @@ public class Orden implements Serializable {
 		this.setDatosRecogida(null, null, null);
 
 		// ---------------------------------------------------------------------------------------------------------
+		this.setDatosCorteRuta(null, "", null);
+		this.setDatosRuta(null, null, null, "", null);
+
+		// ---------------------------------------------------------------------------------------------------------
 		this.setDatosCreacion("", null);
 		this.setDatosActualizacion("", null);
 		this.setDatosAnulacion("", null, "", null);
 		this.setDatosReprogramacion("", null, "", null);
-		
+
 		// ---------------------------------------------------------------------------------------------------------
 		this.lineas = new HashSet<>();
 		this.mensajes = new HashSet<>();
@@ -765,7 +769,7 @@ public class Orden implements Serializable {
 		this.setCausalAnulacion(causal);
 	}
 
-	//TODO ORDEN ORIGINAL
+	// TODO ORDEN ORIGINAL
 	protected void setDatosReprogramacion(String usuario, Date fecha, String notas, CausalReprogramacion causal) {
 		this.setUsuarioReprogramacion(usuario);
 		this.setFechaReprogramacion(fecha);

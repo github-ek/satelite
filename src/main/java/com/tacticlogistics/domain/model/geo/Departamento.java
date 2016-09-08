@@ -33,10 +33,10 @@ public class Departamento implements Serializable {
 	private String nombre;
 
 	@Column(nullable = true, precision = 18, scale = 15)
-	private BigDecimal longitud;
+	private BigDecimal cx;
 
 	@Column(nullable = true, precision = 18, scale = 15)
-	private BigDecimal latitud;
+	private BigDecimal cy;
 
 	private int ordinal;
 
@@ -82,20 +82,20 @@ public class Departamento implements Serializable {
 		this.nombre = nombre;
 	}
 
-	public BigDecimal getLongitud() {
-		return longitud;
+	public BigDecimal getCx() {
+		return cx;
 	}
 
-	public void setLongitud(BigDecimal longitud) {
-		this.longitud = longitud;
+	public void setCx(BigDecimal cx) {
+		this.cx = cx;
 	}
 
-	public BigDecimal getLatitud() {
-		return latitud;
+	public BigDecimal getCy() {
+		return cy;
 	}
 
-	public void setLatitud(BigDecimal latitud) {
-		this.latitud = latitud;
+	public void setCy(BigDecimal cy) {
+		this.cy = cy;
 	}
 
 	public int getOrdinal() {

@@ -44,8 +44,6 @@ public class ConfirmacionesDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	public static final String ENTREGA_ID = "ID_SOLICITUD";
 	public static final String DESTINO_BARRIO = "BARRIO";
 
-	// public static final String LATITUD = "LATITUD";
-	// public static final String LONGITUD = "LONGITUD";
 	// public static final String NUMERO_DOCUMENTO_ENTREGA = "NOMBRE";
 	// public static final String DESTINATARIO_NOMBRE = "NOMBRE_DESTINATARIO";
 	// public static final String DESTINO_DIRECCION = "DIRECCION";

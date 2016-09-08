@@ -50,7 +50,7 @@ public class Direccion {
         setDireccion(aDireccion);
         setIndicacionesDireccion(aIndicacionesDireccion);
         setCx(null);
-        setLatitud(null);
+        setCy(null);
         setDireccionEstandarizada("");
     }
 
@@ -105,7 +105,7 @@ public class Direccion {
         cx = aCx;
     }
 
-    public void setLatitud(BigDecimal aCy) {
+    public void setCy(BigDecimal aCy) {
         cy = aCy;
     }
 

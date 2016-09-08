@@ -113,7 +113,7 @@ public class LineaOrden implements Serializable {
 	@NotNull
 	private String bodegaOrigenCodigoAlterno;
 
-	@Column(name = "id_estado_inventario", nullable = false, length = 4)
+	@Column(name = "id_estado_inventario_origen", nullable = false, length = 4)
 	@NotNull
 	private String estadoInventarioOrigenId;
 
