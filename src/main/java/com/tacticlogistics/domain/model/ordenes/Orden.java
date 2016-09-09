@@ -367,44 +367,38 @@ public class Orden implements Serializable {
 	private String usuarioAsignacionRuta;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaEntregaEstimada;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaEntrega;
 
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaLlegadaEstimada;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaEntregaInicio;
 
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaLlegada;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaInicio;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaFin;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSalida;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaEntregaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaRecogidaEstimada;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date fechaRecogida;
 
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaLlegadaEstimada;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaRecogidaInicio;
 
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaLlegada;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaInicio;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaFin;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSalida;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date fechaRecogidaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
@@ -589,7 +583,7 @@ public class Orden implements Serializable {
 		this.setDatosCreacion("", null);
 		this.setDatosActualizacion("", null);
 		this.setDatosAnulacion("", null, "", null);
-		this.setDatosReprogramacion("", null, "", null);
+		this.setDatosReprogramacion("", null, "", null,null);
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.lineas = new HashSet<>();
@@ -734,22 +728,16 @@ public class Orden implements Serializable {
 		this.setUsuarioAsignacionRuta(usuario);
 	}
 
-	// TODO HORA DE LLEGADA ESTIMADA
-	// TODO HORA ESTIMADA
-	// TODO HORA SALIDA
-	public void setDatosEntrega(Date fecha, Time hoMi, Time hoMa) {
-		this.setFechaEntrega(fecha);
-		this.setHoraEntregaInicio(hoMi);
-		this.setHoraEntregaFin(hoMa);
+	public void setDatosEntrega(Date fechaEntrega, Date fechaEntregaInicio, Date fechaEntregaFin) {
+		this.setFechaEntrega(fechaEntrega);
+		this.setFechaEntregaInicio(fechaEntregaInicio);
+		this.setFechaEntregaFin(fechaEntregaFin);
 	}
 
-	// TODO HORA DE LLEGADA ESTIMADA
-	// TODO HORA ESTIMADA
-	// TODO HORA SALIDA
-	public void setDatosRecogida(Date fecha, Time hoMi, Time hoMa) {
-		this.setFechaRecogida(fecha);
-		this.setHoraRecogidaInicio(hoMi);
-		this.setHoraRecogidaFin(hoMa);
+	public void setDatosRecogida(Date fechaRecogida, Date fechaRecogidaInicio, Date fechaRecogidaFin) {
+		this.setFechaRecogida(fechaRecogida);
+		this.setFechaRecogidaInicio(fechaRecogidaInicio);
+		this.setFechaRecogidaFin(fechaRecogidaFin);
 	}
 
 	public void setDatosCreacion(String usuario, Date fecha) {
@@ -770,11 +758,13 @@ public class Orden implements Serializable {
 	}
 
 	// TODO ORDEN ORIGINAL
-	protected void setDatosReprogramacion(String usuario, Date fecha, String notas, CausalReprogramacion causal) {
+	protected void setDatosReprogramacion(String usuario, Date fecha, String notas, CausalReprogramacion causal,
+			Integer ordenOriginalId) {
 		this.setUsuarioReprogramacion(usuario);
 		this.setFechaReprogramacion(fecha);
 		this.setNotasReprogramacion(notas);
 		this.setCausalReprogramacion(causal);
+		this.setOrdenOriginalId(ordenOriginalId);
 	}
 
 	// TODO DATOS REPROGRAMACION
@@ -1096,53 +1086,37 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaEntregaEstimada() {
+		return fechaEntregaEstimada;
+	}
+
 	public Date getFechaEntrega() {
 		return fechaEntrega;
 	}
 
-	public Time getHoraEntregaLlegadaEstimada() {
-		return horaEntregaLlegadaEstimada;
+	public Date getFechaEntregaInicio() {
+		return fechaEntregaInicio;
 	}
 
-	public Time getHoraEntregaLlegada() {
-		return horaEntregaLlegada;
-	}
-
-	public Time getHoraEntregaInicio() {
-		return horaEntregaInicio;
-	}
-
-	public Time getHoraEntregaFin() {
-		return horaEntregaFin;
-	}
-
-	public Time getHoraEntregaSalida() {
-		return horaEntregaSalida;
+	public Date getFechaEntregaFin() {
+		return fechaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	public Date getFechaRecogidaEstimada() {
+		return fechaRecogidaEstimada;
+	}
+
 	public Date getFechaRecogida() {
 		return fechaRecogida;
 	}
 
-	public Time getHoraRecogidaLlegadaEstimada() {
-		return horaRecogidaLlegadaEstimada;
+	public Date getFechaRecogidaInicio() {
+		return fechaRecogidaInicio;
 	}
 
-	public Time getHoraRecogidaLlegada() {
-		return horaRecogidaLlegada;
-	}
-
-	public Time getHoraRecogidaInicio() {
-		return horaRecogidaInicio;
-	}
-
-	public Time getHoraRecogidaFin() {
-		return horaRecogidaFin;
-	}
-
-	public Time getHoraRecogidaSalida() {
-		return horaRecogidaSalida;
+	public Date getFechaRecogidaFin() {
+		return fechaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -1505,53 +1479,37 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	protected void setFechaEntregaEstimada(Date fechaEntregaEstimada) {
+		this.fechaEntregaEstimada = fechaEntregaEstimada;
+	}
+
 	protected void setFechaEntrega(Date fechaEntrega) {
 		this.fechaEntrega = fechaEntrega;
 	}
 
-	protected void setHoraEntregaLlegada(Time horaEntregaLlegada) {
-		this.horaEntregaLlegada = horaEntregaLlegada;
+	protected void setFechaEntregaInicio(Date fechaEntregaInicio) {
+		this.fechaEntregaInicio = fechaEntregaInicio;
 	}
 
-	protected void setHoraEntregaLlegadaEstimada(Time horaEntregaLlegadaEstimada) {
-		this.horaEntregaLlegadaEstimada = horaEntregaLlegadaEstimada;
-	}
-
-	protected void setHoraEntregaInicio(Time horaEntregaInicio) {
-		this.horaEntregaInicio = horaEntregaInicio;
-	}
-
-	protected void setHoraEntregaFin(Time horaEntregaFin) {
-		this.horaEntregaFin = horaEntregaFin;
-	}
-
-	protected void setHoraEntregaSalida(Time horaEntregaSalida) {
-		this.horaEntregaSalida = horaEntregaSalida;
+	protected void setFechaEntregaFin(Date fechaEntregaFin) {
+		this.fechaEntregaFin = fechaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
+	protected void setFechaRecogidaEstimada(Date fechaRecogidaEstimada) {
+		this.fechaRecogidaEstimada = fechaRecogidaEstimada;
+	}
+
 	protected void setFechaRecogida(Date fechaRecogida) {
 		this.fechaRecogida = fechaRecogida;
 	}
 
-	protected void setHoraRecogidaLlegadaEstimada(Time horaRecogidaLlegadaEstimada) {
-		this.horaRecogidaLlegadaEstimada = horaRecogidaLlegadaEstimada;
+	protected void setFechaRecogidaInicio(Date fechaRecogidaInicio) {
+		this.fechaRecogidaInicio = fechaRecogidaInicio;
 	}
 
-	protected void setHoraRecogidaLlegada(Time horaRecogidaLlegada) {
-		this.horaRecogidaLlegada = horaRecogidaLlegada;
-	}
-
-	protected void setHoraRecogidaInicio(Time horaRecogidaInicio) {
-		this.horaRecogidaInicio = horaRecogidaInicio;
-	}
-
-	protected void setHoraRecogidaFin(Time horaRecogidaFin) {
-		this.horaRecogidaFin = horaRecogidaFin;
-	}
-
-	protected void setHoraRecogidaSalida(Time horaRecogidaSalida) {
-		this.horaRecogidaSalida = horaRecogidaSalida;
+	protected void setFechaRecogidaFin(Date fechaRecogidaFin) {
+		this.fechaRecogidaFin = fechaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
