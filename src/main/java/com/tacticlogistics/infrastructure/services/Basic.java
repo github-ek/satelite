@@ -1,13 +1,12 @@
 package com.tacticlogistics.infrastructure.services;
 
 import java.math.BigDecimal;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Basic {
 	public static <T> T coalesce(T one, T two) {
@@ -19,7 +18,8 @@ public class Basic {
 	}
 
 	// --------------------------------------------------------------------------------------------
-	public static Date toFecha(String value, Date defaultValue, SimpleDateFormat format) throws ParseException {
+	public static LocalDate toFecha(String value, LocalDate defaultValue, DateTimeFormatter format)
+			throws ParseException {
 		value = Basic.coalesce(value, "");
 		if (value.trim().isEmpty()) {
 			return defaultValue;
@@ -28,7 +28,18 @@ public class Basic {
 		}
 	}
 
-	public static Time toHora(String value, Time defaultValue, SimpleDateFormat format) throws ParseException {
+	public static LocalDateTime toFechaHora(String value, LocalDateTime defaultValue, DateTimeFormatter format)
+			throws ParseException {
+		value = Basic.coalesce(value, "");
+		if (value.trim().isEmpty()) {
+			return defaultValue;
+		} else {
+			return parseFechaHora(value, format);
+		}
+	}
+
+	public static LocalTime toHora(String value, LocalTime defaultValue, DateTimeFormatter format)
+			throws ParseException {
 		value = Basic.coalesce(value, "");
 		if (value.trim().isEmpty()) {
 			return defaultValue;
@@ -62,7 +73,7 @@ public class Basic {
 		if (texto != null) {
 			if (!texto.isEmpty()) {
 				format.setParseBigDecimal(true);
-				//Number n = format.parse(texto);
+				// Number n = format.parse(texto);
 				value = format.parse(texto).intValue();
 			}
 		}
@@ -82,23 +93,34 @@ public class Basic {
 		return value;
 	}
 
-	public static Date parseFecha(String texto, DateFormat format) throws ParseException {
-		Date value = null;
+	private static LocalDate parseFecha(String texto, DateTimeFormatter format) throws ParseException {
+		LocalDate value = null;
 
 		if (texto != null) {
 			if (!texto.isEmpty()) {
-				value = format.parse(texto);
+				value = LocalDate.parse(texto, format);
 			}
 		}
 		return value;
 	}
 
-	public static Time parseHora(String texto, DateFormat format) throws ParseException {
-		Time value = null;
+	private static LocalDateTime parseFechaHora(String texto, DateTimeFormatter format) throws ParseException {
+		LocalDateTime value = null;
 
 		if (texto != null) {
 			if (!texto.isEmpty()) {
-				value = new Time(format.parse(texto).getTime());
+				value = LocalDateTime.parse(texto, format);
+			}
+		}
+		return value;
+	}
+
+	private static LocalTime parseHora(String texto, DateTimeFormatter format) throws ParseException {
+		LocalTime value = null;
+
+		if (texto != null) {
+			if (!texto.isEmpty()) {
+				value = LocalTime.parse(texto, format);
 			}
 		}
 		return value;
@@ -126,30 +148,5 @@ public class Basic {
 
 	public static String ajustarNumero(String texto) {
 		return texto.replaceAll("\\$", "").replaceAll("\\,", ";").replaceAll("\\.", ",").replaceAll(";", ".");
-	}
-
-	public static Date addDays(Date date, int days) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		cal.add(Calendar.DATE, days); // minus number would decrement the days
-
-		// while (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
-		// cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-		// cal.add(Calendar.DATE, 1);
-		// }
-
-		return cal.getTime();
-	}
-
-	public static Date truncate(Date date) {
-		Calendar cal = Calendar.getInstance();
-
-		cal.setTime(date);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-
-		return cal.getTime();
 	}
 }

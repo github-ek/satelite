@@ -8,18 +8,11 @@ import com.tacticlogistics.application.tasks.etl.ETLApplicationService;
 
 @Component
 public class NotificacionSchedule {
-    //@Autowired
-    //private ProcesamientoNotificacionesOrdenesIngreso notificacionesOrdenesIngresoService;
     @Autowired
     private ETLApplicationService ordenesETLApplicationService;
 
     @Scheduled(fixedDelay = 1000 * 60 * 1)
-    public void sampleCronMethod() {
-        //notificacionesOrdenesIngresoService.procesar();
-        //cargueArchivosPdfService.procesar();
-        //ordenesETLApplicationService.procesar();
-        //ordenesETLApplicationService.antiguoProcesar();
-        
+    public void cron() {
         try{
             ordenesETLApplicationService.run();
         }catch(RuntimeException e){

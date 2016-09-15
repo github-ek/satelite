@@ -1,9 +1,10 @@
 package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.finalizacion;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,8 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
 		if (!map.containsKey(key)) {
 			String value;
-			Date dateValue;
+			LocalDate dateValue;
+			LocalDateTime dateTimeValue;
 
 			EntregaDto dto = new EntregaDto();
 
@@ -166,19 +168,19 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 
 			value = getValorCampo(FECHA_ENTREGA_INICIO, campos, mapNameToIndex);
 			if (value.equals("NULL")) {
-				dateValue = null;
+				dateTimeValue = null;
 			} else {
-				dateValue = getValorCampoFecha(key, FECHA_ENTREGA_INICIO, value, getFormatoFechaLarga());
+				dateTimeValue = getValorCampoFechaHora(key, FECHA_ENTREGA_INICIO, value, getFormatoFechaLarga());
 			}
-			dto.setFechaEntregaInicio(dateValue);
+			dto.setFechaEntregaInicio(dateTimeValue);
 
 			value = getValorCampo(FECHA_ENTREGA_FIN, campos, mapNameToIndex);
 			if (value.equals("NULL")) {
-				dateValue = null;
+				dateTimeValue = null;
 			} else {
-				dateValue = getValorCampoFecha(key, FECHA_ENTREGA_FIN, value, getFormatoFechaLarga());
+				dateTimeValue = getValorCampoFechaHora(key, FECHA_ENTREGA_FIN, value, getFormatoFechaLarga());
 			}
-			dto.setFechaEntregaFin(dateValue);
+			dto.setFechaEntregaFin(dateTimeValue);
 
 			map.put(key, dto);
 		}
@@ -202,6 +204,8 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 
 			actualizarEstadoDistribucion(dto);
 		}
+		
+		actualizarEstadoRuta();
 
 		log.info("End cargar");
 	}
@@ -227,6 +231,13 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 		simpleJdbcCall.execute(in);
 	}
 
+	private void actualizarEstadoRuta() {
+		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
+				.withSchemaName("tms").withProcedureName("NotificacionesRutasCambioEstadoRuta");
+
+		simpleJdbcCall.execute();
+	}
+	
 	private EstadoDistribucionType decodeEstadoRutaControl(String value) {
 		switch (value) {
 		case "ENTREGADO":
@@ -244,12 +255,11 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 		}
 	}
 
-	private SimpleDateFormat formatoFechaCorta = null;
-	
+	private DateTimeFormatter formatoFechaCorta = null; 
 	@Override
-	protected SimpleDateFormat getFormatoFechaCorta() {
+	protected DateTimeFormatter getFormatoFechaCorta() {
 		if (formatoFechaCorta == null) {
-			formatoFechaCorta = new SimpleDateFormat("yyyy-MM-dd");
+			formatoFechaCorta = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		}
 		return formatoFechaCorta;
 	}

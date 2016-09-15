@@ -1,18 +1,18 @@
 package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.planificacion;
 
-import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RutaDto {
 	private String placa;
-	private Time horaCitaCargue;
+	private LocalTime horaCitaCargue;
 	private List<LineaRutaDto> lineas;
 
-	public RutaDto(String placa, Time horaCitaCargue) {
+	public RutaDto(String placa, LocalTime timeValue) {
 		super();
 		this.setPlaca(placa);
-		this.setHoraCitaCargue(horaCitaCargue);
+		this.setHoraCitaCargue(timeValue);
 		this.lineas = new ArrayList<>();
 	}
 
@@ -20,7 +20,7 @@ public class RutaDto {
 		return placa;
 	}
 
-	public Time getHoraCitaCargue() {
+	public LocalTime getHoraCitaCargue() {
 		return horaCitaCargue;
 	}
 
@@ -28,8 +28,8 @@ public class RutaDto {
 		this.placa = placa;
 	}
 
-	protected void setHoraCitaCargue(Time horaCitaCargue) {
-		this.horaCitaCargue = horaCitaCargue;
+	protected void setHoraCitaCargue(LocalTime timeValue) {
+		this.horaCitaCargue = timeValue;
 	}
 
 	protected List<LineaRutaDto> getLineas() {

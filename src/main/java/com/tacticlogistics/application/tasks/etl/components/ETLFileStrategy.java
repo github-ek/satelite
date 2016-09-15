@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -256,11 +256,11 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
         boolean error = this.getMensajes().getSeveridadMaxima().equals(SeveridadType.FATAL);
         Path path = (error ? getDirectorioErrores() : getDirectorioProcesados()).toPath();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
+        DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
         try {
             FileSystemService.move(getArchivo(), path);
             File newFile = path.resolve(getArchivo().getName()).toFile();
-            File renamedFile = path.resolve(sdf.format(new Date()) + "-" + getArchivo().getName()).toFile();
+            File renamedFile = path.resolve(sdf.format(LocalDate.now()) + "-" + getArchivo().getName()).toFile();
             newFile.renameTo(renamedFile);
         } catch (IOException ioe) {
             log.error("Error al mover el archivo {} al directorio {}.", getArchivo().getName(), path);
@@ -370,38 +370,38 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
     }
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
-    private SimpleDateFormat formatoFechaCorta = null;
-    private SimpleDateFormat formatoFechaLarga = null;
+    private DateTimeFormatter formatoFechaCorta = null;
+    private DateTimeFormatter formatoFechaLarga = null;
     private DecimalFormat formatoEntero = null;
     private DecimalFormat formatoMoneda = null;
     private DecimalFormat formatoCoordenada = null;
-    private SimpleDateFormat formatoHoraHH = null;
-    private SimpleDateFormat formatoHoraHHmm = null;
+    private DateTimeFormatter formatoHoraHH = null;
+    private DateTimeFormatter formatoHoraHHmm = null;
 
-    protected SimpleDateFormat getFormatoHoraHH() {
+    protected DateTimeFormatter getFormatoHoraHH() {
         if (formatoHoraHH == null) {
-            formatoHoraHH = new SimpleDateFormat("HH");
+            formatoHoraHH = DateTimeFormatter.ofPattern("HH");
         }
         return formatoHoraHH;
     }
 
-    protected SimpleDateFormat getFormatoHoraHHmm() {
+    protected DateTimeFormatter getFormatoHoraHHmm() {
         if (formatoHoraHHmm == null) {
-            formatoHoraHHmm = new SimpleDateFormat("HH:mm");
+            formatoHoraHHmm = DateTimeFormatter.ofPattern("HH:mm");
         }
         return formatoHoraHHmm;
     }
 
-    protected SimpleDateFormat getFormatoFechaCorta() {
+    protected DateTimeFormatter getFormatoFechaCorta() {
         if (formatoFechaCorta == null) {
-            formatoFechaCorta = new SimpleDateFormat("dd/MM/yyyy");
+            formatoFechaCorta = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         }
         return formatoFechaCorta;
     }
 
-    protected SimpleDateFormat getFormatoFechaLarga() {
+    protected DateTimeFormatter getFormatoFechaLarga() {
         if (formatoFechaLarga == null) {
-        	formatoFechaLarga = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        	formatoFechaLarga = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         }
         return formatoFechaLarga;
     }
@@ -438,10 +438,11 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
     }
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
+    @Deprecated
     protected void logParseException(String key, Enum<?> property, String value, String format) {
         logParseException(key, property.toString(), value, format);
     }
-
+    @Deprecated
     protected void logParseException(String key, String property, String value, String format) {
         String texto = MessageFormat.format(VALOR_NO_CONCUERDA_CON_EL_FORMATO_ESPERADO, key, property.toString(),
                 format);

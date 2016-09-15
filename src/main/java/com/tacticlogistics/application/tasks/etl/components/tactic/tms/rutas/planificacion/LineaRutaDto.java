@@ -1,18 +1,18 @@
 package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.planificacion;
 
-import java.sql.Time;
+import java.time.LocalTime;
 
 public class LineaRutaDto {
 	private Integer ordenId;
 	private Integer secuencia;
-	private Time horaEstimada;
+	private LocalTime horaEstimada;
 
 	
 	public LineaRutaDto() {
 		this(null,null,null);
 	}
 
-	public LineaRutaDto(Integer ordenId, Integer secuencia, Time horaEstimada) {
+	public LineaRutaDto(Integer ordenId, Integer secuencia, LocalTime horaEstimada) {
 		super();
 		this.setOrdenId(ordenId);
 		this.setSecuencia(secuencia);
@@ -27,7 +27,7 @@ public class LineaRutaDto {
 		return secuencia;
 	}
 
-	public Time getHoraEstimada() {
+	public LocalTime getHoraEstimada() {
 		return horaEstimada;
 	}
 
@@ -39,8 +39,8 @@ public class LineaRutaDto {
 		this.secuencia = secuencia;
 	}
 
-	protected void setHoraEstimada(Time horaEstimada) {
-		this.horaEstimada = horaEstimada;
+	protected void setHoraEstimada(LocalTime timeValue) {
+		this.horaEstimada = timeValue;
 	}
 
 	@Override

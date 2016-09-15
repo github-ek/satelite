@@ -1,6 +1,7 @@
 package com.tacticlogistics.domain.model.calendario;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,8 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "Calendario", catalog = "core")
@@ -22,8 +21,7 @@ public class Calendario implements Comparable<Calendario> {
 	private Integer id;
 
 	@Column(nullable = false, columnDefinition = "DATE", unique = true)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fecha;
+	private LocalDate fecha;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_dia_semana", nullable = false, length = 20)
@@ -32,8 +30,7 @@ public class Calendario implements Comparable<Calendario> {
 	private boolean diaHabil;
 
 	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaActualizacion;
+	private LocalDateTime fechaActualizacion;
 
 	@Column(nullable = false, length = 50)
 	private String usuarioActualizacion;
@@ -42,11 +39,11 @@ public class Calendario implements Comparable<Calendario> {
 		super();
 	}
 
-	public Date getFecha() {
+	public LocalDate getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(Date fecha) {
+	public void setFecha(LocalDate fecha) {
 		this.fecha = fecha;
 	}
 
@@ -66,11 +63,11 @@ public class Calendario implements Comparable<Calendario> {
 		this.diaHabil = diaHabil;
 	}
 
-	public Date getFechaActualizacion() {
+	public LocalDateTime getFechaActualizacion() {
 		return fechaActualizacion;
 	}
 
-	public void setFechaActualizacion(Date fechaActualizacion) {
+	public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
 

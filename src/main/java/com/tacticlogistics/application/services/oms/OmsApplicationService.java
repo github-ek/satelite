@@ -1,7 +1,8 @@
 package com.tacticlogistics.application.services.oms;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +36,12 @@ import com.tacticlogistics.infrastructure.services.Basic;
 @Service
 @Transactional(readOnly = true)
 public class OmsApplicationService {
+	private static final int SERVICIO_DESPACHOS_PRIMARIA = 1;
+	private static final int SERVICIO_DESPACHOS_SECUNDARIA = 3;
+	private static final int SERVICIO_RECIBOS = 4;
+	private static final int SERVICIO_RECOGIDAS_SECUNDARIA = 5;
+	private static final int SERVICIO_TRASLADOS = 6;
+
 	@Autowired
 	private ClienteRepository clienteRepository;
 
@@ -61,61 +68,53 @@ public class OmsApplicationService {
 		return dto;
 	}
 
-	private static final int SERVICIO_DESPACHOS_PRIMARIA = 1;
-	private static final int SERVICIO_DESPACHOS_SECUNDARIA = 3;
-	private static final int SERVICIO_RECIBOS = 4;
-	private static final int SERVICIO_RECOGIDAS_SECUNDARIA = 5;
-	private static final int SERVICIO_TRASLADOS = 6;
-
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Resumen
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findResumenPorCediDespachosPrimaria(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
+	public List<Object> findResumenPorCediDespachosPrimaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_DESPACHOS_PRIMARIA,
 				getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen());
 	}
 
-	public List<Object> findResumenEstadoOrdenesDeDespachoPorCeDiOrigen(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
-		return findResumenEstadoOrdenesPorCeDiOrigen(
-				usuarioId, 
-				fechaDesde, 
-				fechaHasta, 
-				SERVICIO_DESPACHOS_SECUNDARIA,
+	public List<Object> findResumenEstadoOrdenesDeDespachoPorCeDiOrigen(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta) {
+		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_DESPACHOS_SECUNDARIA,
 				getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen());
 
 	}
 
-	public List<Object> findResumenPorCediRecibosPrimaria(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
-		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_RECIBOS, getQueryResumenPorCediRecibos());
+	public List<Object> findResumenPorCediRecibosPrimaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
+		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_RECIBOS,
+				getQueryResumenPorCediRecibos());
 
 	}
 
-	public List<Object> findResumenPorCediRecogidasSecundaria(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
+	public List<Object> findResumenPorCediRecogidasSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_RECOGIDAS_SECUNDARIA,
 				getQueryResumenPorCediRecibos());
 
 	}
 
-	public List<Object> findResumenPorCediTraslados(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
+	public List<Object> findResumenPorCediTraslados(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
 		return findResumenPorCeDiTraslados(usuarioId, fechaDesde, fechaHasta, SERVICIO_TRASLADOS,
 				getQueryResumenPorCediTraslados());
 
 	}
 
-	public List<Object> findResumenPorCediDespachosTraslado(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
+	public List<Object> findResumenPorCediDespachosTraslado(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_TRASLADOS,
 				getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen());
 
 	}
 
-	public List<Object> findResumenPorCediRecibosTraslado(Integer usuarioId, Date fechaDesde, Date fechaHasta) {
+	public List<Object> findResumenPorCediRecibosTraslado(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_TRASLADOS,
 				getQueryResumenPorCediRecibos());
 
 	}
-	
-	private List<Object> findResumenEstadoOrdenesPorCeDiOrigen(Integer usuarioId, Date fechaDesde, Date fechaHasta, int tipoServicioId,
-			String sql) {
+
+	private List<Object> findResumenEstadoOrdenesPorCeDiOrigen(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -145,14 +144,14 @@ public class OmsApplicationService {
 			dto.put("id_row", rs.getString("id_row"));
 			dto.put("ciudad_columna", rs.getString("ciudad_columna"));
 			dto.put("bodega_columna", rs.getString("bodega_columna"));
-			
+
 			dto.put("n", rs.getInt("n"));
 
 			return dto;
 		});
 	}
 
-	private List<Object> findResumenPorCeDiTraslados(Integer usuarioId, Date fechaDesde, Date fechaHasta,
+	private List<Object> findResumenPorCeDiTraslados(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
 			int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
@@ -185,12 +184,9 @@ public class OmsApplicationService {
 	}
 
 	private String getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen() {
-		return "" 
-				+ " SELECT " 
-				+ "     a.* "
+		return "" + " SELECT " + "     a.* "
 				+ " FROM oms.ResumenEstadoOrdenesDeDespachoPorCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta) a "
-				+ " ORDER BY " 
-				+ "     a.cliente_ordinal,a.estado_orden_ordinal,a.ciudad_ordinal,a.bodega_ordinal " 
+				+ " ORDER BY " + "     a.cliente_ordinal,a.estado_orden_ordinal,a.ciudad_ordinal,a.bodega_ordinal "
 				+ "";
 	}
 
@@ -203,34 +199,23 @@ public class OmsApplicationService {
 	private String getQueryResumenPorCediTraslados() {
 		return "" + " SELECT " + "     a.* "
 				+ " FROM [oms].[ResumenPorCediTraslados] (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta) a "
-				+ " ORDER BY " + "     a.cliente,a.ciudad_origen,a.bodega_origen,a.id_estado_orden,a.ciudad_destino,a.bodega_destino " + "";
+				+ " ORDER BY "
+				+ "     a.cliente,a.ciudad_origen,a.bodega_origen,a.id_estado_orden,a.ciudad_destino,a.bodega_destino "
+				+ "";
 	}
-	
+
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Solicitudes
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findSolcitudesDeDespachoSecundaria(Integer usuarioId, Date fechaDesde, Date fechaHasta,int clienteId, String estadoOrdenId,int bodegaOrigenId) {
-		return findSolcitudesDeDespacho(
-				usuarioId, 
-				fechaDesde, 
-				fechaHasta,
-				clienteId,
-				estadoOrdenId,
-				bodegaOrigenId,
-				SERVICIO_DESPACHOS_SECUNDARIA,
-				getQueryOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen());
+	public List<Object> findSolcitudesDeDespachoSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int clienteId, String estadoOrdenId, int bodegaOrigenId) {
+		return findSolcitudesDeDespacho(usuarioId, fechaDesde, fechaHasta, clienteId, estadoOrdenId, bodegaOrigenId,
+				SERVICIO_DESPACHOS_SECUNDARIA, getQueryOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen());
 
 	}
-	
-	private List<Object> findSolcitudesDeDespacho(
-			Integer usuarioId, 
-			Date fechaDesde, 
-			Date fechaHasta,
-			int clienteId, 
-			String estadoOrdenId,
-			int bodegaOrigenId,
-			int tipoServicioId,
-			String sql) {
+
+	private List<Object> findSolcitudesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta, int clienteId,
+			String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -248,23 +233,23 @@ public class OmsApplicationService {
 			dto.put("numero_orden", rs.getString("numero_orden"));
 			dto.put("fecha_orden", rs.getDate("fecha_orden"));
 			dto.put("numero_orden_compra", rs.getString("numero_orden_compra"));
-			
+
 			dto.put("fecha_confirmacion", rs.getString("fecha_confirmacion"));
 			dto.put("destino_ciudad_nombre", rs.getString("destino_ciudad_nombre"));
-			
+
 			dto.put("id_estado_orden", rs.getString("id_estado_orden"));
 			dto.put("id_estado_alistamiento", rs.getString("id_estado_alistamiento"));
 			dto.put("id_estado_distribucion", rs.getString("id_estado_distribucion"));
 			dto.put("cliente_recoge", rs.getString("cliente_recoge"));
 			dto.put("id_estado_cumplidos", rs.getString("id_estado_cumplidos"));
-			
+
 			dto.put("canal_codigo", rs.getString("canal_codigo"));
 			dto.put("destinatario_numero_identificacion", rs.getString("destinatario_numero_identificacion"));
 			dto.put("destinatario_nombre", rs.getString("destinatario_nombre"));
 			dto.put("destino_direccion", rs.getString("destino_direccion"));
 			dto.put("destino_nombre", rs.getString("destino_nombre"));
 			dto.put("valor_recaudo", rs.getString("valor_recaudo"));
-			
+
 			dto.put("confirmar_cita", rs.getString("confirmar_cita"));
 			dto.put("fecha_entrega_sugerida", rs.getString("fecha_entrega_sugerida"));
 			dto.put("entrega_sugerida_AMPM", rs.getString("entrega_sugerida_AMPM"));
@@ -279,20 +264,14 @@ public class OmsApplicationService {
 	}
 
 	private String getQueryOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen() {
-		return "" 
-				+ " SELECT " 
-				+ "     a.* "
+		return "" + " SELECT " + "     a.* "
 				+ " FROM oms.OrdenesDeDespachoPorClienteEstadoOrdenCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
-				+ " ORDER BY " 
-				+ "     a.fecha_confirmacion,a.destino_ciudad_nombre" 
-				+ "";
+				+ " ORDER BY " + "     a.fecha_confirmacion,a.destino_ciudad_nombre" + "";
 	}
-	
-	public List<Object> findLineasOrdenDeDespacho(
-			Integer ordenId
-			) {
+
+	public List<Object> findLineasOrdenDeDespacho(Integer ordenId) {
 		String sql = this.getQueryLineasOrdenesDeDespachoPorOrdenId();
-		
+
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("ordenId", ordenId);
@@ -302,30 +281,30 @@ public class OmsApplicationService {
 
 			dto.put("id_orden", rs.getInt("id_orden"));
 			dto.put("id_linea_orden", rs.getInt("id_linea_orden"));
-			
+
 			dto.put("numero_item", rs.getInt("numero_item"));
 			dto.put("producto_codigo", rs.getString("producto_codigo"));
 			dto.put("descripcion", rs.getString("descripcion"));
-			
+
 			dto.put("cantidad_solicitada", rs.getInt("cantidad_solicitada"));
-			dto.put("cantidad_planificada", (Integer)rs.getObject("cantidad_planificada"));
-			dto.put("cantidad_alistada", (Integer)rs.getObject("cantidad_alistada"));
-			dto.put("cantidad_entregada", (Integer)rs.getObject("cantidad_entregada"));
-			dto.put("cantidad_no_entregada", (Integer)rs.getObject("cantidad_no_entregada"));
-			dto.put("cantidad_no_entregada_legalizada", (Integer)rs.getObject("cantidad_no_entregada_legalizada"));
-			dto.put("cantidad_sobrante", (Integer)rs.getObject("cantidad_sobrante"));
-			dto.put("cantidad_sobrante_legalizada", (Integer)rs.getObject("cantidad_sobrante_legalizada"));
-			
+			dto.put("cantidad_planificada", (Integer) rs.getObject("cantidad_planificada"));
+			dto.put("cantidad_alistada", (Integer) rs.getObject("cantidad_alistada"));
+			dto.put("cantidad_entregada", (Integer) rs.getObject("cantidad_entregada"));
+			dto.put("cantidad_no_entregada", (Integer) rs.getObject("cantidad_no_entregada"));
+			dto.put("cantidad_no_entregada_legalizada", (Integer) rs.getObject("cantidad_no_entregada_legalizada"));
+			dto.put("cantidad_sobrante", (Integer) rs.getObject("cantidad_sobrante"));
+			dto.put("cantidad_sobrante_legalizada", (Integer) rs.getObject("cantidad_sobrante_legalizada"));
+
 			dto.put("bodega_origen_codigo_alterno", rs.getString("bodega_origen_codigo_alterno"));
 			dto.put("id_estado_inventario_origen", rs.getString("id_estado_inventario_origen"));
 			dto.put("numero_orden_wms_origen", rs.getString("numero_orden_wms_origen"));
-			
-			dto.put("valor_declarado_por_unidad", (Integer)rs.getObject("valor_declarado_por_unidad"));
+
+			dto.put("valor_declarado_por_unidad", (Integer) rs.getObject("valor_declarado_por_unidad"));
 			dto.put("predistribucion_destino_final", rs.getString("predistribucion_destino_final"));
 			dto.put("predistribucion_rotulo", rs.getString("predistribucion_rotulo"));
 			dto.put("volumen_por_unidad", rs.getObject("volumen_por_unidad"));
 			dto.put("peso_bruto_por_unidad", rs.getObject("peso_bruto_por_unidad"));
-			
+
 			dto.put("lote", rs.getString("lote"));
 			dto.put("serial", rs.getString("serial"));
 			dto.put("cosecha", rs.getString("cosecha"));
@@ -337,7 +316,7 @@ public class OmsApplicationService {
 			dto.put("requerimiento_bl", rs.getString("requerimiento_bl"));
 			dto.put("requerimiento_fondo_cuenta", rs.getString("requerimiento_fondo_cuenta"));
 			dto.put("requerimiento_origen", rs.getString("requerimiento_origen"));
-			
+
 			dto.put("fecha_actualizacion", rs.getDate("fecha_actualizacion"));
 			dto.put("usuario_actualizacion", rs.getString("usuario_actualizacion"));
 
@@ -346,40 +325,22 @@ public class OmsApplicationService {
 	}
 
 	private String getQueryLineasOrdenesDeDespachoPorOrdenId() {
-		return "" 
-				+ " SELECT " 
-				+ "     a.* "
-				+ " FROM oms.LineasOrdenesDeDespachoPorOrdenId (:ordenId) a "
-				+ " ORDER BY " 
-				+ "     a.numero_item" 
-				+ "";
+		return "" + " SELECT " + "     a.* " + " FROM oms.LineasOrdenesDeDespachoPorOrdenId (:ordenId) a "
+				+ " ORDER BY " + "     a.numero_item" + "";
 	}
-	
+
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Excepciones
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findExcepcionesDeDespachoSecundaria(Integer usuarioId, Date fechaDesde, Date fechaHasta,int clienteId, String estadoOrdenId,int bodegaOrigenId) {
-		return findExcepcionesDeDespacho(
-				usuarioId, 
-				fechaDesde, 
-				fechaHasta,
-				clienteId,
-				estadoOrdenId,
-				bodegaOrigenId,
-				SERVICIO_DESPACHOS_SECUNDARIA,
-				getQueryExcepcionesDeDespachoPorClienteEstadoOrdenCediOrigen());
+	public List<Object> findExcepcionesDeDespachoSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int clienteId, String estadoOrdenId, int bodegaOrigenId) {
+		return findExcepcionesDeDespacho(usuarioId, fechaDesde, fechaHasta, clienteId, estadoOrdenId, bodegaOrigenId,
+				SERVICIO_DESPACHOS_SECUNDARIA, getQueryExcepcionesDeDespachoPorClienteEstadoOrdenCediOrigen());
 
 	}
-	
-	private List<Object> findExcepcionesDeDespacho(
-			Integer usuarioId, 
-			Date fechaDesde, 
-			Date fechaHasta,
-			int clienteId, 
-			String estadoOrdenId,
-			int bodegaOrigenId,
-			int tipoServicioId,
-			String sql) {
+
+	private List<Object> findExcepcionesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta, int clienteId,
+			String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -396,10 +357,10 @@ public class OmsApplicationService {
 			dto.put("id_orden", rs.getInt("id_orden"));
 			dto.put("error_codigo", rs.getString("error_codigo"));
 			dto.put("error_nombre", rs.getString("error_nombre"));
-			
+
 			dto.put("numero_orden", rs.getString("numero_orden"));
-			dto.put("numero_item", (Integer)rs.getObject("numero_item"));
-			
+			dto.put("numero_item", (Integer) rs.getObject("numero_item"));
+
 			dto.put("fecha_confirmacion", rs.getString("fecha_confirmacion"));
 			dto.put("destino_ciudad_nombre", rs.getString("destino_ciudad_nombre"));
 			dto.put("id_estado_orden", rs.getString("id_estado_orden"));
@@ -409,23 +370,23 @@ public class OmsApplicationService {
 			dto.put("destinatario_nombre", rs.getString("destinatario_nombre"));
 			dto.put("destino_direccion", rs.getString("destino_direccion"));
 			dto.put("destino_nombre", rs.getString("destino_nombre"));
-			
+
 			dto.put("confirmar_cita", rs.getString("confirmar_cita"));
 			dto.put("fecha_entrega_sugerida", rs.getString("fecha_entrega_sugerida"));
 			dto.put("entrega_sugerida_AMPM", rs.getString("entrega_sugerida_AMPM"));
-			
+
 			dto.put("fecha_cita", rs.getString("fecha_cita"));
 			dto.put("cita_AMPM", rs.getString("cita_AMPM"));
-			
+
 			dto.put("descripcion", rs.getString("descripcion"));
 			dto.put("producto_codigo", rs.getString("producto_codigo"));
-			dto.put("cantidad_solicitada", (Integer)rs.getObject("cantidad_solicitada"));
+			dto.put("cantidad_solicitada", (Integer) rs.getObject("cantidad_solicitada"));
 			dto.put("unidad_codigo", rs.getString("unidad_codigo"));
-			
+
 			dto.put("bodega_origen_codigo_alterno", rs.getString("bodega_origen_codigo_alterno"));
 			dto.put("bodega_origen_codigo", rs.getString("bodega_origen_codigo"));
 			dto.put("id_estado_inventario_origen", rs.getString("id_estado_inventario_origen"));
-			
+
 			dto.put("alto_por_unidad", rs.getObject("alto_por_unidad"));
 			dto.put("ancho_por_unidad", rs.getObject("ancho_por_unidad"));
 			dto.put("largo_por_unidad", rs.getObject("largo_por_unidad"));
@@ -436,40 +397,24 @@ public class OmsApplicationService {
 	}
 
 	private String getQueryExcepcionesDeDespachoPorClienteEstadoOrdenCediOrigen() {
-		return "" 
-				+ " SELECT " 
-				+ "     a.* "
+		return "" + " SELECT " + "     a.* "
 				+ " FROM oms.ExcepcionesDeOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
-				+ " ORDER BY " 
-				+ "     a.fecha_confirmacion,a.destino_ciudad_nombre,a.numero_orden,a.numero_item,a.error_nombre" 
-				+ "";
+				+ " ORDER BY "
+				+ "     a.fecha_confirmacion,a.destino_ciudad_nombre,a.numero_orden,a.numero_item,a.error_nombre" + "";
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Entregas
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findEntregasDeDespachosSecundaria(Integer usuarioId, Date fechaDesde, Date fechaHasta,int clienteId, String estadoOrdenId,int bodegaOrigenId) {
-		return findEntregasDeDespachos(
-				usuarioId, 
-				fechaDesde, 
-				fechaHasta,
-				clienteId,
-				estadoOrdenId,
-				bodegaOrigenId,
-				SERVICIO_DESPACHOS_SECUNDARIA,
-				getQueryEntregasDeDespachosPorClienteEstadoOrdenCediOrigen());
+	public List<Object> findEntregasDeDespachosSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int clienteId, String estadoOrdenId, int bodegaOrigenId) {
+		return findEntregasDeDespachos(usuarioId, fechaDesde, fechaHasta, clienteId, estadoOrdenId, bodegaOrigenId,
+				SERVICIO_DESPACHOS_SECUNDARIA, getQueryEntregasDeDespachosPorClienteEstadoOrdenCediOrigen());
 
 	}
-	
-	private List<Object> findEntregasDeDespachos(
-			Integer usuarioId, 
-			Date fechaDesde, 
-			Date fechaHasta,
-			int clienteId, 
-			String estadoOrdenId,
-			int bodegaOrigenId,
-			int tipoServicioId,
-			String sql) {
+
+	private List<Object> findEntregasDeDespachos(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta, int clienteId,
+			String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -493,46 +438,42 @@ public class OmsApplicationService {
 			dto.put("destino_direccion", rs.getString("destino_direccion"));
 			dto.put("fecha_cita", rs.getString("fecha_cita"));
 			dto.put("fecha_entrega", rs.getString("fecha_entrega"));
-			
+
 			dto.put("id_estado_distribucion", rs.getString("id_estado_distribucion"));
 			dto.put("causal_novedad_distribucion_nombre", rs.getString("causal_novedad_distribucion_nombre"));
 			dto.put("indicador_otif_nombre", rs.getString("indicador_otif_nombre"));
 			dto.put("notas", rs.getString("notas"));
 			dto.put("tipo_novedad_distribucion_nombre", rs.getString("tipo_novedad_distribucion_nombre"));
-			
-			dto.put("numero_item", (Integer)rs.getObject("numero_item"));
+
+			dto.put("numero_item", (Integer) rs.getObject("numero_item"));
 			dto.put("descripcion", rs.getString("descripcion"));
 			dto.put("producto_codigo", rs.getString("producto_codigo"));
-			dto.put("cantidad", (Integer)rs.getObject("cantidad"));
+			dto.put("cantidad", (Integer) rs.getObject("cantidad"));
 			dto.put("unidad_codigo", rs.getString("unidad_codigo"));
-		
+
 			dto.put("responsable_novedad_nombre", rs.getString("responsable_novedad_nombre"));
 			dto.put("responsable_interno_novedad_nombre", rs.getString("responsable_interno_novedad_nombre"));
 			dto.put("fecha_creacion", rs.getDate("fecha_creacion"));
 			dto.put("usuario_creacion", rs.getString("usuario_creacion"));
 			dto.put("fecha_actualizacion", rs.getDate("fecha_actualizacion"));
 			dto.put("usuario_actualizacion", rs.getString("usuario_actualizacion"));
-			dto.put("id_orden_novedad", (Integer)rs.getObject("id_orden_novedad"));
-			dto.put("id_causal_novedad_distribucion", (Integer)rs.getObject("id_causal_novedad_distribucion"));
-			dto.put("id_responsable_novedad", (Integer)rs.getObject("id_responsable_novedad"));
-			dto.put("id_responsable_interno_novedad", (Integer)rs.getObject("id_responsable_interno_novedad"));
+			dto.put("id_orden_novedad", (Integer) rs.getObject("id_orden_novedad"));
+			dto.put("id_causal_novedad_distribucion", (Integer) rs.getObject("id_causal_novedad_distribucion"));
+			dto.put("id_responsable_novedad", (Integer) rs.getObject("id_responsable_novedad"));
+			dto.put("id_responsable_interno_novedad", (Integer) rs.getObject("id_responsable_interno_novedad"));
 			dto.put("id_indicador_otif", rs.getString("id_indicador_otif"));
-			dto.put("id_tipo_novedad_distribucion", (Integer)rs.getObject("id_tipo_novedad_distribucion"));
-			dto.put("id_producto", (Integer)rs.getObject("id_producto"));
-			dto.put("id_unidad", (Integer)rs.getObject("id_unidad"));
+			dto.put("id_tipo_novedad_distribucion", (Integer) rs.getObject("id_tipo_novedad_distribucion"));
+			dto.put("id_producto", (Integer) rs.getObject("id_producto"));
+			dto.put("id_unidad", (Integer) rs.getObject("id_unidad"));
 
 			return dto;
 		});
 	}
 
 	private String getQueryEntregasDeDespachosPorClienteEstadoOrdenCediOrigen() {
-		return "" 
-				+ " SELECT " 
-				+ "     a.* "
+		return "" + " SELECT " + "     a.* "
 				+ " FROM oms.EntregasDeDespachosPorClienteEstadoOrdenCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
-				+ " ORDER BY " 
-				+ "     a.fecha_confirmacion,a.destino_ciudad_nombre,a.numero_orden,a.numero_item" 
-				+ "";
+				+ " ORDER BY " + "     a.fecha_confirmacion,a.destino_ciudad_nombre,a.numero_orden,a.numero_item" + "";
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------
@@ -545,7 +486,7 @@ public class OmsApplicationService {
 		Usuario usuario = usuarioRepository.findOne(usuarioId);
 
 		String usuarioUpd = usuario.getUsuario();
-		Date fechaUpd = new Date();
+		LocalDateTime fechaUpd = LocalDateTime.now();
 		notas = Basic.coalesce(notas, "");
 
 		for (Integer id : ids) {
@@ -567,7 +508,7 @@ public class OmsApplicationService {
 					break;
 				case ACEPTADA:
 					e.aceptar(usuarioUpd, fechaUpd, notas);
-					break;
+					break;	
 				case ANULADA:
 					e.anular(usuarioUpd, fechaUpd, notas, null);
 					// SE DEBEN REVERTIR LOS CAMBIOS REALIZADOS DURANTE LA
@@ -583,36 +524,6 @@ public class OmsApplicationService {
 					break;
 				}
 
-				try {
-					ordenRepository.save(e);
-					msg.addMensaje(SeveridadType.INFO, e.getId(), "OK");
-				} catch (RuntimeException re) {
-					msg.addMensaje(re, e.getId());
-				}
-			} else {
-				msg.AddMensaje(new MensajeDto(SeveridadType.ERROR, id, "El cambio de estado desde " + e.getEstadoOrden()
-						+ " a " + nuevoEstado + ", no esta permitido"));
-			}
-		}
-		return msg;
-	}
-
-	@Transactional(readOnly = false)
-	public MensajesDto anularOrdenes(Integer usuarioId, List<Integer> ids, int causalId, String notas)
-			throws DataAccessException {
-		MensajesDto msg = new MensajesDto();
-		Usuario usuario = usuarioRepository.findOne(usuarioId);
-
-		String usuarioUpd = usuario.getUsuario();
-		Date fechaUpd = new Date();
-		notas = Basic.coalesce(notas, "");
-
-		for (Integer id : ids) {
-			OmsOrden e = ordenRepository.findOne(id);
-			EstadoOrdenType nuevoEstado = EstadoOrdenType.ANULADA;
-
-			if (OmsOrden.transicionPermitida(e.getEstadoOrden(), nuevoEstado)) {
-				e.anular(usuarioUpd, fechaUpd, notas, null);
 				try {
 					ordenRepository.save(e);
 					msg.addMensaje(SeveridadType.INFO, e.getId(), "OK");

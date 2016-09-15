@@ -1,4 +1,4 @@
-package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.dto;
+package com.tacticlogistics.application.tasks.schedules.tms.rutas;
 
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
@@ -7,17 +7,17 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ResultadosProgramacionRutasDto {
+public class ResultadosDto {
     @JsonProperty("status")
     private String status;
     @JsonProperty("rutas")
-    private List<ResultadoProgramacionRutaDto> rutas;
+    private List<ResultadoDto> rutas;
 
-    public ResultadosProgramacionRutasDto() {
+    public ResultadosDto() {
         this("", null);
     }
 
-    public ResultadosProgramacionRutasDto(String status, List<ResultadoProgramacionRutaDto> rutas) {
+    public ResultadosDto(String status, List<ResultadoDto> rutas) {
         super();
         this.setStatus(status);
         this.setRutas(rutas);
@@ -27,7 +27,7 @@ public class ResultadosProgramacionRutasDto {
         return status;
     }
 
-    public List<ResultadoProgramacionRutaDto> getRutas() {
+    public List<ResultadoDto> getRutas() {
         if (rutas == null) {
             rutas = new ArrayList<>();
         }
@@ -39,7 +39,7 @@ public class ResultadosProgramacionRutasDto {
         this.status = coalesce(value, "");
     }
 
-    protected void setRutas(List<ResultadoProgramacionRutaDto> value) {
+    protected void setRutas(List<ResultadoDto> value) {
         if (value == null) {
             value = new ArrayList<>();
         }

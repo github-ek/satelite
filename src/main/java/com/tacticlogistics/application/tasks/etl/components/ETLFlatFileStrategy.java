@@ -1,13 +1,14 @@
 package com.tacticlogistics.application.tasks.etl.components;
 
 import java.io.File;
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,32 +232,48 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	protected Date getValorCampoFecha(String key, Enum<?> campo, String value, SimpleDateFormat sdfmt) {
+	protected LocalDate getValorCampoFecha(String key, Enum<?> campo, String value, DateTimeFormatter sdfmt) {
 		return getValorCampoFecha(key, campo.toString(), value, sdfmt);
 	}
 
-	protected Date getValorCampoFecha(String key, String campo, String value, SimpleDateFormat sdfmt) {
-		Date dateValue = null;
+	protected LocalDate getValorCampoFecha(String key, String campo, String value, DateTimeFormatter sdfmt) {
+		LocalDate dateValue = null;
 
 		try {
 			dateValue = Basic.toFecha(value, null, sdfmt);
 		} catch (ParseException e) {
-			logParseException(key, campo, value, sdfmt.toPattern());
+			logParseException(key, campo, value, "");
 		}
 		return dateValue;
 	}
+
+	protected LocalDateTime getValorCampoFechaHora(String key, Enum<?> campo, String value, DateTimeFormatter sdfmt) {
+		return getValorCampoFechaHora(key, campo.toString(), value, sdfmt);
+	}
+
+	protected LocalDateTime getValorCampoFechaHora(String key, String campo, String value, DateTimeFormatter sdfmt) {
+		LocalDateTime dateValue = null;
+
+		try {
+			dateValue = Basic.toFechaHora(value, null, sdfmt);
+		} catch (ParseException e) {
+			logParseException(key, campo, value, "");
+		}
+		return dateValue;
+	}
+
 	
-	protected Time getValorCampoHora(String key, Enum<?> campo, String value, SimpleDateFormat sdfmt) {
+	protected LocalTime getValorCampoHora(String key, Enum<?> campo, String value, DateTimeFormatter sdfmt) {
 		return getValorCampoHora(key, campo.toString(), value, sdfmt);
 	}
 
-	protected Time getValorCampoHora(String key, String campo, String value, SimpleDateFormat sdfmt) {
-		Time timeValue = null;
+	protected LocalTime getValorCampoHora(String key, String campo, String value, DateTimeFormatter sdfmt) {
+		LocalTime timeValue = null;
 
 		try {
 			timeValue = Basic.toHora(value, null, sdfmt);
 		} catch (ParseException e) {
-			logParseException(key, campo, value, sdfmt.toPattern());
+			logParseException(key, campo, value, "");
 		}
 		return timeValue;
 	}
@@ -276,5 +293,4 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 		value = value.replaceAll("[$\\s]+", "");
 		return getValorCampoDecimal(key, campo, value, fmt);
 	}
-
 }

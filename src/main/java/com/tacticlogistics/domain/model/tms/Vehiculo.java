@@ -42,7 +42,7 @@ public class Vehiculo implements Serializable {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_dispositivo_movil_seguimiento", nullable = false)
-	private DispositivoMovilSeguimiento dispositivoMovilSeguimiento;
+	private DispositivoMovil dispositivoMovilSeguimiento;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_conductor", nullable = false)
@@ -104,11 +104,11 @@ public class Vehiculo implements Serializable {
 		this.usuarioActualizacion = usuarioActualizacion;
 	}
 
-	public DispositivoMovilSeguimiento getDispositivoMovilSeguimiento() {
+	public DispositivoMovil getDispositivoMovilSeguimiento() {
 		return dispositivoMovilSeguimiento;
 	}
 
-	public void setDispositivoMovilSeguimiento(DispositivoMovilSeguimiento dispositivoMovilSeguimiento) {
+	public void setDispositivoMovilSeguimiento(DispositivoMovil dispositivoMovilSeguimiento) {
 		this.dispositivoMovilSeguimiento = dispositivoMovilSeguimiento;
 	}
 

@@ -39,9 +39,9 @@ import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.or
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.ORIGEN_DIRECCION;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.ORIGEN_NOMBRE;
 
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -140,8 +140,8 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
 
         if (!map.containsKey(key)) {
             String value;
-            Date dateValue;
-            Time timeValue;
+            LocalDate dateValue;
+            LocalTime timeValue;
 
             ETLOrdenDto dto = new ETLOrdenDto();
 

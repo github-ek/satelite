@@ -86,6 +86,13 @@ public class MensajesDto {
 		this.severidadMaxima = (severidad.isPresent()) ? severidad.get() : SeveridadType.INFO;
 		return this;
 	}
+	
+	public MensajesDto AddMensajes(MensajesDto mensajes) {
+		for (MensajeDto msj: mensajes.getMensajes()) {
+			this.AddMensaje(msj);
+		}
+		return this;
+	}
 
 	@Override
 	public String toString() {

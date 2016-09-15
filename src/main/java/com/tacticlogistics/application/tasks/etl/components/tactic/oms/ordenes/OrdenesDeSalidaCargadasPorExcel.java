@@ -43,13 +43,14 @@ import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.or
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.NUMERO_ORDEN_COMPRA;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.VALOR_RECAUDO;
 
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,6 @@ import com.tacticlogistics.application.services.ordenes.OrdenesApplicationServic
 import com.tacticlogistics.application.tasks.etl.components.ETLOrdenesExcelFileStrategy;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 
-import ch.qos.logback.classic.Logger;
 
 @Component("TACTIC.OMS.EXCEL.SALIDAS")
 public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy {
@@ -156,8 +156,8 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 		if (!map.containsKey(key)) {
 			String value;
-			Date dateValue;
-			Time timeValue;
+			LocalDate dateValue;
+			LocalTime timeValue;
 			Integer integerValue;
 
 			ETLOrdenDto dto = new ETLOrdenDto();

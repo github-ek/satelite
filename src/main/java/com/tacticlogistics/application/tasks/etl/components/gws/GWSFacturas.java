@@ -27,12 +27,12 @@ import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.VALOR_
 import static com.tacticlogistics.infrastructure.services.Basic.substringSafe;
 
 import java.io.File;
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -155,8 +155,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 		if (!map.containsKey(key)) {
 			String value;
-			Date dateValue;
-			Time timeValue;
+			LocalDate dateValue;
+			LocalTime timeValue;
 			Integer integerValue;
 
 			ETLOrdenDto dto = new ETLOrdenDto();
@@ -194,7 +194,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
 			} catch (ParseException e) {
-				logParseException(key, FECHA_MINIMA, value, getFormatoFechaCorta().toPattern());
+				logParseException(key, FECHA_MINIMA, value, "");
 			}
 			dto.setFechaEntregaSugeridaMinima(dateValue);
 
@@ -204,7 +204,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
 			} catch (ParseException e) {
-				logParseException(key, FECHA_MAXIMA, value, getFormatoFechaCorta().toPattern());
+				logParseException(key, FECHA_MAXIMA, value, "");
 			}
 			dto.setFechaEntregaSugeridaMaxima(dateValue);
 
@@ -214,7 +214,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				timeValue = Basic.toHora(value, null, getFormatoHoraHHmm());
 			} catch (ParseException e) {
-				logParseException(key, HORA_MINIMA, value, getFormatoHoraHHmm().toPattern());
+				logParseException(key, HORA_MINIMA, value, "");
 			}
 			dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -224,7 +224,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				timeValue = Basic.toHora(value, null, getFormatoHoraHHmm());
 			} catch (ParseException e) {
-				logParseException(key, HORA_MAXIMA, value, getFormatoHoraHHmm().toPattern());
+				logParseException(key, HORA_MAXIMA, value, "");
 			}
 			dto.setHoraEntregaSugeridaMaxima(timeValue);
 

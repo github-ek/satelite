@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteCanalAssociation;
-import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
+import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     Cliente findByCodigoIgnoringCase(String codigo);

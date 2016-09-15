@@ -1,5 +1,7 @@
 package com.tacticlogistics.application.services.ordenes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +11,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
+import com.tacticlogistics.domain.model.common.SeveridadType;
 import com.tacticlogistics.domain.model.common.UsoUbicacionType;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 import com.tacticlogistics.domain.model.common.valueobjects.Dimensiones;
@@ -22,8 +26,10 @@ import com.tacticlogistics.domain.model.crm.Destinatario;
 import com.tacticlogistics.domain.model.crm.Destino;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
+import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.domain.model.seguridad.Usuario;
 import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.domain.model.wms.ProductoUnidadAssociation;
@@ -35,8 +41,10 @@ import com.tacticlogistics.infrastructure.persistence.crm.DestinoRepository;
 import com.tacticlogistics.infrastructure.persistence.crm.TipoServicioRepository;
 import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
 import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
+import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 import com.tacticlogistics.infrastructure.persistence.wms.BodegaRepository;
 import com.tacticlogistics.infrastructure.persistence.wms.ProductoRepository;
+import com.tacticlogistics.infrastructure.services.Basic;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,14 +67,15 @@ public class OrdenesApplicationService {
 	private BodegaRepository bodegaRepository;
 	@Autowired
 	private ProductoRepository productoRepository;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	// TODO HOMOLOGAR CODIGOS ALTERNOS DE SERVICIOS
 	// TODO IMPLEMENTAR RGLAS DE NEGOCIO EN CONFIRMAR
 	// TODO RETORNAR ERRORES DE NEGOCIO
 	// TODO IMPLEMENTAR UN CACHE DE DATOS
 	// TODO QUITAR LOS CODIGOS ALTERNO DE LAS LINEAS
-	// TODO INCLUIR PINADO
-	// TODO VALIDAR ERRORES DE LONGITUD DE CARACTERES
+	// TODO VALIDAR ERRORES DE LONGITUD DE CARACTERES POR MEDIO DE SPRING
 	@Transactional(readOnly = false)
 	public Orden saveOrdenDespachosSecundaria(ETLOrdenDto dto) throws DataAccessException {
 		StringBuffer errores = new StringBuffer();
@@ -95,7 +104,7 @@ public class OrdenesApplicationService {
 
 		// ------------------------------------------------------------------------------------------------
 		String usuario = dto.getUsuarioConfirmacion();
-		Date fecha = new Date();
+		LocalDateTime fecha = LocalDateTime.now();
 
 		ciudad = homologarCiudad(cliente.getId(), dto.getDestinoCiudadNombreAlterno());
 		tercero = homologarTercero(dto, cliente.getId(), dto.getDestinatarioNumeroIdentificacion(), usuario);
@@ -161,7 +170,7 @@ public class OrdenesApplicationService {
 
 		// ------------------------------------------------------------------------------------------------
 		String usuario = dto.getUsuarioConfirmacion();
-		Date fecha = new Date();
+		LocalDateTime fecha = LocalDateTime.now();
 
 		ciudad = homologarCiudad(cliente.getId(), dto.getOrigenCiudadNombreAlterno());
 		tercero = homologarTercero(dto, cliente.getId(), dto.getDestinatarioNumeroIdentificacion(), usuario);
@@ -200,7 +209,7 @@ public class OrdenesApplicationService {
 	}
 
 	@Transactional(readOnly = false)
-	protected void saveLineaOrden(ETLOrdenDto dtoOrden, ETLLineaOrdenDto dto, Orden orden) {
+	private void saveLineaOrden(ETLOrdenDto dtoOrden, ETLLineaOrdenDto dto, Orden orden) {
 		LineaOrden model = null;
 		Producto producto = null;
 		Optional<ProductoUnidadAssociation> huella = null;
@@ -286,7 +295,7 @@ public class OrdenesApplicationService {
 
 	private Orden setDatosOrden(ETLOrdenDto dto, Cliente cliente, TipoServicio tipoServicio, Canal canal,
 			Destinatario tercero, Ciudad ciudadDestino, Destino puntoDestino, Ciudad ciudadOrigen, Destino puntoOrigen,
-			String usuario, Date fecha) {
+			String usuario, LocalDateTime fecha) {
 
 		Orden model = new Orden();
 
@@ -317,8 +326,8 @@ public class OrdenesApplicationService {
 		if (!dto.isRequiereConfirmacionCitaRecogida()) {
 			if (dto.getFechaRecogidaSugeridaMaxima() != null) {
 				if (dto.getFechaRecogidaSugeridaMaxima().equals(dto.getFechaRecogidaSugeridaMinima())) {
-					model.setDatosCitaRecogida(dto.getFechaRecogidaSugeridaMaxima(), dto.getHoraRecogidaSugeridaMinima(),
-							dto.getHoraRecogidaSugeridaMaxima());
+					model.setDatosCitaRecogida(dto.getFechaRecogidaSugeridaMaxima(),
+							dto.getHoraRecogidaSugeridaMinima(), dto.getHoraRecogidaSugeridaMaxima());
 				}
 			}
 		}
@@ -541,4 +550,84 @@ public class OrdenesApplicationService {
 		}
 		return bodega;
 	}
+
+	// -------------------------------------------------------------------------------------------------------------------------------------------------
+	@Transactional(readOnly = false)
+	public MensajesDto aceptarOrdenes(List<Integer> ids, String notas, Integer usuarioId) throws DataAccessException {
+		Usuario usuario = usuarioRepository.findOne(usuarioId);
+
+		String usuarioUpd = usuario.getUsuario();
+		LocalDate fechaUpd = LocalDate.now();
+		notas = Basic.coalesce(notas, "");
+
+		MensajesDto msg = new MensajesDto();
+		for (Integer id : ids) {
+
+			Orden orden = ordenRepository.findOne(id);
+			if (orden != null) {
+				msg.AddMensajes(aceptarOrden(orden, notas, usuarioUpd, fechaUpd));
+			} else {
+				msg.addMensaje(SeveridadType.ERROR, id, "No se encontró la orden con id: " + id);
+				// throw new BadRequestException();
+			}
+		}
+		return msg;
+	}
+
+	private MensajesDto aceptarOrden(Orden orden, String notas, String usuarioUpd, LocalDate fechaUpd) {
+		EstadoOrdenType nuevoEstado = EstadoOrdenType.ACEPTADA;
+
+		MensajesDto msg = new MensajesDto();
+
+		if (Orden.transicionPermitida(orden.getEstadoOrden(), nuevoEstado)) {
+
+			if (orden.getEstadoOrden() == EstadoOrdenType.ANULADA) {
+				orden.revertirAnulacion(usuarioUpd, fechaUpd, nuevoEstado);
+				// e.revertirAnulacion(usuarioUpd, fechaUpd, nuevoEstado);
+			}
+			// e.aceptar(usuarioUpd, fechaUpd, notas);
+
+			try {
+				ordenRepository.save(orden);
+				msg.addMensaje(SeveridadType.INFO, orden.getId(), "OK");
+			} catch (RuntimeException re) {
+				msg.addMensaje(re, orden.getId());
+			}
+		} else {
+			msg.addMensaje(SeveridadType.ERROR, orden.getNumeroOrden(), "El cambio de estado desde "+orden.getEstadoOrden().getNombre()+" a "+nuevoEstado.getNombre()+", no esta permitido");
+		}
+		return msg;
+	}
+
+	@Transactional(readOnly = false)
+	public MensajesDto anularOrdenes(Integer usuarioId, List<Integer> ids, int causalId, String notas)
+			throws DataAccessException {
+		MensajesDto msg = new MensajesDto();
+		// Usuario usuario = usuarioRepository.findOne(usuarioId);
+		//
+		// String usuarioUpd = usuario.getUsuario();
+		// Date fechaUpd = new Date();
+		// notas = Basic.coalesce(notas, "");
+		//
+		// for (Integer id : ids) {
+		// OmsOrden e = ordenRepository.findOne(id);
+		// EstadoOrdenType nuevoEstado = EstadoOrdenType.ANULADA;
+		//
+		// if (OmsOrden.transicionPermitida(e.getEstadoOrden(), nuevoEstado)) {
+		// e.anular(usuarioUpd, fechaUpd, notas, null);
+		// try {
+		// ordenRepository.save(e);
+		// msg.addMensaje(SeveridadType.INFO, e.getId(), "OK");
+		// } catch (RuntimeException re) {
+		// msg.addMensaje(re, e.getId());
+		// }
+		// } else {
+		// msg.AddMensaje(new MensajeDto(SeveridadType.ERROR, id, "El cambio de
+		// estado desde " + e.getEstadoOrden()
+		// + " a " + nuevoEstado + ", no esta permitido"));
+		// }
+		// }
+		return msg;
+	}
+
 }

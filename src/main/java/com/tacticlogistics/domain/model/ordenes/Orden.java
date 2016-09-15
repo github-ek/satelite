@@ -3,10 +3,11 @@ package com.tacticlogistics.domain.model.ordenes;
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
 import java.io.Serializable;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalInt;
@@ -30,8 +31,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.support.MutableSortDefinition;
@@ -55,7 +54,6 @@ import com.tacticlogistics.domain.model.tms.TipoVehiculo;
 
 @Entity
 @Table(name = "Ordenes", catalog = "ordenes")
-
 public class Orden implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -68,9 +66,9 @@ public class Orden implements Serializable {
 	@NotNull
 	private String numeroOrden;
 
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaOrden;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDate fechaOrden;
 
 	@Column(nullable = false, length = 20)
 	@NotNull
@@ -138,19 +136,17 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaEntrega;
 
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaSugeridaMinima;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	private LocalDate fechaEntregaSugeridaMinima;
 
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaSugeridaMaxima;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	private LocalDate fechaEntregaSugeridaMaxima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSugeridaMinima;
+	private LocalTime horaEntregaSugeridaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSugeridaMaxima;
+	private LocalTime horaEntregaSugeridaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -172,19 +168,17 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaRecogida;
 
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaSugeridaMinima;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	private LocalDate fechaRecogidaSugeridaMinima;
 
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaSugeridaMaxima;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	private LocalDate fechaRecogidaSugeridaMaxima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSugeridaMinima;
+	private LocalTime horaRecogidaSugeridaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSugeridaMaxima;
+	private LocalTime horaRecogidaSugeridaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -273,8 +267,8 @@ public class Orden implements Serializable {
 	private String notasConfirmacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaConfirmacion;
+
+	private LocalDateTime fechaConfirmacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -283,37 +277,36 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCitaEntrega;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	private LocalDate fechaCitaEntrega;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaEntregaMinima;
+	private LocalTime horaCitaEntregaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaEntregaMaxima;
+	private LocalTime horaCitaEntregaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCitaRecogida;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDate fechaCitaRecogida;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaRecogidaMinima;
+	private LocalTime horaCitaRecogidaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaRecogidaMaxima;
+	private LocalTime horaCitaRecogidaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAlistamiento;
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDate fechaAlistamiento;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaAlistamientoMinima;
+	private LocalTime horaAlistamientoMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaAlistamientoMaxima;
+	private LocalTime horaAlistamientoMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -329,8 +322,8 @@ public class Orden implements Serializable {
 	private String notasAceptacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAceptacion;
+
+	private LocalDateTime fechaAceptacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -341,8 +334,8 @@ public class Orden implements Serializable {
 	private Integer corteRutaId;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCorteRuta;
+
+	private LocalDateTime fechaCorteRuta;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -359,8 +352,8 @@ public class Orden implements Serializable {
 	private Integer numeroCajas;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAsignacionRuta;
+
+	private LocalDateTime fechaAsignacionRuta;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -368,49 +361,49 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaEstimada;
+
+	private LocalDateTime fechaEntregaEstimada;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntrega;
+
+	private LocalDateTime fechaEntrega;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaInicio;
+
+	private LocalDateTime fechaEntregaInicio;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaFin;
 
-	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaEstimada;
-
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogida;
-
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaInicio;
-
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaFin;
+	private LocalDateTime fechaEntregaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCreacion;
+
+	private LocalDateTime fechaRecogidaEstimada;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDateTime fechaRecogida;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDateTime fechaRecogidaInicio;
+
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDateTime fechaRecogidaFin;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+
+	private LocalDateTime fechaCreacion;
 
 	@Column(nullable = false, length = 50)
 	private String usuarioCreacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaActualizacion;
+
+	private LocalDateTime fechaActualizacion;
 
 	@Column(nullable = false, length = 50)
 	private String usuarioActualizacion;
@@ -425,8 +418,8 @@ public class Orden implements Serializable {
 	private String notasAnulacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAnulacion;
+
+	private LocalDateTime fechaAnulacion;
 
 	@Column(nullable = false, length = 50)
 	private String usuarioAnulacion;
@@ -444,8 +437,7 @@ public class Orden implements Serializable {
 	private String notasReprogramacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaReprogramacion;
+	private LocalDateTime fechaReprogramacion;
 
 	@Column(nullable = false, length = 50)
 	private String usuarioReprogramacion;
@@ -479,7 +471,7 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
-	public void confirmar(String usuario, Date fecha, String notas) {
+	public void confirmar(String usuario, LocalDateTime fecha, String notas) {
 		if (!this.isRequiereConfirmacionCitaEntrega()) {
 			if (this.getFechaEntregaSugeridaMinima() != null) {
 				if (this.getFechaEntregaSugeridaMaxima() != null) {
@@ -505,30 +497,30 @@ public class Orden implements Serializable {
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void aceptar(String usuario, Date fecha, String notas) {
+	public void aceptar(String usuario, LocalDateTime fecha, String notas) {
 		this.setDatosAceptacion(usuario, fecha, notas);
 		this.setEstadoOrden(EstadoOrdenType.ACEPTADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void anular(String usuario, Date fecha, String notas, CausalAnulacion causal) {
+	public void anular(String usuario, LocalDateTime fecha, String notas, CausalAnulacion causal) {
 		this.setDatosAnulacion(usuario, fecha, notas, causal);
 		this.setEstadoOrden(EstadoOrdenType.ANULADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void revertirConfirmacion(String usuario, Date fecha) {
+	public void revertirConfirmacion(String usuario, LocalDateTime fecha) {
 		this.setDatosConfirmacion("", null, this.getNotasConfirmacion());
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void revertirAceptacion(String usuario, Date fecha) {
+	public void revertirAceptacion(String usuario, LocalDateTime fecha) {
 		this.setDatosAceptacion("", null, this.getNotasAceptacion());
 		this.confirmar(usuario, fecha, "");
 	}
 
-	public void revertirAnulacion(String usuario, Date fecha, EstadoOrdenType nuevoEstado) {
+	public void revertirAnulacion(String usuario, LocalDate fecha, EstadoOrdenType nuevoEstado) {
 		this.setDatosAnulacion("", null, "", null);
 	}
 
@@ -583,7 +575,7 @@ public class Orden implements Serializable {
 		this.setDatosCreacion("", null);
 		this.setDatosActualizacion("", null);
 		this.setDatosAnulacion("", null, "", null);
-		this.setDatosReprogramacion("", null, "", null,null);
+		this.setDatosReprogramacion("", null, "", null, null);
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.lineas = new HashSet<>();
@@ -591,7 +583,7 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public void setDatosOrden(String numeroOrden, Date fechaOrden, String numeroOrdenCompra, Cliente cliente,
+	public void setDatosOrden(String numeroOrden, LocalDate fechaOrden, String numeroOrdenCompra, Cliente cliente,
 			TipoServicio tipoServicio, String tipoServicioCodigoAlterno, boolean requiereServicioDistribucion) {
 		this.setNumeroOrden(numeroOrden);
 		this.setFechaOrden(fechaOrden);
@@ -610,7 +602,7 @@ public class Orden implements Serializable {
 		this.setDestinoIndicaciones(indicaciones);
 	}
 
-	public void setDatosCitaEntregaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
+	public void setDatosCitaEntregaSugerida(LocalDate feMi, LocalDate feMa, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaEntregaSugeridaMinima(feMi);
 		this.setFechaEntregaSugeridaMaxima(feMa);
 		this.setHoraEntregaSugeridaMinima(hoMi);
@@ -624,7 +616,7 @@ public class Orden implements Serializable {
 		this.setOrigenIndicaciones(indicaciones);
 	}
 
-	public void setDatosCitaRecogidaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
+	public void setDatosCitaRecogidaSugerida(LocalDate feMi, LocalDate feMa, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaRecogidaSugeridaMinima(feMi);
 		this.setFechaRecogidaSugeridaMaxima(feMa);
 		this.setHoraRecogidaSugeridaMinima(hoMi);
@@ -679,25 +671,25 @@ public class Orden implements Serializable {
 		this.setOrigenContacto(contacto);
 	}
 
-	public void setDatosConfirmacion(String usuario, Date fecha, String notas) {
+	public void setDatosConfirmacion(String usuario, LocalDateTime fecha, String notas) {
 		this.setNotasConfirmacion(notas);
 		this.setFechaConfirmacion(fecha);
 		this.setUsuarioConfirmacion(usuario);
 	}
 
-	public void setDatosCitaEntrega(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCitaEntrega(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaCitaEntrega(fecha);
 		this.setHoraCitaEntregaMinima(hoMi);
 		this.setHoraCitaEntregaMaxima(hoMa);
 	}
 
-	public void setDatosCitaRecogida(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCitaRecogida(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaCitaRecogida(fecha);
 		this.setHoraCitaRecogidaMinima(hoMi);
 		this.setHoraCitaRecogidaMaxima(hoMa);
 	}
 
-	public void setDatosCitaAlistamiento(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCitaAlistamiento(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaAlistamiento(fecha);
 		this.setHoraAlistamientoMinima(hoMi);
 		this.setHoraAlistamientoMaxima(hoMa);
@@ -708,19 +700,20 @@ public class Orden implements Serializable {
 		this.setValorFletePlanificado(valorFletePlanificado);
 	}
 
-	public void setDatosAceptacion(String usuario, Date fecha, String notas) {
+	public void setDatosAceptacion(String usuario, LocalDateTime fecha, String notas) {
 		this.setNotasAceptacion(notas);
 		this.setFechaAceptacion(fecha);
 		this.setUsuarioAceptacion(usuario);
 	}
 
-	public void setDatosCorteRuta(Integer corteRutaId, String usuario, Date fecha) {
+	public void setDatosCorteRuta(Integer corteRutaId, String usuario, LocalDateTime fecha) {
 		this.setCorteRutaId(corteRutaId);
 		this.setFechaCorteRuta(fecha);
 		this.setUsuarioCorteRuta(usuario);
 	}
 
-	public void setDatosRuta(Integer rutaId, Integer secuenciaRuta, Integer numeroCajas, String usuario, Date fecha) {
+	public void setDatosRuta(Integer rutaId, Integer secuenciaRuta, Integer numeroCajas, String usuario,
+			LocalDateTime fecha) {
 		this.setRutaId(rutaId);
 		this.setSecuenciaRuta(secuenciaRuta);
 		this.setNumeroCajas(numeroCajas);
@@ -728,29 +721,31 @@ public class Orden implements Serializable {
 		this.setUsuarioAsignacionRuta(usuario);
 	}
 
-	public void setDatosEntrega(Date fechaEntrega, Date fechaEntregaInicio, Date fechaEntregaFin) {
+	public void setDatosEntrega(LocalDateTime fechaEntrega, LocalDateTime fechaEntregaInicio,
+			LocalDateTime fechaEntregaFin) {
 		this.setFechaEntrega(fechaEntrega);
 		this.setFechaEntregaInicio(fechaEntregaInicio);
 		this.setFechaEntregaFin(fechaEntregaFin);
 	}
 
-	public void setDatosRecogida(Date fechaRecogida, Date fechaRecogidaInicio, Date fechaRecogidaFin) {
+	public void setDatosRecogida(LocalDateTime fechaRecogida, LocalDateTime fechaRecogidaInicio,
+			LocalDateTime fechaRecogidaFin) {
 		this.setFechaRecogida(fechaRecogida);
 		this.setFechaRecogidaInicio(fechaRecogidaInicio);
 		this.setFechaRecogidaFin(fechaRecogidaFin);
 	}
 
-	public void setDatosCreacion(String usuario, Date fecha) {
+	public void setDatosCreacion(String usuario, LocalDateTime fecha) {
 		this.setUsuarioCreacion(usuario);
 		this.setFechaCreacion(fecha);
 	}
 
-	public void setDatosActualizacion(String usuario, Date fecha) {
+	public void setDatosActualizacion(String usuario, LocalDateTime fecha) {
 		this.setUsuarioActualizacion(usuario);
 		this.setFechaActualizacion(fecha);
 	}
 
-	protected void setDatosAnulacion(String usuario, Date fecha, String notas, CausalAnulacion causal) {
+	protected void setDatosAnulacion(String usuario, LocalDateTime fecha, String notas, CausalAnulacion causal) {
 		this.setUsuarioAnulacion(usuario);
 		this.setFechaAnulacion(fecha);
 		this.setNotasAnulacion(notas);
@@ -758,8 +753,8 @@ public class Orden implements Serializable {
 	}
 
 	// TODO ORDEN ORIGINAL
-	protected void setDatosReprogramacion(String usuario, Date fecha, String notas, CausalReprogramacion causal,
-			Integer ordenOriginalId) {
+	protected void setDatosReprogramacion(String usuario, LocalDateTime fecha, String notas,
+			CausalReprogramacion causal, Integer ordenOriginalId) {
 		this.setUsuarioReprogramacion(usuario);
 		this.setFechaReprogramacion(fecha);
 		this.setNotasReprogramacion(notas);
@@ -778,7 +773,7 @@ public class Orden implements Serializable {
 		return numeroOrden;
 	}
 
-	public Date getFechaOrden() {
+	public LocalDate getFechaOrden() {
 		return fechaOrden;
 	}
 
@@ -847,19 +842,19 @@ public class Orden implements Serializable {
 		return requiereConfirmacionCitaEntrega;
 	}
 
-	public Date getFechaEntregaSugeridaMinima() {
+	public LocalDate getFechaEntregaSugeridaMinima() {
 		return fechaEntregaSugeridaMinima;
 	}
 
-	public Date getFechaEntregaSugeridaMaxima() {
+	public LocalDate getFechaEntregaSugeridaMaxima() {
 		return fechaEntregaSugeridaMaxima;
 	}
 
-	public Time getHoraEntregaSugeridaMinima() {
+	public LocalTime getHoraEntregaSugeridaMinima() {
 		return horaEntregaSugeridaMinima;
 	}
 
-	public Time getHoraEntregaSugeridaMaxima() {
+	public LocalTime getHoraEntregaSugeridaMaxima() {
 		return horaEntregaSugeridaMaxima;
 	}
 
@@ -885,19 +880,19 @@ public class Orden implements Serializable {
 		return requiereConfirmacionCitaRecogida;
 	}
 
-	public Date getFechaRecogidaSugeridaMinima() {
+	public LocalDate getFechaRecogidaSugeridaMinima() {
 		return fechaRecogidaSugeridaMinima;
 	}
 
-	public Date getFechaRecogidaSugeridaMaxima() {
+	public LocalDate getFechaRecogidaSugeridaMaxima() {
 		return fechaRecogidaSugeridaMaxima;
 	}
 
-	public Time getHoraRecogidaSugeridaMinima() {
+	public LocalTime getHoraRecogidaSugeridaMinima() {
 		return horaRecogidaSugeridaMinima;
 	}
 
-	public Time getHoraRecogidaSugeridaMaxima() {
+	public LocalTime getHoraRecogidaSugeridaMaxima() {
 		return horaRecogidaSugeridaMaxima;
 	}
 
@@ -982,7 +977,7 @@ public class Orden implements Serializable {
 		return notasConfirmacion;
 	}
 
-	public Date getFechaConfirmacion() {
+	public LocalDateTime getFechaConfirmacion() {
 		return fechaConfirmacion;
 	}
 
@@ -991,41 +986,41 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCitaEntrega() {
+	public LocalDate getFechaCitaEntrega() {
 		return fechaCitaEntrega;
 	}
 
-	public Time getHoraCitaEntregaMinima() {
+	public LocalTime getHoraCitaEntregaMinima() {
 		return horaCitaEntregaMinima;
 	}
 
-	public Time getHoraCitaEntregaMaxima() {
+	public LocalTime getHoraCitaEntregaMaxima() {
 		return horaCitaEntregaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCitaRecogida() {
+	public LocalDate getFechaCitaRecogida() {
 		return fechaCitaRecogida;
 	}
 
-	public Time getHoraCitaRecogidaMinima() {
+	public LocalTime getHoraCitaRecogidaMinima() {
 		return horaCitaRecogidaMinima;
 	}
 
-	public Time getHoraCitaRecogidaMaxima() {
+	public LocalTime getHoraCitaRecogidaMaxima() {
 		return horaCitaRecogidaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaAlistamiento() {
+	public LocalDate getFechaAlistamiento() {
 		return fechaAlistamiento;
 	}
 
-	public Time getHoraAlistamientoMinima() {
+	public LocalTime getHoraAlistamientoMinima() {
 		return horaAlistamientoMinima;
 	}
 
-	public Time getHoraAlistamientoMaxima() {
+	public LocalTime getHoraAlistamientoMaxima() {
 		return horaAlistamientoMaxima;
 	}
 
@@ -1043,7 +1038,7 @@ public class Orden implements Serializable {
 		return notasAceptacion;
 	}
 
-	public Date getFechaAceptacion() {
+	public LocalDateTime getFechaAceptacion() {
 		return fechaAceptacion;
 	}
 
@@ -1056,7 +1051,7 @@ public class Orden implements Serializable {
 		return corteRutaId;
 	}
 
-	public Date getFechaCorteRuta() {
+	public LocalDateTime getFechaCorteRuta() {
 		return fechaCorteRuta;
 	}
 
@@ -1077,7 +1072,7 @@ public class Orden implements Serializable {
 		return numeroCajas;
 	}
 
-	public Date getFechaAsignacionRuta() {
+	public LocalDateTime getFechaAsignacionRuta() {
 		return fechaAsignacionRuta;
 	}
 
@@ -1086,41 +1081,41 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaEntregaEstimada() {
+	public LocalDateTime getFechaEntregaEstimada() {
 		return fechaEntregaEstimada;
 	}
 
-	public Date getFechaEntrega() {
+	public LocalDateTime getFechaEntrega() {
 		return fechaEntrega;
 	}
 
-	public Date getFechaEntregaInicio() {
+	public LocalDateTime getFechaEntregaInicio() {
 		return fechaEntregaInicio;
 	}
 
-	public Date getFechaEntregaFin() {
+	public LocalDateTime getFechaEntregaFin() {
 		return fechaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaRecogidaEstimada() {
+	public LocalDateTime getFechaRecogidaEstimada() {
 		return fechaRecogidaEstimada;
 	}
 
-	public Date getFechaRecogida() {
+	public LocalDateTime getFechaRecogida() {
 		return fechaRecogida;
 	}
 
-	public Date getFechaRecogidaInicio() {
+	public LocalDateTime getFechaRecogidaInicio() {
 		return fechaRecogidaInicio;
 	}
 
-	public Date getFechaRecogidaFin() {
+	public LocalDateTime getFechaRecogidaFin() {
 		return fechaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCreacion() {
+	public LocalDateTime getFechaCreacion() {
 		return fechaCreacion;
 	}
 
@@ -1128,7 +1123,7 @@ public class Orden implements Serializable {
 		return usuarioCreacion;
 	}
 
-	public Date getFechaActualizacion() {
+	public LocalDateTime getFechaActualizacion() {
 		return fechaActualizacion;
 	}
 
@@ -1145,7 +1140,7 @@ public class Orden implements Serializable {
 		return notasAnulacion;
 	}
 
-	public Date getFechaAnulacion() {
+	public LocalDateTime getFechaAnulacion() {
 		return fechaAnulacion;
 	}
 
@@ -1166,7 +1161,7 @@ public class Orden implements Serializable {
 		return notasReprogramacion;
 	}
 
-	public Date getFechaReprogramacion() {
+	public LocalDateTime getFechaReprogramacion() {
 		return fechaReprogramacion;
 	}
 
@@ -1181,7 +1176,7 @@ public class Orden implements Serializable {
 		this.numeroOrden = coalesce(value, "");
 	}
 
-	protected void setFechaOrden(Date fechaOrden) {
+	protected void setFechaOrden(LocalDate fechaOrden) {
 		this.fechaOrden = fechaOrden;
 	}
 
@@ -1251,19 +1246,19 @@ public class Orden implements Serializable {
 		this.requiereConfirmacionCitaEntrega = requiereConfirmacionCitaEntrega;
 	}
 
-	protected void setFechaEntregaSugeridaMinima(Date fechaEntregaSugeridaMinima) {
+	protected void setFechaEntregaSugeridaMinima(LocalDate fechaEntregaSugeridaMinima) {
 		this.fechaEntregaSugeridaMinima = fechaEntregaSugeridaMinima;
 	}
 
-	protected void setFechaEntregaSugeridaMaxima(Date fechaEntregaSugeridaMaxima) {
+	protected void setFechaEntregaSugeridaMaxima(LocalDate fechaEntregaSugeridaMaxima) {
 		this.fechaEntregaSugeridaMaxima = fechaEntregaSugeridaMaxima;
 	}
 
-	protected void setHoraEntregaSugeridaMinima(Time horaEntregaSugeridaMinima) {
+	protected void setHoraEntregaSugeridaMinima(LocalTime horaEntregaSugeridaMinima) {
 		this.horaEntregaSugeridaMinima = horaEntregaSugeridaMinima;
 	}
 
-	protected void setHoraEntregaSugeridaMaxima(Time horaEntregaSugeridaMaxima) {
+	protected void setHoraEntregaSugeridaMaxima(LocalTime horaEntregaSugeridaMaxima) {
 		this.horaEntregaSugeridaMaxima = horaEntregaSugeridaMaxima;
 	}
 
@@ -1289,19 +1284,19 @@ public class Orden implements Serializable {
 		this.requiereConfirmacionCitaRecogida = requiereConfirmacionCitaRecogida;
 	}
 
-	protected void setFechaRecogidaSugeridaMinima(Date fechaRecogidaSugeridaMinima) {
+	protected void setFechaRecogidaSugeridaMinima(LocalDate fechaRecogidaSugeridaMinima) {
 		this.fechaRecogidaSugeridaMinima = fechaRecogidaSugeridaMinima;
 	}
 
-	protected void setFechaRecogidaSugeridaMaxima(Date fechaRecogidaSugeridaMaxima) {
+	protected void setFechaRecogidaSugeridaMaxima(LocalDate fechaRecogidaSugeridaMaxima) {
 		this.fechaRecogidaSugeridaMaxima = fechaRecogidaSugeridaMaxima;
 	}
 
-	protected void setHoraRecogidaSugeridaMinima(Time horaRecogidaSugeridaMinima) {
+	protected void setHoraRecogidaSugeridaMinima(LocalTime horaRecogidaSugeridaMinima) {
 		this.horaRecogidaSugeridaMinima = horaRecogidaSugeridaMinima;
 	}
 
-	protected void setHoraRecogidaSugeridaMaxima(Time horaRecogidaSugeridaMaxima) {
+	protected void setHoraRecogidaSugeridaMaxima(LocalTime horaRecogidaSugeridaMaxima) {
 		this.horaRecogidaSugeridaMaxima = horaRecogidaSugeridaMaxima;
 	}
 
@@ -1375,7 +1370,7 @@ public class Orden implements Serializable {
 		this.notasConfirmacion = coalesce(value, "");
 	}
 
-	protected void setFechaConfirmacion(Date fechaConfirmacion) {
+	protected void setFechaConfirmacion(LocalDateTime fechaConfirmacion) {
 		this.fechaConfirmacion = fechaConfirmacion;
 	}
 
@@ -1384,41 +1379,41 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCitaEntrega(Date fechaCitaEntrega) {
+	protected void setFechaCitaEntrega(LocalDate fechaCitaEntrega) {
 		this.fechaCitaEntrega = fechaCitaEntrega;
 	}
 
-	protected void setHoraCitaEntregaMinima(Time horaCitaEntregaMinima) {
+	protected void setHoraCitaEntregaMinima(LocalTime horaCitaEntregaMinima) {
 		this.horaCitaEntregaMinima = horaCitaEntregaMinima;
 	}
 
-	protected void setHoraCitaEntregaMaxima(Time horaCitaEntregaMaxima) {
+	protected void setHoraCitaEntregaMaxima(LocalTime horaCitaEntregaMaxima) {
 		this.horaCitaEntregaMaxima = horaCitaEntregaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCitaRecogida(Date fechaCitaRecogida) {
+	protected void setFechaCitaRecogida(LocalDate fechaCitaRecogida) {
 		this.fechaCitaRecogida = fechaCitaRecogida;
 	}
 
-	protected void setHoraCitaRecogidaMinima(Time horaCitaRecogidaMinima) {
+	protected void setHoraCitaRecogidaMinima(LocalTime horaCitaRecogidaMinima) {
 		this.horaCitaRecogidaMinima = horaCitaRecogidaMinima;
 	}
 
-	protected void setHoraCitaRecogidaMaxima(Time horaCitaRecogidaMaxima) {
+	protected void setHoraCitaRecogidaMaxima(LocalTime horaCitaRecogidaMaxima) {
 		this.horaCitaRecogidaMaxima = horaCitaRecogidaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaAlistamiento(Date fechaAlistamiento) {
+	protected void setFechaAlistamiento(LocalDate fechaAlistamiento) {
 		this.fechaAlistamiento = fechaAlistamiento;
 	}
 
-	protected void setHoraAlistamientoMinima(Time horaAlistamientoMinima) {
+	protected void setHoraAlistamientoMinima(LocalTime horaAlistamientoMinima) {
 		this.horaAlistamientoMinima = horaAlistamientoMinima;
 	}
 
-	protected void setHoraAlistamientoMaxima(Time horaAlistamientoMaxima) {
+	protected void setHoraAlistamientoMaxima(LocalTime horaAlistamientoMaxima) {
 		this.horaAlistamientoMaxima = horaAlistamientoMaxima;
 	}
 
@@ -1436,7 +1431,7 @@ public class Orden implements Serializable {
 		this.notasAceptacion = coalesce(value, "");
 	}
 
-	protected void setFechaAceptacion(Date fechaAceptacion) {
+	protected void setFechaAceptacion(LocalDateTime fechaAceptacion) {
 		this.fechaAceptacion = fechaAceptacion;
 	}
 
@@ -1449,7 +1444,7 @@ public class Orden implements Serializable {
 		this.corteRutaId = corteRutaId;
 	}
 
-	protected void setFechaCorteRuta(Date fechaCorteRuta) {
+	protected void setFechaCorteRuta(LocalDateTime fechaCorteRuta) {
 		this.fechaCorteRuta = fechaCorteRuta;
 	}
 
@@ -1470,7 +1465,7 @@ public class Orden implements Serializable {
 		this.numeroCajas = numeroCajas;
 	}
 
-	protected void setFechaAsignacionRuta(Date fechaAsignacionRuta) {
+	protected void setFechaAsignacionRuta(LocalDateTime fechaAsignacionRuta) {
 		this.fechaAsignacionRuta = fechaAsignacionRuta;
 	}
 
@@ -1479,41 +1474,41 @@ public class Orden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaEntregaEstimada(Date fechaEntregaEstimada) {
+	protected void setFechaEntregaEstimada(LocalDateTime fechaEntregaEstimada) {
 		this.fechaEntregaEstimada = fechaEntregaEstimada;
 	}
 
-	protected void setFechaEntrega(Date fechaEntrega) {
+	protected void setFechaEntrega(LocalDateTime fechaEntrega) {
 		this.fechaEntrega = fechaEntrega;
 	}
 
-	protected void setFechaEntregaInicio(Date fechaEntregaInicio) {
+	protected void setFechaEntregaInicio(LocalDateTime fechaEntregaInicio) {
 		this.fechaEntregaInicio = fechaEntregaInicio;
 	}
 
-	protected void setFechaEntregaFin(Date fechaEntregaFin) {
+	protected void setFechaEntregaFin(LocalDateTime fechaEntregaFin) {
 		this.fechaEntregaFin = fechaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaRecogidaEstimada(Date fechaRecogidaEstimada) {
+	protected void setFechaRecogidaEstimada(LocalDateTime fechaRecogidaEstimada) {
 		this.fechaRecogidaEstimada = fechaRecogidaEstimada;
 	}
 
-	protected void setFechaRecogida(Date fechaRecogida) {
+	protected void setFechaRecogida(LocalDateTime fechaRecogida) {
 		this.fechaRecogida = fechaRecogida;
 	}
 
-	protected void setFechaRecogidaInicio(Date fechaRecogidaInicio) {
+	protected void setFechaRecogidaInicio(LocalDateTime fechaRecogidaInicio) {
 		this.fechaRecogidaInicio = fechaRecogidaInicio;
 	}
 
-	protected void setFechaRecogidaFin(Date fechaRecogidaFin) {
+	protected void setFechaRecogidaFin(LocalDateTime fechaRecogidaFin) {
 		this.fechaRecogidaFin = fechaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCreacion(Date fechaCreacion) {
+	protected void setFechaCreacion(LocalDateTime fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
 
@@ -1521,7 +1516,7 @@ public class Orden implements Serializable {
 		this.usuarioCreacion = coalesce(value, "");
 	}
 
-	protected void setFechaActualizacion(Date fechaActualizacion) {
+	protected void setFechaActualizacion(LocalDateTime fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
 
@@ -1538,7 +1533,7 @@ public class Orden implements Serializable {
 		this.notasAnulacion = coalesce(value, "");
 	}
 
-	protected void setFechaAnulacion(Date fechaAnulacion) {
+	protected void setFechaAnulacion(LocalDateTime fechaAnulacion) {
 		this.fechaAnulacion = fechaAnulacion;
 	}
 
@@ -1559,7 +1554,7 @@ public class Orden implements Serializable {
 		this.notasReprogramacion = notasReprogramacion;
 	}
 
-	protected void setFechaReprogramacion(Date fechaReprogramacion) {
+	protected void setFechaReprogramacion(LocalDateTime fechaReprogramacion) {
 		this.fechaReprogramacion = fechaReprogramacion;
 	}
 
@@ -1629,6 +1624,141 @@ public class Orden implements Serializable {
 			this.mensajes.clear();
 		}
 		this.mensajes = set;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	public static boolean transicionPermitida(EstadoOrdenType estadoOrigen, EstadoOrdenType estadoDestino) {
+		switch (estadoOrigen) {
+		case NO_CONFIRMADA:
+			return transicionPermitidaDesde_NO_CONFIRMADA(estadoDestino);
+		case CONFIRMADA:
+			return transicionPermitidaDesde_CONFIRMADA(estadoDestino);
+		case ACEPTADA:
+			return transicionPermitidaDesde_ACEPTADA(estadoDestino);
+
+		case EJECUCION:
+			return transicionPermitidaDesde_EJECUCION(estadoDestino);
+		case NO_ENTREGADA:
+			return transicionPermitidaDesde_NO_ENTREGADA(estadoDestino);
+
+		case ENTREGADA:
+			return transicionPermitidaDesde_ENTREGADA(estadoDestino);
+		case REPROGRAMADA:
+			return transicionPermitidaDesde_REPROGRAMADA(estadoDestino);
+		case NO_REPROGRAMADA:
+			return transicionPermitidaDesde_NO_REPROGRAMADA(estadoDestino);
+		case NOVEDADES:
+			return transicionPermitidaDesde_NOVEDADES(estadoDestino);
+
+		case ANULADA:
+			return transicionPermitidaDesde_ANULADA(estadoDestino);
+		default:
+			break;
+		}
+		return false;
+	}
+
+	private static boolean transicionPermitidaDesde_NO_CONFIRMADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case CONFIRMADA:
+		case ACEPTADA:
+			// Solo si es planner
+		case ANULADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_CONFIRMADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case NO_CONFIRMADA:
+		case ACEPTADA:
+		case ANULADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_ACEPTADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case CONFIRMADA:
+		case ANULADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_EJECUCION(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case ACEPTADA:
+			// Depende de lo avanzado que vaya la operacion
+		case NO_ENTREGADA:
+		case ENTREGADA:
+		case REPROGRAMADA:
+		case NO_REPROGRAMADA:
+		case NOVEDADES:
+		case ANULADA:
+			// Depende de lo avanzado que vaya la operacion
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_NO_ENTREGADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case ENTREGADA:
+		case REPROGRAMADA:
+		case NO_REPROGRAMADA:
+		case NOVEDADES:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_ENTREGADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case NO_ENTREGADA:
+		case REPROGRAMADA:
+		case NO_REPROGRAMADA:
+		case NOVEDADES:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_REPROGRAMADA(EstadoOrdenType nuevoEstado) {
+		return false;
+	}
+
+	private static boolean transicionPermitidaDesde_NO_REPROGRAMADA(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case REPROGRAMADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_NOVEDADES(EstadoOrdenType nuevoEstado) {
+		switch (nuevoEstado) {
+		case ENTREGADA:
+		case NO_ENTREGADA:
+		case REPROGRAMADA:
+		case NO_REPROGRAMADA:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean transicionPermitidaDesde_ANULADA(EstadoOrdenType nuevoEstado) {
+		return false;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------

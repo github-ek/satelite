@@ -3,10 +3,11 @@ package com.tacticlogistics.domain.model.oms;
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
 import java.io.Serializable;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalInt;
@@ -30,8 +31,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.support.MutableSortDefinition;
@@ -67,8 +66,8 @@ public class OmsOrden implements Serializable {
 	private String numeroOrden;
 
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaOrden;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaOrden;
 
 	@Column(nullable = false, length = 20)
 	@NotNull
@@ -158,35 +157,35 @@ public class OmsOrden implements Serializable {
 	private boolean requiereConfirmacionCitaEntrega;
 
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaSugeridaMinima;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaEntregaSugeridaMinima;
 
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntregaSugeridaMaxima;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaEntregaSugeridaMaxima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSugeridaMinima;
+	private LocalTime horaEntregaSugeridaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaSugeridaMaxima;
+	private LocalTime horaEntregaSugeridaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaRecogida;
 
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaSugeridaMinima;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaRecogidaSugeridaMinima;
 
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogidaSugeridaMaxima;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaRecogidaSugeridaMaxima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSugeridaMinima;
+	private LocalTime horaRecogidaSugeridaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaSugeridaMaxima;
+	private LocalTime horaRecogidaSugeridaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -269,8 +268,8 @@ public class OmsOrden implements Serializable {
 	private String notasConfirmacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaConfirmacion;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime fechaConfirmacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -278,36 +277,36 @@ public class OmsOrden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCitaEntrega;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaCitaEntrega;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaEntregaMinima;
+	private LocalTime horaCitaEntregaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaEntregaMaxima;
+	private LocalTime horaCitaEntregaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCitaRecogida;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaCitaRecogida;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaRecogidaMinima;
+	private LocalTime horaCitaRecogidaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCitaRecogidaMaxima;
+	private LocalTime horaCitaRecogidaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAlistamiento;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaAlistamiento;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaAlistamientoMinima;
+	private LocalTime horaAlistamientoMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaAlistamientoMaxima;
+	private LocalTime horaAlistamientoMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -323,8 +322,8 @@ public class OmsOrden implements Serializable {
 	private String notasAceptacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAceptacion;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime fechaAceptacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -332,62 +331,62 @@ public class OmsOrden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaEntrega;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaEntrega;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaInicio;
+	private LocalTime horaEntregaInicio;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaEntregaFin;
+	private LocalTime horaEntregaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaRecogida;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaRecogida;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaInicio;
+	private LocalTime horaRecogidaInicio;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaRecogidaFin;
+	private LocalTime horaRecogidaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCargue;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaCargue;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCargueInicio;
+	private LocalTime horaCargueInicio;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaCargueFin;
+	private LocalTime horaCargueFin;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true, columnDefinition = "DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaDescargue;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDate fechaDescargue;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaDescargueInicio;
+	private LocalTime horaDescargueInicio;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private Time horaDescargueFin;
+	private LocalTime horaDescargueFin;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
+	//@Temporal(TemporalType.TIMESTAMP)
 	@NotNull
-	private Date fechaCreacion;
+	private LocalDateTime fechaCreacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
 	private String usuarioCreacion;
 
 	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
+	//@Temporal(TemporalType.TIMESTAMP)
 	@NotNull
-	private Date fechaActualizacion;
+	private LocalDateTime fechaActualizacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -402,8 +401,8 @@ public class OmsOrden implements Serializable {
 	private String notasAnulacion;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAnulacion;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime fechaAnulacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -470,8 +469,8 @@ public class OmsOrden implements Serializable {
 	private Integer cortePlanificacionRutaId;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaCortePlanificacionRuta;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime fechaCortePlanificacionRuta;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -482,8 +481,8 @@ public class OmsOrden implements Serializable {
 	private Integer rutaId;
 
 	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fechaAsignacionRuta;
+	//@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime fechaAsignacionRuta;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -493,36 +492,36 @@ public class OmsOrden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
-	public void confirmar(String usuario, Date fecha, String notas) {
+	public void confirmar(String usuario, LocalDateTime fecha, String notas) {
 		this.setDatosConfirmacion(usuario, fecha, notas);
 		this.setEstadoOrden(EstadoOrdenType.CONFIRMADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void aceptar(String usuario, Date fecha, String notas) {
+	public void aceptar(String usuario, LocalDateTime fecha, String notas) {
 		this.setDatosAceptacion(usuario, fecha, notas);
 		this.setEstadoOrden(EstadoOrdenType.ACEPTADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void anular(String usuario, Date fecha, String notas, Integer causalId) {
+	public void anular(String usuario, LocalDateTime fecha, String notas, Integer causalId) {
 		this.setDatosAnulacion(usuario, fecha, notas, causalId);
 		this.setEstadoOrden(EstadoOrdenType.ANULADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void revertirConfirmacion(String usuario, Date fecha) {
+	public void revertirConfirmacion(String usuario, LocalDateTime fecha) {
 		this.setDatosConfirmacion("", null, this.getNotasConfirmacion());
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
 		this.setDatosActualizacion(usuario, fecha);
 	}
 
-	public void revertirAceptacion(String usuario, Date fecha) {
+	public void revertirAceptacion(String usuario, LocalDateTime fecha) {
 		this.setDatosAceptacion("", null, this.getNotasAceptacion());
 		this.confirmar(usuario, fecha, "");
 	}
 
-	public void revertirAnulacion(String usuario, Date fecha, EstadoOrdenType nuevoEstado) {
+	public void revertirAnulacion(String usuario, LocalDateTime fecha, EstadoOrdenType nuevoEstado) {
 		this.setDatosAnulacion("", null, "", null);
 	}
 
@@ -596,13 +595,13 @@ public class OmsOrden implements Serializable {
 		this.requerimientosAlistamiento = new HashSet<>();
 
 		// ---------------------------------------------------------------------------------------------------------
-		this.setEstadoPlanificacionRuta(EstadoCorteRutaType.SIN_SOLICITUD);
+		this.setEstadoPlanificacionRuta(null);
 		this.setDatosCorteRuta("", null, null);
 		this.setDatosRuta("", null, null);
 
 	}
 
-	public void setDatosOrden(String numeroOrden, Date fechaOrden, String numeroOrdenCompra, String numeroConsolidado) {
+	public void setDatosOrden(String numeroOrden, LocalDate fechaOrden, String numeroOrdenCompra, String numeroConsolidado) {
 		this.setNumeroOrden(numeroOrden);
 		this.setFechaOrden(fechaOrden);
 		this.setNumeroOrdenCompra(numeroOrdenCompra);
@@ -623,14 +622,14 @@ public class OmsOrden implements Serializable {
 		this.setOrigenIndicaciones(indicaciones);
 	}
 
-	public void setDatosCitaEntregaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
+	public void setDatosCitaEntregaSugerida(LocalDate feMi, LocalDate feMa, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaEntregaSugeridaMinima(feMi);
 		this.setFechaEntregaSugeridaMaxima(feMa);
 		this.setHoraEntregaSugeridaMinima(hoMi);
 		this.setHoraEntregaSugeridaMaxima(hoMa);
 	}
 
-	public void setDatosCitaRecogidaSugerida(Date feMi, Date feMa, Time hoMi, Time hoMa) {
+	public void setDatosCitaRecogidaSugerida(LocalDate feMi, LocalDate feMa, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaRecogidaSugeridaMinima(feMi);
 		this.setFechaRecogidaSugeridaMaxima(feMa);
 		this.setHoraRecogidaSugeridaMinima(hoMi);
@@ -683,25 +682,25 @@ public class OmsOrden implements Serializable {
 		this.setOrigenContacto(contacto);
 	}
 
-	public void setDatosConfirmacion(String usuario, Date fecha, String notas) {
+	public void setDatosConfirmacion(String usuario, LocalDateTime fecha, String notas) {
 		this.setUsuarioConfirmacion(usuario);
 		this.setFechaConfirmacion(fecha);
 		this.setNotasConfirmacion(notas);
 	}
 
-	public void setDatosCitaEntrega(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCitaEntrega(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaCitaEntrega(fecha);
 		this.setHoraCitaEntregaMinima(hoMi);
 		this.setHoraCitaEntregaMaxima(hoMa);
 	}
 
-	public void setDatosCitaRecogida(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCitaRecogida(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaCitaRecogida(fecha);
 		this.setHoraCitaRecogidaMinima(hoMi);
 		this.setHoraCitaRecogidaMaxima(hoMa);
 	}
 
-	public void setDatosCitaAlistamiento(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCitaAlistamiento(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaAlistamiento(fecha);
 		this.setHoraAlistamientoMinima(hoMi);
 		this.setHoraAlistamientoMaxima(hoMa);
@@ -712,60 +711,60 @@ public class OmsOrden implements Serializable {
 		this.setValorFletePlanificado(valorFletePlanificado);
 	}
 
-	public void setDatosAceptacion(String usuario, Date fecha, String notas) {
+	public void setDatosAceptacion(String usuario, LocalDateTime fecha, String notas) {
 		this.setUsuarioAceptacion(usuario);
 		this.setFechaAceptacion(fecha);
 		this.setNotasAceptacion(notas);
 	}
 
-	public void setDatosEntrega(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosEntrega(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaEntrega(fecha);
 		this.setHoraEntregaInicio(hoMi);
 		this.setHoraEntregaFin(hoMa);
 	}
 
-	public void setDatosRecogida(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosRecogida(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaRecogida(fecha);
 		this.setHoraRecogidaInicio(hoMi);
 		this.setHoraRecogidaFin(hoMa);
 	}
 
-	public void setDatosCargue(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosCargue(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaCargue(fecha);
 		this.setHoraCargueInicio(hoMi);
 		this.setHoraCargueFin(hoMa);
 	}
 
-	public void setDatosDescargue(Date fecha, Time hoMi, Time hoMa) {
+	public void setDatosDescargue(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
 		this.setFechaDescargue(fecha);
 		this.setHoraDescargueInicio(hoMi);
 		this.setHoraDescargueFin(hoMa);
 	}
 
-	public void setDatosCreacion(String usuario, Date fecha) {
+	public void setDatosCreacion(String usuario, LocalDateTime fecha) {
 		this.setUsuarioCreacion(usuario);
 		this.setFechaCreacion(fecha);
 	}
 
-	public void setDatosActualizacion(String usuario, Date fecha) {
+	public void setDatosActualizacion(String usuario, LocalDateTime fecha) {
 		this.setUsuarioActualizacion(usuario);
 		this.setFechaActualizacion(fecha);
 	}
 
-	public void setDatosAnulacion(String usuario, Date fecha, String notas, Integer causalId) {
+	public void setDatosAnulacion(String usuario, LocalDateTime fecha, String notas, Integer causalId) {
 		this.setUsuarioAnulacion(usuario);
 		this.setFechaAnulacion(fecha);
 		this.setNotasAnulacion(notas);
 		this.setCausalAnulacionId(causalId);
 	}
 
-	public void setDatosCorteRuta(String usuario, Date fecha, Integer cortePlanificacionRutaId) {
+	public void setDatosCorteRuta(String usuario, LocalDateTime fecha, Integer cortePlanificacionRutaId) {
 		this.setUsuarioCortePlanificacionRuta(usuario);
 		this.setFechaCortePlanificacionRuta(fecha);
 		this.setCortePlanificacionRutaId(cortePlanificacionRutaId);
 	}
 
-	public void setDatosRuta(String usuario, Date fecha, Integer rutaId) {
+	public void setDatosRuta(String usuario, LocalDateTime fecha, Integer rutaId) {
 		this.setUsuarioAsignacionRuta(usuario);
 		this.setFechaAsignacionRuta(fecha);
 		this.setRutaId(rutaId);
@@ -780,7 +779,7 @@ public class OmsOrden implements Serializable {
 		return numeroOrden;
 	}
 
-	public Date getFechaOrden() {
+	public LocalDate getFechaOrden() {
 		return fechaOrden;
 	}
 
@@ -870,19 +869,19 @@ public class OmsOrden implements Serializable {
 		return requiereConfirmacionCitaEntrega;
 	}
 
-	public Date getFechaEntregaSugeridaMinima() {
+	public LocalDate getFechaEntregaSugeridaMinima() {
 		return fechaEntregaSugeridaMinima;
 	}
 
-	public Date getFechaEntregaSugeridaMaxima() {
+	public LocalDate getFechaEntregaSugeridaMaxima() {
 		return fechaEntregaSugeridaMaxima;
 	}
 
-	public Time getHoraEntregaSugeridaMinima() {
+	public LocalTime getHoraEntregaSugeridaMinima() {
 		return horaEntregaSugeridaMinima;
 	}
 
-	public Time getHoraEntregaSugeridaMaxima() {
+	public LocalTime getHoraEntregaSugeridaMaxima() {
 		return horaEntregaSugeridaMaxima;
 	}
 
@@ -891,19 +890,19 @@ public class OmsOrden implements Serializable {
 		return requiereConfirmacionCitaRecogida;
 	}
 
-	public Date getFechaRecogidaSugeridaMinima() {
+	public LocalDate getFechaRecogidaSugeridaMinima() {
 		return fechaRecogidaSugeridaMinima;
 	}
 
-	public Date getFechaRecogidaSugeridaMaxima() {
+	public LocalDate getFechaRecogidaSugeridaMaxima() {
 		return fechaRecogidaSugeridaMaxima;
 	}
 
-	public Time getHoraRecogidaSugeridaMinima() {
+	public LocalTime getHoraRecogidaSugeridaMinima() {
 		return horaRecogidaSugeridaMinima;
 	}
 
-	public Time getHoraRecogidaSugeridaMaxima() {
+	public LocalTime getHoraRecogidaSugeridaMaxima() {
 		return horaRecogidaSugeridaMaxima;
 	}
 
@@ -986,7 +985,7 @@ public class OmsOrden implements Serializable {
 		return notasConfirmacion;
 	}
 
-	public Date getFechaConfirmacion() {
+	public LocalDateTime getFechaConfirmacion() {
 		return fechaConfirmacion;
 	}
 
@@ -995,41 +994,41 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCitaEntrega() {
+	public LocalDate getFechaCitaEntrega() {
 		return fechaCitaEntrega;
 	}
 
-	public Time getHoraCitaEntregaMinima() {
+	public LocalTime getHoraCitaEntregaMinima() {
 		return horaCitaEntregaMinima;
 	}
 
-	public Time getHoraCitaEntregaMaxima() {
+	public LocalTime getHoraCitaEntregaMaxima() {
 		return horaCitaEntregaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCitaRecogida() {
+	public LocalDate getFechaCitaRecogida() {
 		return fechaCitaRecogida;
 	}
 
-	public Time getHoraCitaRecogidaMinima() {
+	public LocalTime getHoraCitaRecogidaMinima() {
 		return horaCitaRecogidaMinima;
 	}
 
-	public Time getHoraCitaRecogidaMaxima() {
+	public LocalTime getHoraCitaRecogidaMaxima() {
 		return horaCitaRecogidaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaAlistamiento() {
+	public LocalDate getFechaAlistamiento() {
 		return fechaAlistamiento;
 	}
 
-	public Time getHoraAlistamientoMinima() {
+	public LocalTime getHoraAlistamientoMinima() {
 		return horaAlistamientoMinima;
 	}
 
-	public Time getHoraAlistamientoMaxima() {
+	public LocalTime getHoraAlistamientoMaxima() {
 		return horaAlistamientoMaxima;
 	}
 
@@ -1047,7 +1046,7 @@ public class OmsOrden implements Serializable {
 		return notasAceptacion;
 	}
 
-	public Date getFechaAceptacion() {
+	public LocalDateTime getFechaAceptacion() {
 		return fechaAceptacion;
 	}
 
@@ -1056,59 +1055,59 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaEntrega() {
+	public LocalDate getFechaEntrega() {
 		return fechaEntrega;
 	}
 
-	public Time getHoraEntregaInicio() {
+	public LocalTime getHoraEntregaInicio() {
 		return horaEntregaInicio;
 	}
 
-	public Time getHoraEntregaFin() {
+	public LocalTime getHoraEntregaFin() {
 		return horaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaRecogida() {
+	public LocalDate getFechaRecogida() {
 		return fechaRecogida;
 	}
 
-	public Time getHoraRecogidaInicio() {
+	public LocalTime getHoraRecogidaInicio() {
 		return horaRecogidaInicio;
 	}
 
-	public Time getHoraRecogidaFin() {
+	public LocalTime getHoraRecogidaFin() {
 		return horaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCargue() {
+	public LocalDate getFechaCargue() {
 		return fechaCargue;
 	}
 
-	public Time getHoraCargueInicio() {
+	public LocalTime getHoraCargueInicio() {
 		return horaCargueInicio;
 	}
 
-	public Time getHoraCargueFin() {
+	public LocalTime getHoraCargueFin() {
 		return horaCargueFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaDescargue() {
+	public LocalDate getFechaDescargue() {
 		return fechaDescargue;
 	}
 
-	public Time getHoraDescargueInicio() {
+	public LocalTime getHoraDescargueInicio() {
 		return horaDescargueInicio;
 	}
 
-	public Time getHoraDescargueFin() {
+	public LocalTime getHoraDescargueFin() {
 		return horaDescargueFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCreacion() {
+	public LocalDateTime getFechaCreacion() {
 		return fechaCreacion;
 	}
 
@@ -1116,7 +1115,7 @@ public class OmsOrden implements Serializable {
 		return usuarioCreacion;
 	}
 
-	public Date getFechaActualizacion() {
+	public LocalDateTime getFechaActualizacion() {
 		return fechaActualizacion;
 	}
 
@@ -1137,7 +1136,7 @@ public class OmsOrden implements Serializable {
 		return usuarioAnulacion;
 	}
 
-	public Date getFechaAnulacion() {
+	public LocalDateTime getFechaAnulacion() {
 		return fechaAnulacion;
 	}
 
@@ -1168,7 +1167,7 @@ public class OmsOrden implements Serializable {
 		return cortePlanificacionRutaId;
 	}
 
-	public Date getFechaCortePlanificacionRuta() {
+	public LocalDateTime getFechaCortePlanificacionRuta() {
 		return fechaCortePlanificacionRuta;
 	}
 
@@ -1181,7 +1180,7 @@ public class OmsOrden implements Serializable {
 		return rutaId;
 	}
 
-	public Date getFechaAsignacionRuta() {
+	public LocalDateTime getFechaAsignacionRuta() {
 		return fechaAsignacionRuta;
 	}
 
@@ -1197,7 +1196,7 @@ public class OmsOrden implements Serializable {
 		this.numeroOrden = coalesce(value, "");
 	}
 
-	protected void setFechaOrden(Date fechaOrden) {
+	protected void setFechaOrden(LocalDate fechaOrden) {
 		this.fechaOrden = fechaOrden;
 	}
 
@@ -1288,19 +1287,19 @@ public class OmsOrden implements Serializable {
 		this.requiereConfirmacionCitaEntrega = requiereConfirmacionCitaEntrega;
 	}
 
-	protected void setFechaEntregaSugeridaMinima(Date fechaEntregaSugeridaMinima) {
+	protected void setFechaEntregaSugeridaMinima(LocalDate fechaEntregaSugeridaMinima) {
 		this.fechaEntregaSugeridaMinima = fechaEntregaSugeridaMinima;
 	}
 
-	protected void setFechaEntregaSugeridaMaxima(Date fechaEntregaSugeridaMaxima) {
+	protected void setFechaEntregaSugeridaMaxima(LocalDate fechaEntregaSugeridaMaxima) {
 		this.fechaEntregaSugeridaMaxima = fechaEntregaSugeridaMaxima;
 	}
 
-	protected void setHoraEntregaSugeridaMinima(Time horaEntregaSugeridaMinima) {
+	protected void setHoraEntregaSugeridaMinima(LocalTime horaEntregaSugeridaMinima) {
 		this.horaEntregaSugeridaMinima = horaEntregaSugeridaMinima;
 	}
 
-	protected void setHoraEntregaSugeridaMaxima(Time horaEntregaSugeridaMaxima) {
+	protected void setHoraEntregaSugeridaMaxima(LocalTime horaEntregaSugeridaMaxima) {
 		this.horaEntregaSugeridaMaxima = horaEntregaSugeridaMaxima;
 	}
 
@@ -1309,19 +1308,19 @@ public class OmsOrden implements Serializable {
 		this.requiereConfirmacionCitaRecogida = requiereConfirmacionCitaRecogida;
 	}
 
-	protected void setFechaRecogidaSugeridaMinima(Date fechaRecogidaSugeridaMinima) {
+	protected void setFechaRecogidaSugeridaMinima(LocalDate fechaRecogidaSugeridaMinima) {
 		this.fechaRecogidaSugeridaMinima = fechaRecogidaSugeridaMinima;
 	}
 
-	protected void setFechaRecogidaSugeridaMaxima(Date fechaRecogidaSugeridaMaxima) {
+	protected void setFechaRecogidaSugeridaMaxima(LocalDate fechaRecogidaSugeridaMaxima) {
 		this.fechaRecogidaSugeridaMaxima = fechaRecogidaSugeridaMaxima;
 	}
 
-	protected void setHoraRecogidaSugeridaMinima(Time horaRecogidaSugeridaMinima) {
+	protected void setHoraRecogidaSugeridaMinima(LocalTime horaRecogidaSugeridaMinima) {
 		this.horaRecogidaSugeridaMinima = horaRecogidaSugeridaMinima;
 	}
 
-	protected void setHoraRecogidaSugeridaMaxima(Time horaRecogidaSugeridaMaxima) {
+	protected void setHoraRecogidaSugeridaMaxima(LocalTime horaRecogidaSugeridaMaxima) {
 		this.horaRecogidaSugeridaMaxima = horaRecogidaSugeridaMaxima;
 	}
 
@@ -1395,7 +1394,7 @@ public class OmsOrden implements Serializable {
 		this.notasConfirmacion = coalesce(value, "");
 	}
 
-	protected void setFechaConfirmacion(Date fechaConfirmacion) {
+	protected void setFechaConfirmacion(LocalDateTime fechaConfirmacion) {
 		this.fechaConfirmacion = fechaConfirmacion;
 	}
 
@@ -1404,41 +1403,41 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCitaEntrega(Date fechaCitaEntrega) {
+	protected void setFechaCitaEntrega(LocalDate fechaCitaEntrega) {
 		this.fechaCitaEntrega = fechaCitaEntrega;
 	}
 
-	protected void setHoraCitaEntregaMinima(Time horaCitaEntregaMinima) {
+	protected void setHoraCitaEntregaMinima(LocalTime horaCitaEntregaMinima) {
 		this.horaCitaEntregaMinima = horaCitaEntregaMinima;
 	}
 
-	protected void setHoraCitaEntregaMaxima(Time horaCitaEntregaMaxima) {
+	protected void setHoraCitaEntregaMaxima(LocalTime horaCitaEntregaMaxima) {
 		this.horaCitaEntregaMaxima = horaCitaEntregaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCitaRecogida(Date fechaCitaRecogida) {
+	protected void setFechaCitaRecogida(LocalDate fechaCitaRecogida) {
 		this.fechaCitaRecogida = fechaCitaRecogida;
 	}
 
-	protected void setHoraCitaRecogidaMinima(Time horaCitaRecogidaMinima) {
+	protected void setHoraCitaRecogidaMinima(LocalTime horaCitaRecogidaMinima) {
 		this.horaCitaRecogidaMinima = horaCitaRecogidaMinima;
 	}
 
-	protected void setHoraCitaRecogidaMaxima(Time horaCitaRecogidaMaxima) {
+	protected void setHoraCitaRecogidaMaxima(LocalTime horaCitaRecogidaMaxima) {
 		this.horaCitaRecogidaMaxima = horaCitaRecogidaMaxima;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaAlistamiento(Date fechaAlistamiento) {
+	protected void setFechaAlistamiento(LocalDate fechaAlistamiento) {
 		this.fechaAlistamiento = fechaAlistamiento;
 	}
 
-	protected void setHoraAlistamientoMinima(Time horaAlistamientoMinima) {
+	protected void setHoraAlistamientoMinima(LocalTime horaAlistamientoMinima) {
 		this.horaAlistamientoMinima = horaAlistamientoMinima;
 	}
 
-	protected void setHoraAlistamientoMaxima(Time horaAlistamientoMaxima) {
+	protected void setHoraAlistamientoMaxima(LocalTime horaAlistamientoMaxima) {
 		this.horaAlistamientoMaxima = horaAlistamientoMaxima;
 	}
 
@@ -1456,7 +1455,7 @@ public class OmsOrden implements Serializable {
 		this.notasAceptacion = coalesce(value, "");
 	}
 
-	protected void setFechaAceptacion(Date fechaAceptacion) {
+	protected void setFechaAceptacion(LocalDateTime fechaAceptacion) {
 		this.fechaAceptacion = fechaAceptacion;
 	}
 
@@ -1465,59 +1464,59 @@ public class OmsOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaEntrega(Date fechaEntrega) {
+	protected void setFechaEntrega(LocalDate fechaEntrega) {
 		this.fechaEntrega = fechaEntrega;
 	}
 
-	protected void setHoraEntregaInicio(Time horaEntregaInicio) {
+	protected void setHoraEntregaInicio(LocalTime horaEntregaInicio) {
 		this.horaEntregaInicio = horaEntregaInicio;
 	}
 
-	protected void setHoraEntregaFin(Time horaEntregaFin) {
+	protected void setHoraEntregaFin(LocalTime horaEntregaFin) {
 		this.horaEntregaFin = horaEntregaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaRecogida(Date fechaRecogida) {
+	protected void setFechaRecogida(LocalDate fechaRecogida) {
 		this.fechaRecogida = fechaRecogida;
 	}
 
-	protected void setHoraRecogidaInicio(Time horaRecogidaInicio) {
+	protected void setHoraRecogidaInicio(LocalTime horaRecogidaInicio) {
 		this.horaRecogidaInicio = horaRecogidaInicio;
 	}
 
-	protected void setHoraRecogidaFin(Time horaRecogidaFin) {
+	protected void setHoraRecogidaFin(LocalTime horaRecogidaFin) {
 		this.horaRecogidaFin = horaRecogidaFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCargue(Date fechaCargue) {
+	protected void setFechaCargue(LocalDate fechaCargue) {
 		this.fechaCargue = fechaCargue;
 	}
 
-	protected void setHoraCargueInicio(Time horaCargueInicio) {
+	protected void setHoraCargueInicio(LocalTime horaCargueInicio) {
 		this.horaCargueInicio = horaCargueInicio;
 	}
 
-	protected void setHoraCargueFin(Time horaCargueFin) {
+	protected void setHoraCargueFin(LocalTime horaCargueFin) {
 		this.horaCargueFin = horaCargueFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaDescargue(Date fechaDescargue) {
+	protected void setFechaDescargue(LocalDate fechaDescargue) {
 		this.fechaDescargue = fechaDescargue;
 	}
 
-	protected void setHoraDescargueInicio(Time horaDescargueInicio) {
+	protected void setHoraDescargueInicio(LocalTime horaDescargueInicio) {
 		this.horaDescargueInicio = horaDescargueInicio;
 	}
 
-	protected void setHoraDescargueFin(Time horaDescargueFin) {
+	protected void setHoraDescargueFin(LocalTime horaDescargueFin) {
 		this.horaDescargueFin = horaDescargueFin;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCreacion(Date fechaCreacion) {
+	protected void setFechaCreacion(LocalDateTime fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
 
@@ -1525,7 +1524,7 @@ public class OmsOrden implements Serializable {
 		this.usuarioCreacion = coalesce(value, "");
 	}
 
-	protected void setFechaActualizacion(Date fechaActualizacion) {
+	protected void setFechaActualizacion(LocalDateTime fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
 
@@ -1542,7 +1541,7 @@ public class OmsOrden implements Serializable {
 		this.notasAnulacion = coalesce(value, "");
 	}
 
-	protected void setFechaAnulacion(Date fechaAnulacion) {
+	protected void setFechaAnulacion(LocalDateTime fechaAnulacion) {
 		this.fechaAnulacion = fechaAnulacion;
 	}
 
@@ -1649,7 +1648,7 @@ public class OmsOrden implements Serializable {
 		this.cortePlanificacionRutaId = cortePlanificacionRutaId;
 	}
 
-	protected void setFechaCortePlanificacionRuta(Date fechaPlanificacionRuta) {
+	protected void setFechaCortePlanificacionRuta(LocalDateTime fechaPlanificacionRuta) {
 		this.fechaCortePlanificacionRuta = fechaPlanificacionRuta;
 	}
 
@@ -1662,7 +1661,7 @@ public class OmsOrden implements Serializable {
 		this.rutaId = rutaId;
 	}
 
-	protected void setFechaAsignacionRuta(Date fechaAsignacionRuta) {
+	protected void setFechaAsignacionRuta(LocalDateTime fechaAsignacionRuta) {
 		this.fechaAsignacionRuta = fechaAsignacionRuta;
 	}
 

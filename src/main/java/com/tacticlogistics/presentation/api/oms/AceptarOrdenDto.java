@@ -2,13 +2,11 @@ package com.tacticlogistics.presentation.api.oms;
 
 import java.util.List;
 
-import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.infrastructure.services.Basic;
 
-public class CambiarEstadoOrdenDto {
+public class AceptarOrdenDto {
 	private Integer usuarioId;
 	private List<Integer> ids;
-	private EstadoOrdenType nuevoEstadoId;
 	private String notas;
 
 	public Integer getUsuarioId() {
@@ -25,14 +23,6 @@ public class CambiarEstadoOrdenDto {
 
 	public void setIds(List<Integer> ids) {
 		this.ids = ids;
-	}
-
-	public EstadoOrdenType getNuevoEstadoId() {
-		return nuevoEstadoId;
-	}
-
-	public void setNuevoEstadoId(EstadoOrdenType nuevoEstadoId) {
-		this.nuevoEstadoId = nuevoEstadoId;
 	}
 
 	public String getNotas() {

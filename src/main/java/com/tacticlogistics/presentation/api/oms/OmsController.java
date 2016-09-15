@@ -1,7 +1,7 @@
 package com.tacticlogistics.presentation.api.oms;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tacticlogistics.application.dto.common.CustomPage;
 import com.tacticlogistics.application.dto.common.ItemGenerico;
 import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.oms.OmsOrdenDto;
@@ -24,10 +23,12 @@ import com.tacticlogistics.application.services.crm.ClientesApplicationService;
 import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
 import com.tacticlogistics.application.services.crm.DestinosApplicationService;
 import com.tacticlogistics.application.services.oms.OmsApplicationService;
+import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
 import com.tacticlogistics.application.services.seguridad.UsuarioApplicationService;
 import com.tacticlogistics.application.services.wms.ProductosApplicationService;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.oms.OmsOrden;
+import com.tacticlogistics.presentation.util.BadRequestException;
 
 @CrossOrigin
 @RestController
@@ -52,6 +53,9 @@ public class OmsController {
 	@Autowired
 	private OmsApplicationService omsService;
 
+	@Autowired
+	private OrdenesApplicationService ordenesService;
+
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Consultas
 	// ----------------------------------------------------------------------------------------------------------------
@@ -73,8 +77,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-s/despachos/resumenes/estado-ordenes-origen", method = { RequestMethod.GET })
 	public List<Object> getResumenPorCediDespachosSecundaria(
 			@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta
 
 	) {
 		List<Object> list = new ArrayList<>();
@@ -90,8 +94,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-s/resumenes/cedi/recogidas", method = { RequestMethod.GET })
 	public List<Object> getResumenPorCediRecogidasSecundaria(
 			@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta
 
 	) {
 		List<Object> list = new ArrayList<>();
@@ -107,8 +111,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-s/despachos/ordenes/solicitudes-despacho", method = { RequestMethod.GET })
 	public List<Object> getSolicitudesDeDespacho(
 			@RequestParam(required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta,
 			@RequestParam(required = true) int clienteId, @RequestParam(required = true) String estadoOrdenId,
 			@RequestParam(required = true) int bodegaOrigenId
 	) {
@@ -139,8 +143,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-s/despachos/ordenes/excepciones-despacho", method = { RequestMethod.GET })
 	public List<Object> getExcepcionesDeDespacho(
 			@RequestParam(required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta,
 			@RequestParam(required = true) int clienteId, @RequestParam(required = true) String estadoOrdenId,
 			@RequestParam(required = true) int bodegaOrigenId
 	) {
@@ -157,8 +161,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-s/despachos/ordenes/entregas-despacho", method = { RequestMethod.GET })
 	public List<Object> getEntregasDeDespacho(
 			@RequestParam(required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta,
 			@RequestParam(required = true) int clienteId, @RequestParam(required = true) String estadoOrdenId,
 			@RequestParam(required = true) int bodegaOrigenId
 	) {
@@ -179,8 +183,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-p/resumenes/cedi/despachos", method = { RequestMethod.GET })
 	public List<Object> getResumenPorCediDespachosPrimaria(
 			@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta
 
 	) {
 		List<Object> list = new ArrayList<>();
@@ -196,8 +200,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-p/resumenes/cedi/recibos", method = { RequestMethod.GET })
 	public List<Object> getResumenPorCediRecibosPrimaria(
 			@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta
 
 	) {
 		List<Object> list = new ArrayList<>();
@@ -213,8 +217,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-p/resumenes/cedi/despachos-traslados", method = { RequestMethod.GET })
 	public List<Object> getResumenPorCediDespachosTraslado(
 			@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta
 
 	) {
 		List<Object> list = new ArrayList<>();
@@ -230,8 +234,8 @@ public class OmsController {
 	@RequestMapping(path = "/tms-p/resumenes/cedi/recibos-traslados", method = { RequestMethod.GET })
 	public List<Object> getResumenPorCediRecibosTraslado(
 			@RequestParam(value = "usuarioId", required = true) Integer usuarioId,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaDesde,
-			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaHasta
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta
 
 	) {
 		List<Object> list = new ArrayList<>();
@@ -300,50 +304,29 @@ public class OmsController {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Modificaciones
 	// ----------------------------------------------------------------------------------------------------------------
-	@RequestMapping(value = "/cambiar_estado", method = RequestMethod.POST)
-	public MensajesDto cambiarEstadoOrdenes(@RequestBody CambiarEstadoOrdenDto dto) {
+	@RequestMapping(value = "/aceptar", method = RequestMethod.POST)
+	public MensajesDto aceptarOrdenes(@RequestBody AceptarOrdenDto dto) {
+		//		MensajesDto mensajes = new MensajesDto();
+		//		mensajes.addMensaje(SeveridadType.FATAL, "Dummy");
+		//		throw new BadRequestException(mensajes);
 		try {
-			return omsService.cambiarEstadoOrdenes(dto.getUsuarioId(), dto.getIds(), dto.getNuevoEstadoId(),
-					dto.getNotas());
+			return ordenesService.aceptarOrdenes(dto.getIds(), dto.getNotas(), dto.getUsuarioId());
 		} catch (Exception e) {
 			MensajesDto mensajes = new MensajesDto();
 			mensajes.addMensaje(e, dto);
-			return mensajes;
+			throw new BadRequestException(mensajes);
 		}
 	}
 
 	@RequestMapping(value = "/anular", method = RequestMethod.POST)
 	public MensajesDto anaularOrdenes(@RequestBody AnularOrdenDto dto) {
 		try {
-			return omsService.anularOrdenes(dto.getUsuarioId(), dto.getIds(), dto.getCausalId(), dto.getNotas());
+			return null;//omsService.anularOrdenes(dto.getUsuarioId(), dto.getIds(), dto.getCausalId(), dto.getNotas());
 		} catch (Exception e) {
 			MensajesDto mensajes = new MensajesDto();
 			mensajes.addMensaje(e, dto);
 			return mensajes;
 		}
-	}
-
-	// ----------------------------------------------------------------------------------------------------------------
-	// Listar Ordenes
-	@RequestMapping(path = "/ordenes-x-usuario-x-tipo_servicio-x-cliente-x-estado_orden", method = { RequestMethod.GET,
-			RequestMethod.POST })
-	public CustomPage<String[]> getOrdenesPorUsuarioIdAndTipoServicioIdAndEstadoOrden(
-			@RequestParam(required = true) Integer usuarioId, @RequestParam(required = true) Integer tipoServicioId,
-			@RequestParam(required = false) Integer clienteId,
-			@RequestParam(required = false) EstadoOrdenType estadoOrdenId, @RequestParam(required = true) int start,
-			@RequestParam(required = true) int length) {
-
-		CustomPage<String[]> page = new CustomPage<>(0L, null);
-		try {
-			// page =
-			// omsService.findOrdenesByUsuarioIdAndTipoServicioIdAndEstadoOrden(usuarioId,
-			// tipoServicioId,
-			// clienteId, estadoOrdenId, start, length);
-		} catch (Exception e) {
-			// TODO e.printStackTrace()
-			e.printStackTrace();
-		}
-		return page;
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------
@@ -400,22 +383,6 @@ public class OmsController {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Ship To (Destino)
 	// ----------------------------------------------------------------------------------------------------------------
-	// Ciudades habilitadas para un destinatario y tipo de servicio
-//	@RequestMapping(value = "/ciudades-x-destinatario_remitente-x-tipo_servicio", method = RequestMethod.GET)
-//	public List<Map<String, Object>> getCiudadesPorDestinatarioPorTipoServicio(
-//			@RequestParam(required = true) Integer destinatarioId,
-//			@RequestParam(required = true) Integer tipoServicioId) {
-//
-//		List<Map<String, Object>> list = new ArrayList<>();
-//		try {
-//			list = ciudadesService.findCiudadesPorDestinatarioPorTipoServicio(destinatarioId,
-//					tipoServicioId);
-//		} catch (Exception e) {
-//			// TODO e.printStackTrace()
-//			e.printStackTrace();
-//		}
-//		return list;
-//	}
 
 	// Destinos habilitados para un destinatario, ciudad y tipo de servicio
 	@RequestMapping("/destinos_origenes-x-destinatario_remitente-x-tipo_servicio-x-ciudad")

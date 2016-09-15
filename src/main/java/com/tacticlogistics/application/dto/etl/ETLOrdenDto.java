@@ -3,8 +3,9 @@ package com.tacticlogistics.application.dto.etl;
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 import static com.tacticlogistics.infrastructure.services.Basic.substringSafe;
 
-import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 
 public class ETLOrdenDto {
 	private String numeroOrden;
-	private Date fechaOrden;
+	private LocalDate fechaOrden;
 	private String numeroOrdenCompra;
 
 	private String clienteCodigo;
@@ -30,16 +31,16 @@ public class ETLOrdenDto {
 	private String origenIndicaciones;
 
 	private boolean requiereConfirmacionCitaEntrega;
-	private Date fechaEntregaSugeridaMinima;
-	private Date fechaEntregaSugeridaMaxima;
-	private Time horaEntregaSugeridaMinima;
-	private Time horaEntregaSugeridaMaxima;
+	private LocalDate fechaEntregaSugeridaMinima;
+	private LocalDate fechaEntregaSugeridaMaxima;
+	private LocalTime horaEntregaSugeridaMinima;
+	private LocalTime horaEntregaSugeridaMaxima;
 
 	private boolean requiereConfirmacionCitaRecogida;
-	private Date fechaRecogidaSugeridaMinima;
-	private Date fechaRecogidaSugeridaMaxima;
-	private Time horaRecogidaSugeridaMinima;
-	private Time horaRecogidaSugeridaMaxima;
+	private LocalDate fechaRecogidaSugeridaMinima;
+	private LocalDate fechaRecogidaSugeridaMaxima;
+	private LocalTime horaRecogidaSugeridaMinima;
+	private LocalTime horaRecogidaSugeridaMaxima;
 
 	private String canalCodigoAlterno;
 
@@ -71,7 +72,7 @@ public class ETLOrdenDto {
 
 	private String notasConfirmacion;
 	private String usuarioConfirmacion;
-	private Date fechaConfirmacion;
+	private LocalDateTime fechaConfirmacion;
 
 	private Set<ETLLineaOrdenDto> lineas;
 
@@ -150,7 +151,7 @@ public class ETLOrdenDto {
 		return numeroOrden;
 	}
 
-	public Date getFechaOrden() {
+	public LocalDate getFechaOrden() {
 		return fechaOrden;
 	}
 
@@ -202,19 +203,19 @@ public class ETLOrdenDto {
 		return requiereConfirmacionCitaEntrega;
 	}
 
-	public Date getFechaEntregaSugeridaMinima() {
+	public LocalDate getFechaEntregaSugeridaMinima() {
 		return fechaEntregaSugeridaMinima;
 	}
 
-	public Date getFechaEntregaSugeridaMaxima() {
+	public LocalDate getFechaEntregaSugeridaMaxima() {
 		return fechaEntregaSugeridaMaxima;
 	}
 
-	public Time getHoraEntregaSugeridaMinima() {
+	public LocalTime getHoraEntregaSugeridaMinima() {
 		return horaEntregaSugeridaMinima;
 	}
 
-	public Time getHoraEntregaSugeridaMaxima() {
+	public LocalTime getHoraEntregaSugeridaMaxima() {
 		return horaEntregaSugeridaMaxima;
 	}
 
@@ -222,19 +223,19 @@ public class ETLOrdenDto {
 		return requiereConfirmacionCitaRecogida;
 	}
 
-	public Date getFechaRecogidaSugeridaMinima() {
+	public LocalDate getFechaRecogidaSugeridaMinima() {
 		return fechaRecogidaSugeridaMinima;
 	}
 
-	public Date getFechaRecogidaSugeridaMaxima() {
+	public LocalDate getFechaRecogidaSugeridaMaxima() {
 		return fechaRecogidaSugeridaMaxima;
 	}
 
-	public Time getHoraRecogidaSugeridaMinima() {
+	public LocalTime getHoraRecogidaSugeridaMinima() {
 		return horaRecogidaSugeridaMinima;
 	}
 
-	public Time getHoraRecogidaSugeridaMaxima() {
+	public LocalTime getHoraRecogidaSugeridaMaxima() {
 		return horaRecogidaSugeridaMaxima;
 	}
 
@@ -343,7 +344,7 @@ public class ETLOrdenDto {
 		return usuarioConfirmacion;
 	}
 
-	public Date getFechaConfirmacion() {
+	public LocalDateTime getFechaConfirmacion() {
 		return fechaConfirmacion;
 	}
 
@@ -355,7 +356,7 @@ public class ETLOrdenDto {
 		this.numeroOrden = substringSafe(coalesce(value, "").trim(), 0, 20);
 	}
 
-	public void setFechaOrden(Date fechaOrden) {
+	public void setFechaOrden(LocalDate fechaOrden) {
 		this.fechaOrden = fechaOrden;
 	}
 	
@@ -407,19 +408,19 @@ public class ETLOrdenDto {
 		this.requiereConfirmacionCitaEntrega = requiereConfirmacionCitaEntrega;
 	}
 
-	public void setFechaEntregaSugeridaMinima(Date fechaEntregaSugeridaMinima) {
+	public void setFechaEntregaSugeridaMinima(LocalDate fechaEntregaSugeridaMinima) {
 		this.fechaEntregaSugeridaMinima = fechaEntregaSugeridaMinima;
 	}
 
-	public void setFechaEntregaSugeridaMaxima(Date fechaEntregaSugeridaMaxima) {
+	public void setFechaEntregaSugeridaMaxima(LocalDate fechaEntregaSugeridaMaxima) {
 		this.fechaEntregaSugeridaMaxima = fechaEntregaSugeridaMaxima;
 	}
 
-	public void setHoraEntregaSugeridaMinima(Time horaEntregaSugeridaMinima) {
+	public void setHoraEntregaSugeridaMinima(LocalTime horaEntregaSugeridaMinima) {
 		this.horaEntregaSugeridaMinima = horaEntregaSugeridaMinima;
 	}
 
-	public void setHoraEntregaSugeridaMaxima(Time horaEntregaSugeridaMaxima) {
+	public void setHoraEntregaSugeridaMaxima(LocalTime horaEntregaSugeridaMaxima) {
 		this.horaEntregaSugeridaMaxima = horaEntregaSugeridaMaxima;
 	}
 
@@ -427,19 +428,19 @@ public class ETLOrdenDto {
 		this.requiereConfirmacionCitaRecogida = requiereConfirmacionCitaRecogida;
 	}
 
-	public void setFechaRecogidaSugeridaMinima(Date fechaRecogidaSugeridaMinima) {
+	public void setFechaRecogidaSugeridaMinima(LocalDate fechaRecogidaSugeridaMinima) {
 		this.fechaRecogidaSugeridaMinima = fechaRecogidaSugeridaMinima;
 	}
 
-	public void setFechaRecogidaSugeridaMaxima(Date fechaRecogidaSugeridaMaxima) {
+	public void setFechaRecogidaSugeridaMaxima(LocalDate fechaRecogidaSugeridaMaxima) {
 		this.fechaRecogidaSugeridaMaxima = fechaRecogidaSugeridaMaxima;
 	}
 
-	public void setHoraRecogidaSugeridaMinima(Time horaRecogidaSugeridaMinima) {
+	public void setHoraRecogidaSugeridaMinima(LocalTime horaRecogidaSugeridaMinima) {
 		this.horaRecogidaSugeridaMinima = horaRecogidaSugeridaMinima;
 	}
 
-	public void setHoraRecogidaSugeridaMaxima(Time horaRecogidaSugeridaMaxima) {
+	public void setHoraRecogidaSugeridaMaxima(LocalTime horaRecogidaSugeridaMaxima) {
 		this.horaRecogidaSugeridaMaxima = horaRecogidaSugeridaMaxima;
 	}
 
@@ -572,8 +573,8 @@ public class ETLOrdenDto {
 		this.usuarioConfirmacion = substringSafe(coalesce(value, "").trim(), 0, 50);
 	}
 
-	public void setFechaConfirmacion(Date fechaAprobacionCliente) {
-		this.fechaConfirmacion = fechaAprobacionCliente;
+	public void setFechaConfirmacion(LocalDateTime fechaConfirmacion) {
+		this.fechaConfirmacion = fechaConfirmacion;
 	}
 
 	public void setLineas(Set<ETLLineaOrdenDto> lineas) {

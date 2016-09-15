@@ -1,16 +1,13 @@
 package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.planificacion;
 
 import java.io.File;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -120,13 +117,11 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	protected void adicionar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
 			Map<Integer, String> mapIndexToName) {
 		if (!map.containsKey(key)) {
-			Time timeValue;
+			LocalTime timeValue;
 			String value;
 
-			DateFormat format = getFormatoHoraHHmmUTC();
 			value = getValorCampo(HORA, campos, mapNameToIndex);
-			value = format.format(getValorCampoHoraTourSolver(key, HORA.toString(), value, format));
-			timeValue = getValorCampoHora(key, HORA.toString(), value, getFormatoHoraHHmm());
+			timeValue = getValorCampoHoraTourSolver(key, HORA.toString(), value);
 
 			RutaDto dto = new RutaDto(key, timeValue);
 
@@ -141,7 +136,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 		if (map.containsKey(key)) {
 			String value;
 			Integer integerValue;
-			Time timeValue;
+			LocalTime timeValue;
 
 			value = getValorCampo(NUMERO_ORDEN, campos, mapNameToIndex);
 			if (value.equalsIgnoreCase("INICIO")) {
@@ -158,9 +153,8 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 			integerValue = getValorCampoDecimal(key, ID_ORDEN.toString(), value, getFormatoEntero());
 			dto.setOrdenId(integerValue);
 
-			DateFormat format = getFormatoHoraHHmmUTC();
 			value = getValorCampo(HORA, campos, mapNameToIndex);
-			timeValue = getValorCampoHoraTourSolver(key, HORA.toString(), value, format);
+			timeValue = getValorCampoHoraTourSolver(key, HORA.toString(), value);
 			dto.setHoraEstimada(timeValue);
 
 			map.get(key).getLineas().add(dto);
@@ -227,13 +221,13 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	}
 
 	// TODO CAMBIAR TABLA DE BD TACTIC A TMS.VEHICULOS
-	private Integer crearRuta(Integer corteRutaId, String placa, Time horaCitaCargue, Date fechaAsignacionRuta) {
+	private Integer crearRuta(Integer corteRutaId, String placa, LocalTime localTime, Date fechaAsignacionRuta) {
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
 				.withSchemaName("tms").withProcedureName("PlanificacionRutasCrearRuta");
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
 		inParamMap.put("corteRutaId", corteRutaId);
 		inParamMap.put("placa", placa);
-		inParamMap.put("horaCitaCargue", horaCitaCargue);
+		inParamMap.put("horaCitaCargue", localTime);
 		inParamMap.put("fechaAsignacionRuta", fechaAsignacionRuta);
 		inParamMap.put("rutaId", null);
 
@@ -245,7 +239,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	}
 
 	private void incluirOrdenEnRuta(Integer ordenId, Integer rutaId, Integer secuenciaRuta,
-			Time horaEstimadaDeEntrega) {
+			LocalTime localTime) {
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
 				.withSchemaName("tms").withProcedureName("PlanificacionRutasIncluirOrdenEnRuta");
 
@@ -253,7 +247,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 		inParamMap.put("ordenId", ordenId);
 		inParamMap.put("rutaId", rutaId);
 		inParamMap.put("secuenciaRuta", secuenciaRuta);
-		inParamMap.put("horaEstimadaDeEntrega", horaEstimadaDeEntrega);
+		inParamMap.put("horaEstimadaDeEntrega", localTime);
 
 		SqlParameterSource in = new MapSqlParameterSource(inParamMap);
 
@@ -274,29 +268,19 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	private SimpleDateFormat formatoHoraHHmmUTC = null;
-
-	protected SimpleDateFormat getFormatoHoraHHmmUTC() {
-		if (formatoHoraHHmmUTC == null) {
-			formatoHoraHHmmUTC = new SimpleDateFormat("HH:mm");
-			formatoHoraHHmmUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
-		}
-		return formatoHoraHHmmUTC;
-	}
-
-	private Time getValorCampoHoraTourSolver(String key, String campo, String value, DateFormat fmt) {
-		Time time = null;
+	private LocalTime getValorCampoHoraTourSolver(String key, String campo, String value) {
+		LocalTime time = null;
 		value = value.replace(",", ".");
 		try {
 			Float floatValue = getFormatoCoordenada().parse(value).floatValue();
 			if (floatValue >= 1.0) {
 				throw new RuntimeException("La hora suminitrada supera las 24 horas");
 			}
-			time = new Time((long) ((24L * 60L * 60L * 1000L) * floatValue));
+			time = LocalTime.ofSecondOfDay((long) ((24L * 60L * 60L * 1L) * floatValue));
 		} catch (ParseException e) {
-			logParseException(key, HORA, value, getFormatoHoraHHmm().toPattern());
+			logParseException(key, HORA, value, "");
 		} catch (RuntimeException e) {
-			logParseException(key, HORA, value, getFormatoHoraHHmm().toPattern());
+			logParseException(key, HORA, value, "");
 		}
 		return time;
 	}

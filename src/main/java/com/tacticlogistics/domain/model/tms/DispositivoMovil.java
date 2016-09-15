@@ -13,20 +13,17 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "DispositivosMovilesSeguimiento", catalog = "tms")
-public class DispositivoMovilSeguimiento implements Serializable {
+@Table(name = "DispositivosMoviles", catalog = "tms")
+public class DispositivoMovil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_dispositivo_movil_seguimiento", unique = true, nullable = false)
+	@Column(name = "id_dispositivo_movil", unique = true, nullable = false)
 	private Integer id;
 
 	@Column(nullable = false, length = 20, unique = true)
 	private String codigo;
-
-	@Column(nullable = false, length = 100, unique = true)
-	private String nombre;
 
 	private boolean activo;
 
@@ -37,7 +34,7 @@ public class DispositivoMovilSeguimiento implements Serializable {
 	@Column(nullable = false, length = 50)
 	private String usuarioActualizacion;
 
-	protected DispositivoMovilSeguimiento() {
+	protected DispositivoMovil() {
 
 	}
 
@@ -45,7 +42,7 @@ public class DispositivoMovilSeguimiento implements Serializable {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	protected void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -55,14 +52,6 @@ public class DispositivoMovilSeguimiento implements Serializable {
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
 	}
 
 	public boolean isActivo() {
@@ -91,22 +80,9 @@ public class DispositivoMovilSeguimiento implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("DispositivoMovilSeguimiento [");
-		if (id != null)
-			builder.append("id=").append(id).append(", ");
-		if (codigo != null)
-			builder.append("codigo=").append(codigo).append(", ");
-		if (nombre != null)
-			builder.append("nombre=").append(nombre).append(", ");
-		builder.append("activo=").append(activo).append(", ");
-		if (fechaActualizacion != null)
-			builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-		if (usuarioActualizacion != null)
-			builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-		builder.append("]");
-		return builder.toString();
+		return "DispositivoMovil [" + (id != null ? "id=" + id + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "") + "activo=" + activo + ", "
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
 	}
-
-	
 }

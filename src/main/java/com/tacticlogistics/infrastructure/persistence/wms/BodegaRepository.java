@@ -2,14 +2,12 @@ package com.tacticlogistics.infrastructure.persistence.wms;
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.wms.Bodega;
-import com.tacticlogistics.presentation.api.wms.ingresos.dto.ListItemBodegaDto;
 
 public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
 	Bodega findByCodigoIgnoringCase(String codigo);
@@ -75,19 +73,4 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
     List<Bodega> findByCiudadId(
             @Param("ciudadId") Integer ciudadId);   
 
-	@Deprecated
-	@Query(""
-           + " SELECT new com.tacticlogistics.presentation.api.wms.ingresos.dto.ListItemBodegaDto("
-           + "  a.bodega.id, "
-           + "  a.bodega.codigo, "
-           + "  a.bodega.nombre,"
-           + "  b.nombreAlterno,"
-           + "  a.bodega.direccion.direccion)"
-           + " FROM UsuarioBodegaAssociation a"
-           + " ,Ciudad b "
-           + " WHERE 0 = 0"
-           + " AND b.id = a.bodega.direccion.ciudadId"
-           + " AND a.usuario.id = :usuarioId")
-   List<ListItemBodegaDto> findByUsuarioId(
-           @Param("usuarioId") Integer usuarioId,Sort sort);   
 }

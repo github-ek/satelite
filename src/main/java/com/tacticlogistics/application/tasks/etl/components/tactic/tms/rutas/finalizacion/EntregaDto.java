@@ -1,6 +1,7 @@
 package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.finalizacion;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.tacticlogistics.domain.model.oms.EstadoDistribucionType;
 
@@ -9,10 +10,10 @@ public class EntregaDto {
 	private String numeroOrden;
 	private String movil;
 	private String placa;
-	private Date fechaRuta;
+	private LocalDate fechaRuta;
 	private EstadoDistribucionType estadoDistribucion;
-	private Date fechaEntregaInicio;
-	private Date fechaEntregaFin;
+	private LocalDateTime fechaEntregaInicio;
+	private LocalDateTime fechaEntregaFin;
 	
 	public EntregaDto() {
 		super();
@@ -50,11 +51,11 @@ public class EntregaDto {
 		this.placa = placa;
 	}
 
-	public Date getFechaRuta() {
+	public LocalDate getFechaRuta() {
 		return fechaRuta;
 	}
 
-	public void setFechaRuta(Date fechaRuta) {
+	public void setFechaRuta(LocalDate fechaRuta) {
 		this.fechaRuta = fechaRuta;
 	}
 
@@ -66,19 +67,19 @@ public class EntregaDto {
 		this.estadoDistribucion = estadoDistribucion;
 	}
 
-	public Date getFechaEntregaInicio() {
+	public LocalDateTime getFechaEntregaInicio() {
 		return fechaEntregaInicio;
 	}
 
-	public void setFechaEntregaInicio(Date fechaEntregaInicio) {
+	public void setFechaEntregaInicio(LocalDateTime fechaEntregaInicio) {
 		this.fechaEntregaInicio = fechaEntregaInicio;
 	}
 
-	public Date getFechaEntregaFin() {
+	public LocalDateTime getFechaEntregaFin() {
 		return fechaEntregaFin;
 	}
 
-	public void setFechaEntregaFin(Date fechaEntregaFin) {
+	public void setFechaEntregaFin(LocalDateTime fechaEntregaFin) {
 		this.fechaEntregaFin = fechaEntregaFin;
 	}
 

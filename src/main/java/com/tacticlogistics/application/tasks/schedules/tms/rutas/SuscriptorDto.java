@@ -1,4 +1,4 @@
-package com.tacticlogistics.application.tasks.etl.components.tactic.tms.rutas.dto;
+package com.tacticlogistics.application.tasks.schedules.tms.rutas;
 
 import com.tacticlogistics.infrastructure.services.Basic;
 
