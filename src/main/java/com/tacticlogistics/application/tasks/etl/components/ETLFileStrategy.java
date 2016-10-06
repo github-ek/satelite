@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -260,7 +260,7 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
         try {
             FileSystemService.move(getArchivo(), path);
             File newFile = path.resolve(getArchivo().getName()).toFile();
-            File renamedFile = path.resolve(sdf.format(LocalDate.now()) + "-" + getArchivo().getName()).toFile();
+            File renamedFile = path.resolve(sdf.format(LocalDateTime.now()) + "-" + getArchivo().getName()).toFile();
             newFile.renameTo(renamedFile);
         } catch (IOException ioe) {
             log.error("Error al mover el archivo {} al directorio {}.", getArchivo().getName(), path);
@@ -380,14 +380,14 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 
     protected DateTimeFormatter getFormatoHoraHH() {
         if (formatoHoraHH == null) {
-            formatoHoraHH = DateTimeFormatter.ofPattern("HH");
+            formatoHoraHH = DateTimeFormatter.ofPattern("H");
         }
         return formatoHoraHH;
     }
 
     protected DateTimeFormatter getFormatoHoraHHmm() {
         if (formatoHoraHHmm == null) {
-            formatoHoraHHmm = DateTimeFormatter.ofPattern("HH:mm");
+            formatoHoraHHmm = DateTimeFormatter.ofPattern("H:mm");
         }
         return formatoHoraHHmm;
     }
@@ -401,7 +401,7 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 
     protected DateTimeFormatter getFormatoFechaLarga() {
         if (formatoFechaLarga == null) {
-        	formatoFechaLarga = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        	formatoFechaLarga = DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss");
         }
         return formatoFechaLarga;
     }

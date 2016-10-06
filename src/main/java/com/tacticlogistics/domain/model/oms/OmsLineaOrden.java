@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import com.tacticlogistics.domain.model.common.TipoContenido;
@@ -28,8 +27,7 @@ import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.domain.model.wms.Unidad;
 
 @Entity
-@Table(name = "LineasOrden", catalog = "oms", uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "id_orden", "numeroItem" }) })
+@Table(name = "LineasOrden", catalog = "oms")
 public class OmsLineaOrden implements Serializable {
 	private static final long serialVersionUID = 1L;
 

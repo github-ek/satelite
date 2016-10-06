@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
+import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
 import com.tacticlogistics.application.tasks.etl.readers.FlatFileReaderUTF16;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.infrastructure.services.Basic;
@@ -30,8 +31,8 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     private static final Logger log = LoggerFactory.getLogger(DICERMEXLineasFactura.class);
 
-    @Autowired
-    private FlatFileReaderUTF16 reader;
+	@Autowired
+	private CharsetDetectorFileReader reader;
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
     @Override
@@ -90,6 +91,11 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
     }
 
     @Override
+	protected String limpiar(String texto) {
+    	return super.limpiar(texto).replace('\r', ' ');
+	}
+
+	@Override
     protected List<String> getCamposEsperados() {
         List<String> list = new ArrayList<>();
 
@@ -98,7 +104,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
         list.add(LINEA_PRODUCTO_CODIGO.toString());
         list.add(LINEA_CANTIDAD_SOLICITADA.toString());
-        //list.add(LINEA_UNIDAD_CODIGO_ALTERNO.toString());
+        list.add(IGNORAR.toString());
         list.add(LINEA_BODEGA_ORIGEN_CODIGO_ALTERNO.toString());
         list.add(LINEA_BODEGA_DESTINO_CODIGO_ALTERNO.toString());
 

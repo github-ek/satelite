@@ -3,16 +3,16 @@ package com.tacticlogistics.presentation.api.clientes.dicermex.compras;
 import java.util.Date;
 
 public class LineaOrdenCompraDto {
-	private Date fechaEntrega;
-	private int cantidad;
-	private String productoCodigo;
-	private String unidadCodigo;
-	private String notas;
-	private String talla;
-	private String color;
-	private String lote;
-	private String bodegaDestinoCodigo;
-	private String ubicacionId;
+		private Date fechaEntrega;
+		private int cantidad;
+		private String productoCodigo;
+		private String unidadCodigo;
+		private String notas;
+		private String talla;
+		private String color;
+		private String lote;
+		private String bodegaDestinoCodigo;
+		private String ubicacionId;
 
 	public LineaOrdenCompraDto() {
 		super();

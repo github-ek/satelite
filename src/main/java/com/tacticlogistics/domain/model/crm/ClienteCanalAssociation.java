@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "clientes_segmentos", catalog = "crm")
+@Table(name = "clientes_canales", catalog = "crm")
 public class ClienteCanalAssociation implements Serializable {
     private static final long serialVersionUID = 1L;
 

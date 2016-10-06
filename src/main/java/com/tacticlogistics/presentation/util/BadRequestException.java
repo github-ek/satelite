@@ -7,6 +7,11 @@ import com.tacticlogistics.application.dto.common.MensajesDto;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class BadRequestException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2511580590419334260L;
+
 	public BadRequestException(String msg) {
 		super(msg);
 	}

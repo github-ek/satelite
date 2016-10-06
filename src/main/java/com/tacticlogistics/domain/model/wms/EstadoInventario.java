@@ -19,14 +19,17 @@ public class EstadoInventario implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_estado_inventario", unique = true, nullable = false)
-	private Integer id;
+	@Column(name = "id_estado_inventario", unique = true, nullable = false, length = 4)
+	private String id;
 
-	@Column(nullable = false, length = 50, unique = true)
-	private String codigo;
+	@Column(nullable = false, length = 4, unique = true)
+	private String codigoEstadoInvsts;
 
 	@Column(nullable = false, length = 50, unique = true)
 	private String nombre;
+
+	@Column(nullable = false, length = 200)
+	private String descripcion;
 	private int ordinal;
 	private boolean activo;
 
@@ -41,20 +44,20 @@ public class EstadoInventario implements Serializable {
 
 	}
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public String getCodigo() {
-		return codigo;
+	public String getCodigoEstadoInvsts() {
+		return codigoEstadoInvsts;
 	}
 
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
+	public void setCodigoEstadoInvsts(String codigoEstadoInvsts) {
+		this.codigoEstadoInvsts = codigoEstadoInvsts;
 	}
 
 	public String getNombre() {
@@ -63,6 +66,14 @@ public class EstadoInventario implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 	public int getOrdinal() {
@@ -99,21 +110,12 @@ public class EstadoInventario implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("EstadoInventario [");
-		if (id != null)
-			builder.append("id=").append(id).append(", ");
-		if (codigo != null)
-			builder.append("codigo=").append(codigo).append(", ");
-		if (nombre != null)
-			builder.append("nombre=").append(nombre).append(", ");
-		builder.append("ordinal=").append(ordinal).append(", activo=").append(activo).append(", ");
-		if (fechaActualizacion != null)
-			builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
-		if (usuarioActualizacion != null)
-			builder.append("usuarioActualizacion=").append(usuarioActualizacion);
-		builder.append("]");
-		return builder.toString();
+		return "EstadoInventario [" + (id != null ? "id=" + id + ", " : "")
+				+ (codigoEstadoInvsts != null ? "codigoEstadoInvsts=" + codigoEstadoInvsts + ", " : "")
+				+ (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (descripcion != null ? "descripcion=" + descripcion + ", " : "") + "ordinal=" + ordinal + ", activo="
+				+ activo + ", " + (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
 	}
 
 }

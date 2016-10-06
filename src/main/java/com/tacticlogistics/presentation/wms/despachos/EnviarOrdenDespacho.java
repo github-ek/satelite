@@ -31,14 +31,35 @@ public class EnviarOrdenDespacho {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	@Scheduled(fixedRate = 60000)
-	public void enviarOrdenesWMS() 
-	{
+	@Scheduled(fixedRate = 15 * 60 * 1000)
+	public void enviarOrdenesWMS() {
 		try {
 
 			List<OrdenDespacho> ordenes = jdbcTemplate.query(
-					"select * from wms.ordenes_venta where numero_orden = 'CV 14981'", new OrdenDespachoRowMapper());
-
+					"select * from wms.ordenes_venta WHERE codigo_alterno_wms = 'DICERMEX' AND fecha_confirmacion >= CAST(GETDATE() AS DATE) AND bodega_origen_codigo ='TL-BOG-SIB-01' "
+//					+ " AND numero_orden IN ("
+//					+ "'100-FV-00872226',"
+//					+ "'100-FV-00872273',"
+//					+ "'100-FV-00872275',"
+//					+ "'100-FV-00872277',"
+//					+ "'100-FV-00872286',"
+//					+ "'100-FV-00872317',"
+//					+ "'100-FV-00872319',"
+//					+ "'100-FV-00872345',"
+//					+ "'100-FV-00872355',"
+//					+ "'100-FV-00872359',"
+//					+ "'100-RNF-00019707',"
+//					+ "'100-RNF-00019716',"
+//					+ "'100-RNF-00019722',"
+//					+ "'100-RNF-00019725',"
+//					+ "'100-RNF-00019726',"
+//					+ "'100-RNF-00019730',"
+//					+ "'100-RNF-00019742',"
+//					+ "'100-RNF-00019744',"
+//					+ "'100-RNF-00019745'"
+//					+ ")"
+					+ "", new OrdenDespachoRowMapper());
+			
 			ordenes = consolidarLineasOrden(ordenes);
 
 			log.info("Ordenes Despacho:" + ordenes.size());
@@ -59,12 +80,11 @@ public class EnviarOrdenDespacho {
 	private void actualizarOrdenes(List<OrdenDespacho> ordenes) {
 
 		for (OrdenDespacho oc : ordenes) {
-			jdbcTemplate.execute(""
-					+ " update ordenes.ordenes "
-					+ "  set id_estado_alistamiento = 'ALERTADA'"
-					+ "  where id_orden = " + oc.getIdOrden());
+			jdbcTemplate.execute("" 
+		+ "  update ordenes.ordenes " 
+		+ "  set id_estado_alistamiento = 'ALERTADA'"
+		+ "  where id_orden = " + oc.getIdOrden());
 		}
-
 	}
 
 	private void writeFiles(OrdenDespacho oc) throws IOException, UnsupportedEncodingException {
@@ -82,9 +102,9 @@ public class EnviarOrdenDespacho {
 		fileOut.close();
 
 		writer.close();
-		
+
 		File triggerFile = new File(directorioHostIn + "\\" + oc.getNumeroOrden() + ".trg");
-		
+
 		triggerFile.createNewFile();
 	}
 

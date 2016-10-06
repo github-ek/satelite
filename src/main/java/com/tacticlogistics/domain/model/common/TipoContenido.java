@@ -13,7 +13,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "TiposContenido", catalog = "ordenes")
+@Table(name = "TiposContenido", catalog = "oms")
 public class TipoContenido implements Serializable {
 	private static final long serialVersionUID = 1L;
 

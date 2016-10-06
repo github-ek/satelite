@@ -41,8 +41,8 @@ public class Vehiculo implements Serializable {
 	private String usuarioActualizacion;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_dispositivo_movil_seguimiento", nullable = false)
-	private DispositivoMovil dispositivoMovilSeguimiento;
+	@JoinColumn(name = "id_dispositivo_movil", nullable = false)
+	private DispositivoMovil dispositivoMovil;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_conductor", nullable = false)
@@ -105,11 +105,11 @@ public class Vehiculo implements Serializable {
 	}
 
 	public DispositivoMovil getDispositivoMovilSeguimiento() {
-		return dispositivoMovilSeguimiento;
+		return dispositivoMovil;
 	}
 
 	public void setDispositivoMovilSeguimiento(DispositivoMovil dispositivoMovilSeguimiento) {
-		this.dispositivoMovilSeguimiento = dispositivoMovilSeguimiento;
+		this.dispositivoMovil = dispositivoMovilSeguimiento;
 	}
 
 	public Conductor getConductor() {
@@ -157,8 +157,8 @@ public class Vehiculo implements Serializable {
 			builder.append("fechaActualizacion=").append(fechaActualizacion).append(", ");
 		if (usuarioActualizacion != null)
 			builder.append("usuarioActualizacion=").append(usuarioActualizacion).append(", ");
-		if (dispositivoMovilSeguimiento != null)
-			builder.append("dispositivoMovilSeguimiento=").append(dispositivoMovilSeguimiento).append(", ");
+		if (dispositivoMovil != null)
+			builder.append("dispositivoMovilSeguimiento=").append(dispositivoMovil).append(", ");
 		if (conductor != null)
 			builder.append("conductor=").append(conductor).append(", ");
 		if (tipoVehiculo != null)

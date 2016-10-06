@@ -167,6 +167,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			dto.setEstadoDistribucion(estado);
 
 			value = getValorCampo(FECHA_ENTREGA_INICIO, campos, mapNameToIndex);
+			value = Basic.substringSafe(value, 0, 19);
 			if (value.equals("NULL")) {
 				dateTimeValue = null;
 			} else {
@@ -175,6 +176,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			dto.setFechaEntregaInicio(dateTimeValue);
 
 			value = getValorCampo(FECHA_ENTREGA_FIN, campos, mapNameToIndex);
+			value = Basic.substringSafe(value, 0, 19);
 			if (value.equals("NULL")) {
 				dateTimeValue = null;
 			} else {
@@ -246,8 +248,10 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			return EstadoDistribucionType.NO_ENTREGADA;
 		case "NOVEDAD EN ENTREGA":
 			return EstadoDistribucionType.NOVEDADES;
-		case "VISITA RETRASADA":
+		case "TRANSITO":
 			return EstadoDistribucionType.TRANSITO;
+		case "VISITA RETRASADA":
+			return EstadoDistribucionType.RETRASADA;
 		case "VISITA INICIADA":
 			return EstadoDistribucionType.EN_DESTINO;
 		default:

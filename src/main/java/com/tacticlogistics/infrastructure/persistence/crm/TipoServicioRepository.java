@@ -10,6 +10,22 @@ import com.tacticlogistics.domain.model.crm.TipoServicio;
 
 public interface TipoServicioRepository extends JpaRepository<TipoServicio, Integer> {
 	TipoServicio findByCodigoIgnoringCase(String codigo);
+
+	@Query(""
+	        + " SELECT c"
+	        + " FROM TipoServicio c"
+	        + " WHERE c.id IN"
+	        + " ("
+	        + " SELECT DISTINCT a.tipoServicioId"
+			+ " FROM ClienteTipoServicioAssociation a"
+			+ " WHERE a.clienteId = :clienteId"
+			+ " AND a.codigoAlterno = :codigoAlterno"
+			+ " )"
+			+ " ORDER BY c.ordinal")
+	TipoServicio findFisrtByClienteIdAndCodigoAlterno(
+			@Param("clienteId") Integer clienteId,
+			@Param("codigoAlterno") String codigoAlterno);
+
 	
 	@Query(""
 	        + " SELECT c"

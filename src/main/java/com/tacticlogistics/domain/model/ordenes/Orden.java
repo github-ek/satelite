@@ -66,7 +66,7 @@ public class Orden implements Serializable {
 	@NotNull
 	private String numeroOrden;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 
 	private LocalDate fechaOrden;
 
@@ -136,10 +136,10 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaEntrega;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 	private LocalDate fechaEntregaSugeridaMinima;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 	private LocalDate fechaEntregaSugeridaMaxima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
@@ -168,10 +168,10 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	private boolean requiereConfirmacionCitaRecogida;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 	private LocalDate fechaRecogidaSugeridaMinima;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 	private LocalDate fechaRecogidaSugeridaMaxima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
@@ -266,8 +266,7 @@ public class Orden implements Serializable {
 	@NotNull
 	private String notasConfirmacion;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaConfirmacion;
 
 	@Column(nullable = false, length = 50)
@@ -277,7 +276,7 @@ public class Orden implements Serializable {
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 	private LocalDate fechaCitaEntrega;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
@@ -287,7 +286,7 @@ public class Orden implements Serializable {
 	private LocalTime horaCitaEntregaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 
 	private LocalDate fechaCitaRecogida;
 
@@ -298,7 +297,7 @@ public class Orden implements Serializable {
 	private LocalTime horaCitaRecogidaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 
 	private LocalDate fechaAlistamiento;
 
@@ -321,8 +320,7 @@ public class Orden implements Serializable {
 	@NotNull
 	private String notasAceptacion;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaAceptacion;
 
 	@Column(nullable = false, length = 50)
@@ -333,8 +331,7 @@ public class Orden implements Serializable {
 	@Column(nullable = true, name = "id_corte_ruta")
 	private Integer corteRutaId;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaCorteRuta;
 
 	@Column(nullable = false, length = 50)
@@ -351,8 +348,7 @@ public class Orden implements Serializable {
 	@Column(nullable = true)
 	private Integer numeroCajas;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaAsignacionRuta;
 
 	@Column(nullable = false, length = 50)
@@ -360,49 +356,39 @@ public class Orden implements Serializable {
 	private String usuarioAsignacionRuta;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaEntregaEstimada;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaEntrega;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaEntregaInicio;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaEntregaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaRecogidaEstimada;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaRecogida;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaRecogidaInicio;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaRecogidaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaCreacion;
 
 	@Column(nullable = false, length = 50)
 	private String usuarioCreacion;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
-
+	@Column(nullable = true)
 	private LocalDateTime fechaActualizacion;
 
 	@Column(nullable = false, length = 50)
@@ -417,7 +403,7 @@ public class Orden implements Serializable {
 	@NotNull
 	private String notasAnulacion;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 
 	private LocalDateTime fechaAnulacion;
 
@@ -436,7 +422,7 @@ public class Orden implements Serializable {
 	@NotNull
 	private String notasReprogramacion;
 
-	@Column(nullable = true, columnDefinition = "DATETIME2(0)")
+	@Column(nullable = true)
 	private LocalDateTime fechaReprogramacion;
 
 	@Column(nullable = false, length = 50)
@@ -492,36 +478,39 @@ public class Orden implements Serializable {
 			}
 		}
 
-		this.setDatosConfirmacion(usuario, fecha, notas);
 		this.setEstadoOrden(EstadoOrdenType.CONFIRMADA);
-		this.setDatosActualizacion(usuario, fecha);
+		this.setDatosConfirmacion(usuario, fecha, notas);
+		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	public void aceptar(String usuario, LocalDateTime fecha, String notas) {
-		this.setDatosAceptacion(usuario, fecha, notas);
+	public void aceptar(LocalDateTime fecha,String usuario, String notas) {
+		if (this.getEstadoOrden() == EstadoOrdenType.ANULADA) {
+			this.revertirAnulacion(fecha,usuario);
+		}
 		this.setEstadoOrden(EstadoOrdenType.ACEPTADA);
-		this.setDatosActualizacion(usuario, fecha);
+		this.setDatosAceptacion(fecha, usuario, notas);
+		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	public void anular(String usuario, LocalDateTime fecha, String notas, CausalAnulacion causal) {
-		this.setDatosAnulacion(usuario, fecha, notas, causal);
+	public void anular(LocalDateTime fecha, String usuario, String notas, CausalAnulacion causal) {
 		this.setEstadoOrden(EstadoOrdenType.ANULADA);
-		this.setDatosActualizacion(usuario, fecha);
+		this.setDatosAnulacion(fecha, usuario, notas, causal);
+		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	public void revertirConfirmacion(String usuario, LocalDateTime fecha) {
-		this.setDatosConfirmacion("", null, this.getNotasConfirmacion());
+	private void revertirConfirmacion(String usuario, LocalDateTime fecha) {
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
-		this.setDatosActualizacion(usuario, fecha);
+		this.setDatosConfirmacion("", null, this.getNotasConfirmacion());
+		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	public void revertirAceptacion(String usuario, LocalDateTime fecha) {
-		this.setDatosAceptacion("", null, this.getNotasAceptacion());
+	private void revertirAceptacion(String usuario, LocalDateTime fecha) {
+		this.setDatosAceptacion(null, "", this.getNotasAceptacion());
 		this.confirmar(usuario, fecha, "");
 	}
 
-	public void revertirAnulacion(String usuario, LocalDate fecha, EstadoOrdenType nuevoEstado) {
-		this.setDatosAnulacion("", null, "", null);
+	private void revertirAnulacion(LocalDateTime fecha, String usuario) {
+		this.setDatosAnulacion(null, "", "", null);
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -562,7 +551,7 @@ public class Orden implements Serializable {
 		this.setDatosCitaAlistamiento(null, null, null);
 
 		this.setDatosPlanificacionPrimaria(null, null);
-		this.setDatosAceptacion("", null, "");
+		this.setDatosAceptacion(null, "", "");
 
 		this.setDatosEntrega(null, null, null);
 		this.setDatosRecogida(null, null, null);
@@ -573,8 +562,8 @@ public class Orden implements Serializable {
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.setDatosCreacion("", null);
-		this.setDatosActualizacion("", null);
-		this.setDatosAnulacion("", null, "", null);
+		this.setDatosActualizacion(null, "");
+		this.setDatosAnulacion(null, "", "", null);
 		this.setDatosReprogramacion("", null, "", null, null);
 
 		// ---------------------------------------------------------------------------------------------------------
@@ -700,7 +689,7 @@ public class Orden implements Serializable {
 		this.setValorFletePlanificado(valorFletePlanificado);
 	}
 
-	public void setDatosAceptacion(String usuario, LocalDateTime fecha, String notas) {
+	public void setDatosAceptacion(LocalDateTime fecha, String usuario, String notas) {
 		this.setNotasAceptacion(notas);
 		this.setFechaAceptacion(fecha);
 		this.setUsuarioAceptacion(usuario);
@@ -740,12 +729,12 @@ public class Orden implements Serializable {
 		this.setFechaCreacion(fecha);
 	}
 
-	public void setDatosActualizacion(String usuario, LocalDateTime fecha) {
+	public void setDatosActualizacion(LocalDateTime fecha, String usuario) {
 		this.setUsuarioActualizacion(usuario);
 		this.setFechaActualizacion(fecha);
 	}
 
-	protected void setDatosAnulacion(String usuario, LocalDateTime fecha, String notas, CausalAnulacion causal) {
+	protected void setDatosAnulacion(LocalDateTime fecha, String usuario, String notas, CausalAnulacion causal) {
 		this.setUsuarioAnulacion(usuario);
 		this.setFechaAnulacion(fecha);
 		this.setNotasAnulacion(notas);

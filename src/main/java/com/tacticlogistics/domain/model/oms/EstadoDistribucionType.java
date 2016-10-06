@@ -12,6 +12,7 @@ public enum EstadoDistribucionType {
 	CARGA_RECHAZADA,
 	
 	TRANSITO,
+	RETRASADA,
 	EN_DESTINO,
 	DESCARGANDO,
 	

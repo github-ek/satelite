@@ -13,7 +13,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "CausalReprogramacion", catalog = "oms")
+@Table(name = "CausalesReprogramacion", catalog = "oms")
 public class CausalReprogramacion implements Serializable {
 	private static final long serialVersionUID = 1L;
 

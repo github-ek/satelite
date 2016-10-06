@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrdenCompraDto {
-	private String centroOperacion;
-	private String tipoDocumento;
-	private String numeroOrden;
-	private String estadoOrden;
-
-	List<LineaOrdenCompraDto> lineas = new ArrayList<>();
+		private String centroOperacion;
+		private String tipoDocumento;
+		private String numeroOrden;
+		private String estadoOrden;
+	
+		List<LineaOrdenCompraDto> lineas = new ArrayList<>();
 
 	public OrdenCompraDto() {
 		super();
@@ -20,7 +20,7 @@ public class OrdenCompraDto {
 		super();
 		this.centroOperacion = centroOperacion;
 		this.tipoDocumento = tipoDocumento;
-		this.numeroOrden = numeroOrden;
+		this.numeroOrden = numeroOrden;	
 		this.estadoOrden = estadoOrden;
 		this.lineas = lineas;
 	}

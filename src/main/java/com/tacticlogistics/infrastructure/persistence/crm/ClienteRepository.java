@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tacticlogistics.domain.model.crm.Cliente;
+import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteCanalAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
@@ -25,6 +26,19 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 	List<Cliente> findByUsuarioIdAndTipoServicioId(
             @Param("usuarioId") Integer usuarioId, 
             @Param("tipoServicioId") Integer tipoServicioId);
+
+	@Query(""
+	        + " SELECT c "
+	        + " FROM ClienteBodegaAssociation c "
+	        + " WHERE c.clienteId IN "
+	        + " ( "
+	        + " SELECT DISTINCT a.id "
+			+ " FROM Cliente a "
+			+ " WHERE a.codigo = :clienteCodigo "
+			+ " ) "
+			+ " ORDER BY c.codigoAlterno ")   
+	List<ClienteBodegaAssociation> findClienteBodegaAssociationByClienteCodigo(
+           @Param("clienteCodigo") String clienteCodigo);
 
    @Query(""
            + " SELECT a"

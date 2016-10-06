@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,37 +39,46 @@ import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
+import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
 import com.tacticlogistics.application.tasks.etl.readers.FlatFileReaderUTF16;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.domain.model.calendario.Calendario;
 import com.tacticlogistics.domain.model.calendario.DiaDeSemanaType;
+import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.infrastructure.persistence.calendario.CalendarioRepository;
+import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
 import com.tacticlogistics.infrastructure.services.Basic;
 
 @Component("DICERMEX.")
 public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	private static final Logger log = (Logger) LoggerFactory.getLogger(DICERMEXFacturas.class);
 
-	private static final Pattern PATTERN = Pattern
-			.compile("(?i:((\\d{8})-(\\d{4})\\.)?ESBOrdenesDeDespacho(Parcial)?_(\\d+)\\.txt)");
+	private static final Pattern PATTERN = Pattern.compile("(?i:(.*)ESBOrdenesDeDespacho(Parcial)?_(\\d+)\\.txt)");
 
 	@Autowired
-	private FlatFileReaderUTF16 reader;
+	private CharsetDetectorFileReader reader;
 
 	@Autowired
 	private OrdenesApplicationService ordenesService;
 
 	@Autowired
+	private ClienteRepository clienteRepository;
+
+	@Autowired
 	private DICERMEXLineasFactura lineasOrdenStrategy;
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	protected String getTipoServicioCodigo() {
-		return "OVP-PRODUCTOS";
-	}
-
 	protected String getClienteCodigo() {
 		return "DICERMEX";
+	}
+
+	protected String getTipoServicioCodigoTraslado() {
+		return "TRASLADO";
+	}
+
+	protected String getTipoServicioCodigoAlternoTraslado() {
+		return "TRS";
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
@@ -176,8 +186,11 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 			ETLOrdenDto dto = new ETLOrdenDto();
 
-			dto.setTipoServicioCodigo(getTipoServicioCodigo());
 			dto.setClienteCodigo(getClienteCodigo());
+
+			value = getValorCampo(NUMERO_ORDEN, campos, mapNameToIndex);
+			value = Basic.substringSafe(value, 0, 3).replaceAll("-", "");
+			dto.setTipoServicioCodigoAlterno(value);
 
 			value = getValorCampo(NOTAS, campos, mapNameToIndex);
 			dto.setNotasConfirmacion(value);
@@ -259,6 +272,37 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		lineasOrdenStrategy.setDirectorioSalida(null);
 		lineasOrdenStrategy.setDirectorioProcesados(null);
 		lineasOrdenStrategy.setDirectorioErrores(null);
+
+		final List<ClienteBodegaAssociation> bodegas = clienteRepository
+				.findClienteBodegaAssociationByClienteCodigo(this.getClienteCodigo());
+		
+		List<ETLOrdenDto> list = map.entrySet().stream()
+				.filter(a -> getTipoServicioCodigoAlternoTraslado().equals(a.getValue().getTipoServicioCodigoAlterno()))
+				.map(a -> a.getValue())
+				.collect(Collectors.toCollection(ArrayList::new));
+
+		for (ETLOrdenDto dto : list) {
+			boolean traslado = dto.getLineas()
+					.stream()
+					.anyMatch(a -> 
+					{
+						if (!a.getBodegaDestinoCodigoAlterno().isEmpty()) {
+							boolean origen = bodegas.stream().anyMatch(b -> b.getCodigoAlterno().equals(a.getBodegaOrigenCodigoAlterno()));
+							boolean destino = bodegas.stream().anyMatch(b -> b.getCodigoAlterno().equals(a.getBodegaDestinoCodigoAlterno()));
+							return origen && destino;
+						}
+						return false;
+					});
+			
+			if(traslado){
+				dto.setTipoServicioCodigo(this.getTipoServicioCodigoTraslado());
+				dto.setDestinoCiudadNombreAlterno("");
+				dto.setDestinoDireccion("");
+				dto.setDestinoNombre("");
+				dto.setDestinoContactoTelefonos("");
+				dto.setDestinoContactoEmail("");
+			}
+		}
 
 		return map;
 	}

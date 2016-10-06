@@ -9,7 +9,6 @@ import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.or
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.DESTINATARIO_NOMBRE;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.FECHA_MAXIMA;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.FECHA_MINIMA;
-import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.FECHA_ORDEN;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.HORA_MAXIMA;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.HORA_MINIMA;
 import static com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes.MacroExcelOrdenDtoAtributos.ID_CARGA;
@@ -75,7 +74,6 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
 
 		list.add(CLIENTE_CODIGO.toString());
 		list.add(NUMERO_ORDEN.toString());
-		list.add(FECHA_ORDEN.toString());
 		list.add(CLIENTE_RECOGE.toString());
         
 		list.add(DESTINATARIO_CANAL_CODIGO.toString());
@@ -156,12 +154,8 @@ public class OrdenesDeIngresoCargadasPorExcel extends ETLOrdenesExcelFileStrateg
             value = getValorCampo(NUMERO_ORDEN, campos, mapNameToIndex);
             dto.setNumeroOrden(value);
 
-			value = getValorCampo(FECHA_ORDEN, campos, mapNameToIndex);
-			dateValue = getValorCampoFecha(key, FECHA_ORDEN, value, getFormatoFechaCorta());
-			dto.setFechaOrden(dateValue);
-
 			value = getValorCampo(CLIENTE_RECOGE, campos, mapNameToIndex);
-			dto.setRequiereServicioDistribucion(!(SI.equalsIgnoreCase(value)));
+			dto.setRequiereServicioDistribucion((NO.equalsIgnoreCase(value)));
 
 
 			// ---------------------------------------------------------------------------------------------------------

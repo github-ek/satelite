@@ -8,22 +8,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.crm.ClienteDto;
 import com.tacticlogistics.application.dto.geo.CiudadDto;
-import com.tacticlogistics.application.dto.ingresos.LineaOrdenIngreso;
-import com.tacticlogistics.application.dto.ingresos.LineaOrdenIngresoRepository;
-import com.tacticlogistics.application.dto.ingresos.OrdenIngreso;
-import com.tacticlogistics.application.dto.ingresos.OrdenIngresoRepository;
-import com.tacticlogistics.application.dto.ingresos.RespuestaSaveOrdenIngreso;
-import com.tacticlogistics.application.dto.ingresos.TipoNovedadIngresoInventario;
 import com.tacticlogistics.application.dto.seguridad.RespuestaLoginDto;
 import com.tacticlogistics.application.dto.seguridad.UserDto;
 import com.tacticlogistics.application.dto.tms.TipoVehiculoDto;
@@ -31,7 +22,6 @@ import com.tacticlogistics.application.dto.tms.TransportadoraDto;
 import com.tacticlogistics.application.dto.wms.BodegaDto;
 import com.tacticlogistics.application.dto.wms.EstadoInventarioDto;
 import com.tacticlogistics.application.dto.wms.ProductoDto;
-import com.tacticlogistics.application.dto.wms.TipoNovedadIngresoInventarioDto;
 import com.tacticlogistics.application.dto.wms.UoMDto;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
@@ -45,7 +35,6 @@ import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
 import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
-import com.tacticlogistics.infrastructure.persistence.ingresos.TipoNovedadIngresoInventarioRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 import com.tacticlogistics.infrastructure.persistence.tms.TipoVehiculoRepository;
 import com.tacticlogistics.infrastructure.persistence.tms.TransportadoraRepository;
@@ -68,9 +57,6 @@ public class LoginController {
     BodegaRepository bodegaRepository;
 
     @Autowired
-    TipoNovedadIngresoInventarioRepository tipoNovedadIngresoInventarioRepository;
-
-    @Autowired
     TransportadoraRepository transportadoraRepository;
 
     @Autowired
@@ -79,11 +65,6 @@ public class LoginController {
     @Autowired
     UsuarioRepository usuarioRepository;
 
-    @Autowired
-    OrdenIngresoRepository ordenRepository;
-
-    @Autowired
-    LineaOrdenIngresoRepository lineaOrdenRepository;
 
     @CrossOrigin
     @RequestMapping("/login")
@@ -306,72 +287,7 @@ public class LoginController {
         return list;
     }
 
-    @CrossOrigin
-    @RequestMapping("/tipos-novedades-ingreso-x-producto-x-cliente")
-    public List<TipoNovedadIngresoInventarioDto> getTiposNovedadesIngresoInventarioPorClientePorProducto(
-            @RequestParam(value = "cliente", defaultValue = "") String codigo,
-            @RequestParam(value = "producto", defaultValue = "") String producto) {
-        List<TipoNovedadIngresoInventarioDto> list = new ArrayList<TipoNovedadIngresoInventarioDto>(0);
-
-        List<TipoNovedadIngresoInventario> list2 = new ArrayList<>();
-
-        for (TipoNovedadIngresoInventario c : tipoNovedadIngresoInventarioRepository.findAll()) {
-            list2.add(c);
-        }
-
-        Comparator<TipoNovedadIngresoInventario> by = (a, b) -> Integer.compare(a.getOrdinal(), b.getOrdinal());
-
-        list2.stream().sorted(by).forEachOrdered((c) -> list.add(new TipoNovedadIngresoInventarioDto(c.getId(),
-                c.getCodigo(), c.getNombre(), c.getOrdinal(), c.isActivo())));
-
-        return list;
-    }
-
-    @CrossOrigin
-    @RequestMapping(value = "/ordenes-ingreso/save", method = RequestMethod.POST)
-    @Transactional
-    public RespuestaSaveOrdenIngreso saveOrdenesDeIngreso(@RequestBody OrdenIngreso[] orden) {
-        if (orden.length > 0) {
-            OrdenIngreso o = orden[0];
-
-            o.Recepcionar();
-            ordenRepository.save(o);
-            for (LineaOrdenIngreso lo : o.productos) {
-                lo.idOrden = o.id;
-                lo.setCantidadEsperada(lo.getCantidadEsperada() == null ? 0 : lo.getCantidadEsperada());
-                lo.setCantidadRecibida(lo.getCantidadRecibida() == null ? 0 : lo.getCantidadRecibida());
-                lo.setCantidadAverias(lo.getCantidadAverias() == null ? 0 : lo.getCantidadAverias());
-                lo.setCantidadSobrante(lo.getCantidadSobrante() == null ? 0 : lo.getCantidadSobrante());
-                lo.setCantidadFaltantes(lo.getCantidadFaltantes() == null ? 0 : lo.getCantidadFaltantes());
-                lineaOrdenRepository.save(lo);
-            }
-
-            System.out.println(o.toString());
-            return new RespuestaSaveOrdenIngreso(true, o.id, o.hash);
-        }
-        return new RespuestaSaveOrdenIngreso(false, null, null);
-    }
-
-    @CrossOrigin
-    @RequestMapping("/ordenes-ingreso")
-    public OrdenIngreso getOrdenIngresoPorIdPorToken(@RequestParam(value = "id", defaultValue = "") String id,
-            @RequestParam(value = "token", defaultValue = "") String token) {
-
-        OrdenIngreso o = ordenRepository.findOneByIdAndHash(Integer.parseInt(id), Integer.parseInt(token));
-
-        for (LineaOrdenIngreso lo : o.productos) {
-            Producto p = productoRepository.findByClienteCodigoAndCodigo(o.getCliente(), lo.getProducto());
-            lo.setNombreProducto(p.getNombreLargo());
-
-            // lo.setCantidadEsperada(lo.getCantidadEsperada()==null?0:lo.getCantidadEsperada());
-            // lo.setCantidadRecibida(lo.getCantidadRecibida()==null?0:lo.getCantidadRecibida());
-            // lo.setCantidadAverias(lo.getCantidadAverias()==null?0:lo.getCantidadAverias());
-            // lo.setCantidadSobrante(lo.getCantidadSobrante()==null?0:lo.getCantidadSobrante());
-            // lo.setCantidadFaltantes(lo.getCantidadFaltantes()==null?0:lo.getCantidadFaltantes());
-        }
-
-        return o;
-    }
+    
 
     protected FileOutputStream createOutputStream(File imageFile) throws FileNotFoundException {
 

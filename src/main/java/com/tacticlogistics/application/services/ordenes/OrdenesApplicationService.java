@@ -1,10 +1,10 @@
 package com.tacticlogistics.application.services.ordenes;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -22,10 +22,12 @@ import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
 import com.tacticlogistics.domain.model.crm.Canal;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
+import com.tacticlogistics.domain.model.crm.ClienteTipoServicioAssociation;
 import com.tacticlogistics.domain.model.crm.Destinatario;
 import com.tacticlogistics.domain.model.crm.Destino;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
+import com.tacticlogistics.domain.model.oms.CausalAnulacion;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
@@ -40,6 +42,7 @@ import com.tacticlogistics.infrastructure.persistence.crm.DestinatarioRepository
 import com.tacticlogistics.infrastructure.persistence.crm.DestinoRepository;
 import com.tacticlogistics.infrastructure.persistence.crm.TipoServicioRepository;
 import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
+import com.tacticlogistics.infrastructure.persistence.oms.CausalAnulacionRepository;
 import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 import com.tacticlogistics.infrastructure.persistence.wms.BodegaRepository;
@@ -69,6 +72,8 @@ public class OrdenesApplicationService {
 	private ProductoRepository productoRepository;
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	@Autowired
+	private CausalAnulacionRepository causalAnulacionRepository;
 
 	// TODO HOMOLOGAR CODIGOS ALTERNOS DE SERVICIOS
 	// TODO IMPLEMENTAR RGLAS DE NEGOCIO EN CONFIRMAR
@@ -87,14 +92,15 @@ public class OrdenesApplicationService {
 		Canal canal = null;
 		Destinatario tercero = null;
 
-		tipoServicio = tipoServicioRepository.findByCodigoIgnoringCase(dto.getTipoServicioCodigo());
-		if (tipoServicio == null) {
-			throw new RuntimeException("(tipoServicio == null)");
-		}
-
 		cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
 		if (cliente == null) {
 			throw new RuntimeException("(cliente == null)");
+		}
+
+		tipoServicio = homologarTipoServicio(cliente.getId(), dto.getTipoServicioCodigo(),
+				dto.getTipoServicioCodigoAlterno());
+		if (tipoServicio == null) {
+			throw new RuntimeException("(tipoServicio == null)");
 		}
 
 		Orden model = checkOrdenExistente(dto, cliente.getId());
@@ -136,6 +142,10 @@ public class OrdenesApplicationService {
 		}
 
 		// ------------------------------------------------------------------------------------------------
+		// TODO PASAR PARTE DE ESTE CODIGO A UN METODO DE SOLO TRASLADOS
+		setDireccionesTraslados(tipoServicio, model);
+
+		// ------------------------------------------------------------------------------------------------
 		model.confirmar(usuario, fecha, dto.getNotasConfirmacion());
 		model = ordenRepository.save(model);
 
@@ -153,14 +163,15 @@ public class OrdenesApplicationService {
 		Canal canal = null;
 		Destinatario tercero = null;
 
-		tipoServicio = tipoServicioRepository.findByCodigoIgnoringCase(dto.getTipoServicioCodigo());
-		if (tipoServicio == null) {
-			throw new RuntimeException("(tipoServicio == null)");
-		}
-
 		cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
 		if (cliente == null) {
 			throw new RuntimeException("(cliente == null)");
+		}
+
+		tipoServicio = homologarTipoServicio(cliente.getId(), dto.getTipoServicioCodigo(),
+				dto.getTipoServicioCodigoAlterno());
+		if (tipoServicio == null) {
+			throw new RuntimeException("(tipoServicio == null)");
 		}
 
 		Orden model = checkOrdenExistente(dto, cliente.getId());
@@ -202,10 +213,39 @@ public class OrdenesApplicationService {
 		}
 
 		// ------------------------------------------------------------------------------------------------
+		// TODO PASAR PARTE DE ESTE CODIGO A UN METODO DE SOLO TRASLADOS
+		setDireccionesTraslados(tipoServicio, model);
+
 		model.confirmar(usuario, fecha, dto.getNotasConfirmacion());
 		model = ordenRepository.save(model);
 
 		return model;
+	}
+
+	private void setDireccionesTraslados(TipoServicio tipoServicio, Orden model) {
+		if (tipoServicio.isAdmiteBodegasComoDestino() && tipoServicio.isAdmiteBodegasComoOrigen()) {
+
+			Optional<Bodega> bodega;
+
+			bodega = model.getLineas().stream().map(a -> a.getBodegaOrigen()).filter(a -> a != null)
+					.collect(Collectors.groupingBy(a -> a, Collectors.counting())).entrySet().stream()
+					.max((entry1, entry2) -> (int) (entry1.getValue() - entry2.getValue())).map(a -> a.getKey());
+
+			if (bodega.isPresent()) {
+				OmsDireccion direccion = bodega.get().getDireccion();
+				Ciudad c = ciudadRepository.findOne(direccion.getCiudadId());
+				model.setDatosDireccionOrigen(c, direccion.getDireccion(), direccion.getIndicacionesDireccion());
+			}
+
+			bodega = model.getLineas().stream().map(a -> a.getBodegaDestino()).filter(a -> a != null)
+					.collect(Collectors.groupingBy(a -> a, Collectors.counting())).entrySet().stream()
+					.max((entry1, entry2) -> (int) (entry1.getValue() - entry2.getValue())).map(a -> a.getKey());
+			if (bodega.isPresent()) {
+				OmsDireccion direccion = bodega.get().getDireccion();
+				Ciudad c = ciudadRepository.findOne(direccion.getCiudadId());
+				model.setDatosDireccionDestino(c, direccion.getDireccion(), direccion.getIndicacionesDireccion());
+			}
+		}
 	}
 
 	@Transactional(readOnly = false)
@@ -335,12 +375,12 @@ public class OrdenesApplicationService {
 		// ---------------------------------------------------------------------------------------------------------
 		model.setDatosDestinatario(canal, dto.getCanalCodigoAlterno(), tercero, dto.getDestinatarioContacto());
 		model.setDatosPuntoDestino(puntoDestino, dto.getDestinoContacto());
-		model.setDatosPuntoDestino(puntoOrigen, dto.getOrigenContacto());
+		model.setDatosPuntoOrigen(puntoOrigen, dto.getOrigenContacto());
 
 		// ---------------------------------------------------------------------------------------------------------
 		model.setValorRecaudo(dto.getValorRecaudo());
 		model.setDatosCreacion(usuario, fecha);
-		model.setDatosActualizacion(usuario, fecha);
+		model.setDatosActualizacion(fecha, usuario);
 		// notas_requerimientos_distribucion
 		// notas_requerimientos_alistamiento
 		// Listas de requerimientos
@@ -364,6 +404,17 @@ public class OrdenesApplicationService {
 		}
 
 		return model;
+	}
+
+	private TipoServicio homologarTipoServicio(int clienteId, String codigo, String codigoAlterno) {
+		TipoServicio tipoServicio = null;
+
+		if (!codigo.isEmpty()) {
+			tipoServicio = tipoServicioRepository.findByCodigoIgnoringCase(codigo);
+		} else if (!codigoAlterno.isEmpty()) {
+			tipoServicio = tipoServicioRepository.findFisrtByClienteIdAndCodigoAlterno(clienteId, codigoAlterno);
+		}
+		return tipoServicio;
 	}
 
 	private Ciudad homologarCiudad(int clienteId, String ciudadNombreAlterno) {
@@ -552,20 +603,21 @@ public class OrdenesApplicationService {
 	}
 
 	// -------------------------------------------------------------------------------------------------------------------------------------------------
+	// TODO IMPLEMENTAR REGLAS DE NEGOCIO
+	// TODO HACER USO DE ENTIDADES REST Y DE EXCEPCIONES
 	@Transactional(readOnly = false)
 	public MensajesDto aceptarOrdenes(List<Integer> ids, String notas, Integer usuarioId) throws DataAccessException {
 		Usuario usuario = usuarioRepository.findOne(usuarioId);
 
+		LocalDateTime fechaUpd = LocalDateTime.now();
 		String usuarioUpd = usuario.getUsuario();
-		LocalDate fechaUpd = LocalDate.now();
 		notas = Basic.coalesce(notas, "");
 
 		MensajesDto msg = new MensajesDto();
 		for (Integer id : ids) {
-
 			Orden orden = ordenRepository.findOne(id);
 			if (orden != null) {
-				msg.AddMensajes(aceptarOrden(orden, notas, usuarioUpd, fechaUpd));
+				msg.AddMensajes(aceptarOrden(orden, fechaUpd, usuarioUpd, notas));
 			} else {
 				msg.addMensaje(SeveridadType.ERROR, id, "No se encontró la orden con id: " + id);
 				// throw new BadRequestException();
@@ -574,19 +626,13 @@ public class OrdenesApplicationService {
 		return msg;
 	}
 
-	private MensajesDto aceptarOrden(Orden orden, String notas, String usuarioUpd, LocalDate fechaUpd) {
+	private MensajesDto aceptarOrden(Orden orden, LocalDateTime fechaUpd, String usuarioUpd, String notas) {
 		EstadoOrdenType nuevoEstado = EstadoOrdenType.ACEPTADA;
 
 		MensajesDto msg = new MensajesDto();
 
 		if (Orden.transicionPermitida(orden.getEstadoOrden(), nuevoEstado)) {
-
-			if (orden.getEstadoOrden() == EstadoOrdenType.ANULADA) {
-				orden.revertirAnulacion(usuarioUpd, fechaUpd, nuevoEstado);
-				// e.revertirAnulacion(usuarioUpd, fechaUpd, nuevoEstado);
-			}
-			// e.aceptar(usuarioUpd, fechaUpd, notas);
-
+			orden.aceptar(fechaUpd, usuarioUpd, notas);
 			try {
 				ordenRepository.save(orden);
 				msg.addMensaje(SeveridadType.INFO, orden.getId(), "OK");
@@ -594,39 +640,60 @@ public class OrdenesApplicationService {
 				msg.addMensaje(re, orden.getId());
 			}
 		} else {
-			msg.addMensaje(SeveridadType.ERROR, orden.getNumeroOrden(), "El cambio de estado desde "+orden.getEstadoOrden().getNombre()+" a "+nuevoEstado.getNombre()+", no esta permitido");
+			msg.addMensaje(SeveridadType.ERROR, orden.getNumeroOrden(), "El cambio de estado desde "
+					+ orden.getEstadoOrden().getNombre() + " a " + nuevoEstado.getNombre() + ", no esta permitido");
 		}
 		return msg;
 	}
 
+	// TODO IMPLEMENTAR REGLAS DE NEGOCIO
+	// TODO HACER USO DE ENTIDADES REST Y DE EXCEPCIONES
 	@Transactional(readOnly = false)
-	public MensajesDto anularOrdenes(Integer usuarioId, List<Integer> ids, int causalId, String notas)
+	public MensajesDto anularOrdenes(List<Integer> ids, Integer usuarioId, String notas, int causalId)
 			throws DataAccessException {
+		Usuario usuario = usuarioRepository.findOne(usuarioId);
+		CausalAnulacion causal = causalAnulacionRepository.findOne(causalId);
+
+		LocalDateTime fechaUpd = LocalDateTime.now();
+		String usuarioUpd = usuario.getUsuario();
+		notas = Basic.coalesce(notas, "");
+
 		MensajesDto msg = new MensajesDto();
-		// Usuario usuario = usuarioRepository.findOne(usuarioId);
-		//
-		// String usuarioUpd = usuario.getUsuario();
-		// Date fechaUpd = new Date();
-		// notas = Basic.coalesce(notas, "");
-		//
-		// for (Integer id : ids) {
-		// OmsOrden e = ordenRepository.findOne(id);
-		// EstadoOrdenType nuevoEstado = EstadoOrdenType.ANULADA;
-		//
-		// if (OmsOrden.transicionPermitida(e.getEstadoOrden(), nuevoEstado)) {
-		// e.anular(usuarioUpd, fechaUpd, notas, null);
-		// try {
-		// ordenRepository.save(e);
-		// msg.addMensaje(SeveridadType.INFO, e.getId(), "OK");
-		// } catch (RuntimeException re) {
-		// msg.addMensaje(re, e.getId());
-		// }
-		// } else {
-		// msg.AddMensaje(new MensajeDto(SeveridadType.ERROR, id, "El cambio de
-		// estado desde " + e.getEstadoOrden()
-		// + " a " + nuevoEstado + ", no esta permitido"));
-		// }
-		// }
+
+		if (causal == null) {
+			msg.addMensaje(SeveridadType.ERROR, null, "El id de la causal no existe: " + causalId);
+		} else {
+			for (Integer id : ids) {
+				Orden orden = ordenRepository.findOne(id);
+				if (orden != null) {
+					msg.AddMensajes(anularOrden(orden, fechaUpd, usuarioUpd, notas, causal));
+				} else {
+					msg.addMensaje(SeveridadType.ERROR, id, "No se encontró la orden con id: " + id);
+				}
+			}
+		}
+
+		return msg;
+	}
+
+	private MensajesDto anularOrden(Orden orden, LocalDateTime fechaUpd, String usuarioUpd, String notas,
+			CausalAnulacion causal) {
+		EstadoOrdenType nuevoEstado = EstadoOrdenType.ANULADA;
+
+		MensajesDto msg = new MensajesDto();
+
+		if (Orden.transicionPermitida(orden.getEstadoOrden(), nuevoEstado)) {
+			orden.anular(fechaUpd, usuarioUpd, notas, causal);
+			try {
+				ordenRepository.save(orden);
+				msg.addMensaje(SeveridadType.INFO, orden.getId(), "OK");
+			} catch (RuntimeException re) {
+				msg.addMensaje(re, orden.getId());
+			}
+		} else {
+			msg.addMensaje(SeveridadType.ERROR, orden.getNumeroOrden(), "El cambio de estado desde "
+					+ orden.getEstadoOrden().getNombre() + " a " + nuevoEstado.getNombre() + ", no esta permitido");
+		}
 		return msg;
 	}
 

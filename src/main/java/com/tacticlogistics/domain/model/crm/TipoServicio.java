@@ -91,7 +91,7 @@ public class TipoServicio implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	protected boolean isAdmiteBodegasComoOrigen() {
+	public boolean isAdmiteBodegasComoOrigen() {
 		return admiteBodegasComoOrigen;
 	}
 
@@ -99,7 +99,7 @@ public class TipoServicio implements Serializable {
 		this.admiteBodegasComoOrigen = admiteBodegasComoOrigen;
 	}
 
-	protected boolean isAdmiteBodegasComoDestino() {
+	public boolean isAdmiteBodegasComoDestino() {
 		return admiteBodegasComoDestino;
 	}
 
@@ -107,7 +107,7 @@ public class TipoServicio implements Serializable {
 		this.admiteBodegasComoDestino = admiteBodegasComoDestino;
 	}
 
-	protected boolean isAdmiteDireccionesComoOrigen() {
+	public boolean isAdmiteDireccionesComoOrigen() {
 		return admiteDireccionesComoOrigen;
 	}
 
@@ -115,7 +115,7 @@ public class TipoServicio implements Serializable {
 		this.admiteDireccionesComoOrigen = admiteDireccionesComoOrigen;
 	}
 
-	protected boolean isAdmiteDireccionesComoDestino() {
+	public boolean isAdmiteDireccionesComoDestino() {
 		return admiteDireccionesComoDestino;
 	}
 
@@ -190,17 +190,14 @@ public class TipoServicio implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("TipoServicio [");
-		if (id != null)
-			builder.append("id=").append(id).append(", ");
-		if (codigo != null)
-			builder.append("codigo=").append(codigo).append(", ");
-		if (nombre != null)
-			builder.append("nombre=").append(nombre).append(", ");
-		if (tipoDistribucion != null)
-			builder.append("tipoDistribucion=").append(tipoDistribucion);
-		builder.append("]");
-		return builder.toString();
+		return "TipoServicio [" + (id != null ? "id=" + id + ", " : "")
+				+ (codigo != null ? "codigo=" + codigo + ", " : "") + (nombre != null ? "nombre=" + nombre + ", " : "")
+				+ (descripcion != null ? "descripcion=" + descripcion + ", " : "") + "admiteBodegasComoOrigen="
+				+ admiteBodegasComoOrigen + ", admiteBodegasComoDestino=" + admiteBodegasComoDestino
+				+ ", admiteDireccionesComoOrigen=" + admiteDireccionesComoOrigen + ", admiteDireccionesComoDestino="
+				+ admiteDireccionesComoDestino + ", ordinal=" + ordinal + ", activo=" + activo + ", "
+				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
+				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion + ", " : "")
+				+ (tipoDistribucion != null ? "tipoDistribucion=" + tipoDistribucion : "") + "]";
 	}
 }
