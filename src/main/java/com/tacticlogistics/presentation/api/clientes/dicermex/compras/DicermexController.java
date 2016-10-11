@@ -83,7 +83,6 @@ public class DicermexController {
 	public MensajesDto preAlertarOrConfirmarOrdenDeCompra(@RequestBody OrdenDeCompraDto dto) {
 		MensajesDto mensajes = new MensajesDto();
 		try {
-			System.out.println(dto.toString());
 			return comprasService.preAlertarOrConfirmarOrdenDeCompra(dto);
 		} catch (Exception e) {
 			mensajes.addMensaje(e, dto);

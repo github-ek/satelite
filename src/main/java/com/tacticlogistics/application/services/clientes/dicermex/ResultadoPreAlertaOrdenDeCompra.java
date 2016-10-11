@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResultadoPreAlertaOrdenDeCompra {
-	private int id;
+	private String NumeroOrdenWms;
 	private ResultadoPreAlertaType resultado;
 	String mensaje;
 }

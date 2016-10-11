@@ -122,7 +122,10 @@ public class OrdenesDeCompraService {
 	@Transactional(readOnly = false)
 	public void confirmarAlertaDeOrdenesDeCompraAlWms(List<ResultadoPreAlertaOrdenDeCompra> resultados) {
 		for (val e : resultados) {
-			Orden compra = ordenRepository.findOne(e.getId());
+			String partes[] =e.getNumeroOrdenWms().split("-");  
+			int id = Integer.parseInt(partes[1]); 
+					
+			Orden compra = ordenRepository.findOne(id);
 			if (compra != null) {
 				if(e.getResultado() == ResultadoPreAlertaType.OK){
 					compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA);
@@ -207,8 +210,10 @@ public class OrdenesDeCompraService {
 		}
 
 		val oc = ordenDeCompraRepository.saveAndFlush(ordenDeCompra);
+		
 		oc.getOrden().getLineas().addAll(lineasOC);
 		oc.getLineas().addAll(lineasOCCliente);
+		
 		ordenDeCompraRepository.saveAndFlush(oc);
 
 		mensajes.addMensaje(SeveridadType.INFO, "Orden confirmada exitosamente");
@@ -274,7 +279,6 @@ public class OrdenesDeCompraService {
 				.tipoServicio(getServicio())
 				.tipoServicioCodigoAlterno("")
 				.requiereServicioDistribucion(false)
-				.requiereConfirmacionCitaEntrega(false)
 				.requiereConfirmacionCitaEntrega(false)
 				.fechaEntregaSugeridaMinima(null)
 				.fechaEntregaSugeridaMaxima(null)

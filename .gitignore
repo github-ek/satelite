@@ -51,3 +51,7 @@ local.properties
 .recommenders/
 /target/
 /target/
+/log.log
+/hs_err_pid15276.log
+/hs_err_pid2604.log
+/hs_err_pid2616.log
