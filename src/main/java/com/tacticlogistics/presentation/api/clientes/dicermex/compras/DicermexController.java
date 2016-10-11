@@ -1,9 +1,5 @@
 package com.tacticlogistics.presentation.api.clientes.dicermex.compras;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
-import com.tacticlogistics.domain.model.common.SeveridadType;
+import com.tacticlogistics.application.services.clientes.dicermex.OrdenesDeCompraService;
 import com.tacticlogistics.presentation.util.BadRequestException;
 
 @CrossOrigin	
@@ -22,26 +17,74 @@ import com.tacticlogistics.presentation.util.BadRequestException;
 public class DicermexController {
 
 	@Autowired
-	private OrdenesApplicationService ordenesService;
+	private OrdenesDeCompraService comprasService;
 	
 	@RequestMapping(value = "/ordenes/test", method = RequestMethod.GET)
-	public OrdenCompraDto test() {
-		List<LineaOrdenCompraDto> lineas = new ArrayList<>();
-		lineas.add(new LineaOrdenCompraDto(new Date(), 10, "XXXXX", "UN", ".... .....  ..... ", "LARGE", "ROJO", "XXXX YYY", "PUENTE ARANDA", "UBICACION"));
-		lineas.add(new LineaOrdenCompraDto(new Date(), 5, "ZZZZ", "UN", ".... .....  ..... ", "LARGE", "ROJO", "XXXX YYY", "PUENTE ARANDA", "UBICACION"));
-		
-		return new OrdenCompraDto("100", "OCN", "1111111", "XXX", lineas);
+	public OrdenDeCompraDto test() {
+		return OrdenDeCompraDto
+			.builder()
+			.centroOperacion("100")
+			.consecutivoDocumento("1111111")
+			.fechaDocumento("29991010")
+			.terceroProveedor("PROVIDER")
+			.notasDocumento("NOTA")
+			.sucursalProveedor("100")
+			.terceroCompradorId("EL QUE DIGITÓ")
+			.numeroDocumentoReferencia("123456789012")
+			.monedaDocumento("COP")
+			.monedaConversion("COP")
+			.centroOperacionOrdenCompra("100")
+			.tipoDocumentoOrdenCompra("OC")
+			.consecutivoDocumentoOrdenCompra("1111111")
+			.linea(
+				LineaOrdenDeCompraDto
+				.builder()
+				.centroOperacion("100")
+				.consecutivoDocumento("1111111")
+				.numeroRegistro(1)
+				.bodegaId("DBOG")
+				.ubicacionId("UBICACION")
+				.loteId("LOTE")
+				.unidadMedida("UND")
+				.fechaEntrega("20161006")
+				.cantidad(10)
+				.notasMovimiento("NOTAS")
+				.itemId("555")
+				.talla("NPI")
+				.color("NPI")
+				.centroCosto("EL CENTRO")
+				.proyectoId("EL PROYECTO")
+				.build()
+					)
+			.linea(
+				LineaOrdenDeCompraDto
+				.builder()
+				.centroOperacion("100")
+				.consecutivoDocumento("1111111")
+				.numeroRegistro(2)
+				.bodegaId("DBOG")
+				.ubicacionId("UBICACION")
+				.loteId("LOTE")
+				.unidadMedida("UND")
+				.fechaEntrega("20161006")
+				.cantidad(3)
+				.notasMovimiento("NOTAS")
+				.itemId("544")
+				.talla("NPI")
+				.color("NPI")
+				.centroCosto("EL CENTRO")
+				.proyectoId("EL PROYECTO")
+				.build()
+					)
+			.build();
 	}
 	
 	@RequestMapping(value = "/ordenes/compras", method = RequestMethod.POST)
-	public MensajesDto crearOrdenDeCompra(@RequestBody OrdenCompraDto dto) {
+	public MensajesDto preAlertarOrConfirmarOrdenDeCompra(@RequestBody OrdenDeCompraDto dto) {
 		MensajesDto mensajes = new MensajesDto();
 		try {
 			System.out.println(dto.toString());
-			//ETLOrdenDto orden = new ETLOrdenDto();
-			//ordenesService.CrearOrdenCompra(dto);	
-			mensajes.addMensaje(SeveridadType.INFO, "OK");
-			return mensajes; 
+			return comprasService.preAlertarOrConfirmarOrdenDeCompra(dto);
 		} catch (Exception e) {
 			mensajes.addMensaje(e, dto);
 			throw new BadRequestException(mensajes);

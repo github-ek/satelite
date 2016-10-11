@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
-import com.tacticlogistics.application.tasks.etl.readers.FlatFileReaderUTF16;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.infrastructure.services.Basic;
 

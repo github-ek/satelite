@@ -3,7 +3,7 @@ package com.tacticlogistics.application.dto.etl;
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 import static com.tacticlogistics.infrastructure.services.Basic.substringSafe;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ETLLineaOrdenDto {
 	private Integer numeroItem;
@@ -42,7 +42,7 @@ public class ETLLineaOrdenDto {
 	private String requerimientoPinado;
 	
 	private String numeroOrdenTms;
-	private Date fechaOrdenTms;
+	private LocalDate fechaOrdenTms;
 
 	private String predistribucionDestinoFinal;
 	private String predistribucionRotulo;
@@ -206,7 +206,7 @@ public class ETLLineaOrdenDto {
 		return numeroOrdenTms;
 	}
 
-	public Date getFechaOrdenTms() {
+	public LocalDate getFechaOrdenTms() {
 		return fechaOrdenTms;
 	}
 
@@ -334,7 +334,7 @@ public class ETLLineaOrdenDto {
 		this.numeroOrdenTms = substringSafe(coalesce(value, "").trim(), 0, 30);
 	}
 
-	public void setFechaOrdenTms(Date fechaOrdenTms) {
+	public void setFechaOrdenTms(LocalDate fechaOrdenTms) {
 		this.fechaOrdenTms = fechaOrdenTms;
 	}
 

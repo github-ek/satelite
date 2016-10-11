@@ -1,68 +1,72 @@
 package com.tacticlogistics.presentation.api.clientes.dicermex.compras;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class OrdenCompraDto {
-		private String centroOperacion;
-		private String tipoDocumento;
-		private String numeroOrden;
-		private String estadoOrden;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.Singular;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+public class OrdenDeCompraDto {
+	@NonNull
+	private String centroOperacion;
+	@NonNull
+	private String consecutivoDocumento;
+	@NonNull
+	private String fechaDocumento;
+	@NonNull
+	private String terceroProveedor;
+	@NonNull
+	private String notasDocumento;
+	@NonNull
+	private String sucursalProveedor;
+	@NonNull
+	private String terceroCompradorId;
+	@NonNull
+	private String numeroDocumentoReferencia;
+	@NonNull
+	private String monedaDocumento;
+	@NonNull
+	private String monedaConversion;
+	@NonNull
+	private String centroOperacionOrdenCompra;
+	@NonNull
+	private String tipoDocumentoOrdenCompra;
+	@NonNull
+	private String consecutivoDocumentoOrdenCompra;
 	
-		List<LineaOrdenCompraDto> lineas = new ArrayList<>();
+	@Singular
+	@Setter(AccessLevel.NONE)
+	private List<LineaOrdenDeCompraDto> lineas;
 
-	public OrdenCompraDto() {
-		super();
-	}
+	@Setter(AccessLevel.NONE)
+	@JsonIgnore
+	private String numeroOrden;
 
-	public OrdenCompraDto(String centroOperacion, String tipoDocumento, String numeroOrden, String estadoOrden,
-			List<LineaOrdenCompraDto> lineas) {
-		super();
-		this.centroOperacion = centroOperacion;
-		this.tipoDocumento = tipoDocumento;
-		this.numeroOrden = numeroOrden;	
-		this.estadoOrden = estadoOrden;
-		this.lineas = lineas;
-	}
-
-	public String getCentroOperacion() {
-		return centroOperacion;
-	}
-
-	public void setCentroOperacion(String centroOperacion) {
-		this.centroOperacion = centroOperacion;
-	}
-
-	public String getTipoDocumento() {
-		return tipoDocumento;
-	}
-
-	public void setTipoDocumento(String tipoDocumento) {
-		this.tipoDocumento = tipoDocumento;
-	}
-
+	@JsonIgnore
 	public String getNumeroOrden() {
-		return numeroOrden;
+		if (this.numeroOrden == null) {
+			this.numeroOrden = String.format("%s-%s-%s", this.centroOperacion, this.tipoDocumentoOrdenCompra,
+					this.consecutivoDocumento);
+		}
+		return this.numeroOrden;
 	}
 
-	public void setNumeroOrden(String numeroOrden) {
-		this.numeroOrden = numeroOrden;
+	@JsonIgnore
+	public LocalDate getFechaOrdenFromFechaDocumento() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		return LocalDate.parse(getFechaDocumento(), formatter);
 	}
-
-	public String getEstadoOrden() {
-		return estadoOrden;
-	}
-
-	public void setEstadoOrden(String estadoOrden) {
-		this.estadoOrden = estadoOrden;
-	}
-
-	public List<LineaOrdenCompraDto> getLineas() {
-		return lineas;
-	}
-
-	public void setLineas(List<LineaOrdenCompraDto> lineas) {
-		this.lineas = lineas;
-	}
-
 }

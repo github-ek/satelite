@@ -1,15 +1,10 @@
 package com.tacticlogistics.domain.model.ordenes;
 
-import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
 
@@ -33,9 +28,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.support.MutableSortDefinition;
-import org.springframework.beans.support.PropertyComparator;
-
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
 import com.tacticlogistics.domain.model.crm.Canal;
@@ -46,20 +38,28 @@ import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.geo.Ciudad;
 import com.tacticlogistics.domain.model.oms.CausalAnulacion;
 import com.tacticlogistics.domain.model.oms.CausalReprogramacion;
-import com.tacticlogistics.domain.model.oms.EstadoAlistamientoType;
+import com.tacticlogistics.domain.model.oms.EstadoAlmacenamientoType;
 import com.tacticlogistics.domain.model.oms.EstadoCumplidosType;
 import com.tacticlogistics.domain.model.oms.EstadoDistribucionType;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.tms.TipoVehiculo;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 @Entity
 @Table(name = "Ordenes", catalog = "ordenes")
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Orden implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_orden", unique = true, nullable = false)
+	@Column(name = "id_orden")
 	private Integer id;
 
 	@Column(nullable = false, length = 20)
@@ -67,7 +67,6 @@ public class Orden implements Serializable {
 	private String numeroOrden;
 
 	@Column(nullable = true)
-
 	private LocalDate fechaOrden;
 
 	@Column(nullable = false, length = 20)
@@ -83,7 +82,7 @@ public class Orden implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_alistamiento", nullable = false, length = 50)
 	@NotNull
-	private EstadoAlistamientoType estadoAlistamiento;
+	private EstadoAlmacenamientoType estadoAlmacenamiento;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_distribucion", nullable = false, length = 50)
@@ -97,7 +96,7 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "id_cliente", nullable = false)
+	@JoinColumn(name = "id_cliente")
 	@NotNull
 	private Cliente cliente;
 
@@ -106,7 +105,7 @@ public class Orden implements Serializable {
 	private String clienteCodigo;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "id_tipo_servicio", nullable = false)
+	@JoinColumn(name = "id_tipo_servicio")
 	@NotNull
 	private TipoServicio tipoServicio;
 
@@ -118,7 +117,7 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_ciudad_destino", nullable = true)
+	@JoinColumn(name = "id_ciudad_destino")
 	private Ciudad ciudadDestino;
 
 	@Column(nullable = false, length = 100, name = "destino_ciudad_nombre_alterno")
@@ -150,7 +149,7 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_ciudad_origen", nullable = true)
+	@JoinColumn(name = "id_ciudad_origen")
 	private Ciudad ciudadOrigen;
 
 	@Column(nullable = false, length = 100, name = "origen_ciudad_nombre_alterno")
@@ -182,7 +181,7 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_canal", nullable = true)
+	@JoinColumn(name = "id_canal")
 	private Canal canal;
 
 	@Column(length = 50, nullable = false)
@@ -211,7 +210,7 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_destino", nullable = true)
+	@JoinColumn(name = "id_destino")
 	private Destino destino;
 
 	@Column(nullable = false, length = 20)
@@ -227,11 +226,12 @@ public class Orden implements Serializable {
 			@AttributeOverride(name = "nombres", column = @Column(name = "destino_contacto_nombres", nullable = true, length = 100)),
 			@AttributeOverride(name = "telefonos", column = @Column(name = "destino_contacto_telefonos", nullable = true, length = 50)),
 			@AttributeOverride(name = "email", column = @Column(name = "destino_contacto_email", nullable = true, length = 100)) })
+	@NotNull
 	private Contacto destinoContacto;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_origen", nullable = true)
+	@JoinColumn(name = "id_origen")
 	private Destino origen;
 
 	@Column(nullable = false, length = 20)
@@ -247,17 +247,10 @@ public class Orden implements Serializable {
 			@AttributeOverride(name = "nombres", column = @Column(name = "origen_contacto_nombres", nullable = true, length = 100)),
 			@AttributeOverride(name = "telefonos", column = @Column(name = "origen_contacto_telefonos", nullable = true, length = 50)),
 			@AttributeOverride(name = "email", column = @Column(name = "origen_contacto_email", nullable = true, length = 100)) })
+	@NotNull
 	private Contacto origenContacto;
 
 	// ---------------------------------------------------------------------------------------------------------
-	// @Column(length = 200, nullable = false)
-	// @NotNull
-	// private String notasRequerimientosDistribucion;
-	//
-	// @Column(length = 200, nullable = false)
-	// @NotNull
-	// private String notasRequerimientosAlistamiento;
-
 	@Column(nullable = true)
 	private Integer valorRecaudo;
 
@@ -274,8 +267,6 @@ public class Orden implements Serializable {
 	private String usuarioConfirmacion;
 
 	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true)
 	private LocalDate fechaCitaEntrega;
 
@@ -287,7 +278,6 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true)
-
 	private LocalDate fechaCitaRecogida;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
@@ -298,7 +288,15 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true)
+	private LocalDateTime fechaAsignacionCita;
 
+	@Column(nullable = false, length = 50)
+	@NotNull
+	private String usuarioAsignacionCita;
+
+	// ---------------------------------------------------------------------------------------------------------
+	// TODO EVALUAR SI QUITAR ESTO DE AQUI
+	@Column(nullable = true)
 	private LocalDate fechaAlistamiento;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
@@ -309,7 +307,7 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_tipo_vehiculo_planificado", nullable = true)
+	@JoinColumn(name = "id_tipo_vehiculo_planificado")
 	private TipoVehiculo tipoVehiculoPlanificado;
 
 	@Column(nullable = true)
@@ -346,9 +344,6 @@ public class Orden implements Serializable {
 	private Integer secuenciaRuta;
 
 	@Column(nullable = true)
-	private Integer numeroCajas;
-
-	@Column(nullable = true)
 	private LocalDateTime fechaAsignacionRuta;
 
 	@Column(nullable = false, length = 50)
@@ -382,21 +377,23 @@ public class Orden implements Serializable {
 	private LocalDateTime fechaRecogidaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private LocalDateTime fechaCreacion;
 
 	@Column(nullable = false, length = 50)
+	@NotNull
 	private String usuarioCreacion;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private LocalDateTime fechaActualizacion;
 
 	@Column(nullable = false, length = 50)
+	@NotNull
 	private String usuarioActualizacion;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_causal_anulacion", nullable = true)
+	@JoinColumn(name = "id_causal_anulacion")
 	private CausalAnulacion causalAnulacion;
 
 	@Column(length = 200, nullable = false)
@@ -404,7 +401,6 @@ public class Orden implements Serializable {
 	private String notasAnulacion;
 
 	@Column(nullable = true)
-
 	private LocalDateTime fechaAnulacion;
 
 	@Column(nullable = false, length = 50)
@@ -415,7 +411,7 @@ public class Orden implements Serializable {
 	private Integer ordenOriginalId;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_causal_reprogramacion", nullable = true)
+	@JoinColumn(name = "id_causal_reprogramacion")
 	private CausalReprogramacion causalReprogramacion;
 
 	@Column(length = 200, nullable = false)
@@ -429,33 +425,15 @@ public class Orden implements Serializable {
 	private String usuarioReprogramacion;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "id_orden", nullable = false)
 	private Set<LineaOrden> lineas;
 
 	// TODO AGREGAR LA LINEA ORDEN Y ELIMINAR DE LINEAS
 	@ElementCollection
-	@CollectionTable(name = "ordenes_mensajes", catalog = "ordenes", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden"))
+	@CollectionTable(name = "ordenes_mensajes", catalog = "ordenes", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName = "id_orden", nullable = false))
 	private Set<MensajeEmbeddable> mensajes;
 
-	// TODO DOCUMENTOS
-
-	// TODO REQUERIMIENTOS
-	// @ElementCollection
-	// @CollectionTable(name = "ordenes_requerimientos_distribucion", catalog =
-	// "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName
-	// = "id_orden"))
-	// private Set<OmsOrdenRequerimientoDistribucionAssociation>
-	// requerimientosDistribucion;
-	//
-	// @ElementCollection
-	// @CollectionTable(name = "ordenes_requerimientos_alistamiento", catalog =
-	// "oms", joinColumns = @JoinColumn(name = "id_orden", referencedColumnName
-	// = "id_orden"))
-	// private Set<OmsOrdenRequerimientoAlistamientoAssociation>
-	// requerimientosAlistamiento;
-
-	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------------------------------
 	public void confirmar(String usuario, LocalDateTime fecha, String notas) {
 		if (!this.isRequiereConfirmacionCitaEntrega()) {
@@ -483,9 +461,9 @@ public class Orden implements Serializable {
 		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	public void aceptar(LocalDateTime fecha,String usuario, String notas) {
+	public void aceptar(LocalDateTime fecha, String usuario, String notas) {
 		if (this.getEstadoOrden() == EstadoOrdenType.ANULADA) {
-			this.revertirAnulacion(fecha,usuario);
+			this.revertirAnulacion(fecha, usuario);
 		}
 		this.setEstadoOrden(EstadoOrdenType.ACEPTADA);
 		this.setDatosAceptacion(fecha, usuario, notas);
@@ -498,13 +476,13 @@ public class Orden implements Serializable {
 		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	private void revertirConfirmacion(String usuario, LocalDateTime fecha) {
+	public void revertirConfirmacion(String usuario, LocalDateTime fecha) {
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
 		this.setDatosConfirmacion("", null, this.getNotasConfirmacion());
 		this.setDatosActualizacion(fecha, usuario);
 	}
 
-	private void revertirAceptacion(String usuario, LocalDateTime fecha) {
+	public void revertirAceptacion(String usuario, LocalDateTime fecha) {
 		this.setDatosAceptacion(null, "", this.getNotasAceptacion());
 		this.confirmar(usuario, fecha, "");
 	}
@@ -519,7 +497,7 @@ public class Orden implements Serializable {
 
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
 		this.setEstadoDistribucion(EstadoDistribucionType.NO_PLANIFICADA);
-		this.setEstadoAlistamiento(EstadoAlistamientoType.NO_ALERTADA);
+		this.setEstadoAlmacenamiento(EstadoAlmacenamientoType.NO_ALERTADA);
 		this.setEstadoCumplidos(EstadoCumplidosType.NO_REPORTADOS);
 
 		// ---------------------------------------------------------------------------------------------------------
@@ -565,10 +543,6 @@ public class Orden implements Serializable {
 		this.setDatosActualizacion(null, "");
 		this.setDatosAnulacion(null, "", "", null);
 		this.setDatosReprogramacion("", null, "", null, null);
-
-		// ---------------------------------------------------------------------------------------------------------
-		this.lineas = new HashSet<>();
-		this.mensajes = new HashSet<>();
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -705,7 +679,6 @@ public class Orden implements Serializable {
 			LocalDateTime fecha) {
 		this.setRutaId(rutaId);
 		this.setSecuenciaRuta(secuenciaRuta);
-		this.setNumeroCajas(numeroCajas);
 		this.setFechaAsignacionRuta(fecha);
 		this.setUsuarioAsignacionRuta(usuario);
 	}
@@ -751,808 +724,11 @@ public class Orden implements Serializable {
 		this.setOrdenOriginalId(ordenOriginalId);
 	}
 
-	// TODO DATOS REPROGRAMACION
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Integer getId() {
-		return id;
-	}
-
-	public String getNumeroOrden() {
-		return numeroOrden;
-	}
-
-	public LocalDate getFechaOrden() {
-		return fechaOrden;
-	}
-
-	public String getNumeroOrdenCompra() {
-		return numeroOrdenCompra;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public EstadoOrdenType getEstadoOrden() {
-		return estadoOrden;
-	}
-
-	public EstadoDistribucionType getEstadoDistribucion() {
-		return estadoDistribucion;
-	}
-
-	public EstadoAlistamientoType getEstadoAlistamiento() {
-		return estadoAlistamiento;
-	}
-
-	public EstadoCumplidosType getEstadoCumplidos() {
-		return estadoCumplidos;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Cliente getCliente() {
-		return cliente;
-	}
-
-	public String getClienteCodigo() {
-		return clienteCodigo;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public TipoServicio getTipoServicio() {
-		return tipoServicio;
-	}
-
-	public String getTipoServicioCodigoAlterno() {
-		return tipoServicioCodigoAlterno;
-	}
-
-	public boolean isRequiereServicioDistribucion() {
-		return requiereServicioDistribucion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Ciudad getCiudadDestino() {
-		return ciudadDestino;
-	}
-
-	public String getDestinoCiudadNombre() {
-		return destinoCiudadNombre;
-	}
-
-	public String getDestinoDireccion() {
-		return destinoDireccion;
-	}
-
-	public String getDestinoIndicaciones() {
-		return destinoIndicaciones;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public boolean isRequiereConfirmacionCitaEntrega() {
-		return requiereConfirmacionCitaEntrega;
-	}
-
-	public LocalDate getFechaEntregaSugeridaMinima() {
-		return fechaEntregaSugeridaMinima;
-	}
-
-	public LocalDate getFechaEntregaSugeridaMaxima() {
-		return fechaEntregaSugeridaMaxima;
-	}
-
-	public LocalTime getHoraEntregaSugeridaMinima() {
-		return horaEntregaSugeridaMinima;
-	}
-
-	public LocalTime getHoraEntregaSugeridaMaxima() {
-		return horaEntregaSugeridaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Ciudad getCiudadOrigen() {
-		return ciudadOrigen;
-	}
-
-	public String getOrigenCiudadNombre() {
-		return origenCiudadNombre;
-	}
-
-	public String getOrigenDireccion() {
-		return origenDireccion;
-	}
-
-	public String getOrigenIndicaciones() {
-		return origenIndicaciones;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public boolean isRequiereConfirmacionCitaRecogida() {
-		return requiereConfirmacionCitaRecogida;
-	}
-
-	public LocalDate getFechaRecogidaSugeridaMinima() {
-		return fechaRecogidaSugeridaMinima;
-	}
-
-	public LocalDate getFechaRecogidaSugeridaMaxima() {
-		return fechaRecogidaSugeridaMaxima;
-	}
-
-	public LocalTime getHoraRecogidaSugeridaMinima() {
-		return horaRecogidaSugeridaMinima;
-	}
-
-	public LocalTime getHoraRecogidaSugeridaMaxima() {
-		return horaRecogidaSugeridaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Canal getCanal() {
-		return canal;
-	}
-
-	public String getCanalCodigoAlterno() {
-		return canalCodigoAlterno;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Destinatario getDestinatario() {
-		return destinatario;
-	}
-
-	public String getDestinatarioNumeroIdentificacion() {
-		return destinatarioNumeroIdentificacion;
-	}
-
-	public String getDestinatarioNombre() {
-		return destinatarioNombre;
-	}
-
-	public Contacto getDestinatarioContacto() {
-		if (this.destinatarioContacto == null) {
-			this.destinatarioContacto = new Contacto();
-		}
-		return destinatarioContacto;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Destino getDestino() {
-		return destino;
-	}
-
-	public String getDestinoCodigo() {
-		return destinoCodigo;
-	}
-
-	public String getDestinoNombre() {
-		return destinoNombre;
-	}
-
-	public Contacto getDestinoContacto() {
-		if (this.destinoContacto == null) {
-			this.destinoContacto = new Contacto();
-		}
-
-		return destinoContacto;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Destino getOrigen() {
-		return origen;
-	}
-
-	public String getOrigenCodigo() {
-		return origenCodigo;
-	}
-
-	public String getOrigenNombre() {
-		return origenNombre;
-	}
-
-	public Contacto getOrigenContacto() {
-		if (this.origenContacto == null) {
-			this.origenContacto = new Contacto();
-		}
-
-		return origenContacto;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Integer getValorRecaudo() {
-		return valorRecaudo;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public String getNotasConfirmacion() {
-		return notasConfirmacion;
-	}
-
-	public LocalDateTime getFechaConfirmacion() {
-		return fechaConfirmacion;
-	}
-
-	public String getUsuarioConfirmacion() {
-		return usuarioConfirmacion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public LocalDate getFechaCitaEntrega() {
-		return fechaCitaEntrega;
-	}
-
-	public LocalTime getHoraCitaEntregaMinima() {
-		return horaCitaEntregaMinima;
-	}
-
-	public LocalTime getHoraCitaEntregaMaxima() {
-		return horaCitaEntregaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public LocalDate getFechaCitaRecogida() {
-		return fechaCitaRecogida;
-	}
-
-	public LocalTime getHoraCitaRecogidaMinima() {
-		return horaCitaRecogidaMinima;
-	}
-
-	public LocalTime getHoraCitaRecogidaMaxima() {
-		return horaCitaRecogidaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public LocalDate getFechaAlistamiento() {
-		return fechaAlistamiento;
-	}
-
-	public LocalTime getHoraAlistamientoMinima() {
-		return horaAlistamientoMinima;
-	}
-
-	public LocalTime getHoraAlistamientoMaxima() {
-		return horaAlistamientoMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public TipoVehiculo getTipoVehiculoPlanificado() {
-		return tipoVehiculoPlanificado;
-	}
-
-	public Integer getValorFletePlanificado() {
-		return valorFletePlanificado;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public String getNotasAceptacion() {
-		return notasAceptacion;
-	}
-
-	public LocalDateTime getFechaAceptacion() {
-		return fechaAceptacion;
-	}
-
-	public String getUsuarioAceptacion() {
-		return usuarioAceptacion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Integer getCorteRutaId() {
-		return corteRutaId;
-	}
-
-	public LocalDateTime getFechaCorteRuta() {
-		return fechaCorteRuta;
-	}
-
-	public String getUsuarioCorteRuta() {
-		return usuarioCorteRuta;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Integer getRutaId() {
-		return rutaId;
-	}
-
-	public Integer getSecuenciaRuta() {
-		return secuenciaRuta;
-	}
-
-	public Integer getNumeroCajas() {
-		return numeroCajas;
-	}
-
-	public LocalDateTime getFechaAsignacionRuta() {
-		return fechaAsignacionRuta;
-	}
-
-	public String getUsuarioAsignacionRuta() {
-		return usuarioAsignacionRuta;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public LocalDateTime getFechaEntregaEstimada() {
-		return fechaEntregaEstimada;
-	}
-
-	public LocalDateTime getFechaEntrega() {
-		return fechaEntrega;
-	}
-
-	public LocalDateTime getFechaEntregaInicio() {
-		return fechaEntregaInicio;
-	}
-
-	public LocalDateTime getFechaEntregaFin() {
-		return fechaEntregaFin;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public LocalDateTime getFechaRecogidaEstimada() {
-		return fechaRecogidaEstimada;
-	}
-
-	public LocalDateTime getFechaRecogida() {
-		return fechaRecogida;
-	}
-
-	public LocalDateTime getFechaRecogidaInicio() {
-		return fechaRecogidaInicio;
-	}
-
-	public LocalDateTime getFechaRecogidaFin() {
-		return fechaRecogidaFin;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public LocalDateTime getFechaCreacion() {
-		return fechaCreacion;
-	}
-
-	public String getUsuarioCreacion() {
-		return usuarioCreacion;
-	}
-
-	public LocalDateTime getFechaActualizacion() {
-		return fechaActualizacion;
-	}
-
-	public String getUsuarioActualizacion() {
-		return usuarioActualizacion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public CausalAnulacion getCausalAnulacion() {
-		return causalAnulacion;
-	}
-
-	public String getNotasAnulacion() {
-		return notasAnulacion;
-	}
-
-	public LocalDateTime getFechaAnulacion() {
-		return fechaAnulacion;
-	}
-
-	public String getUsuarioAnulacion() {
-		return usuarioAnulacion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Integer getOrdenOriginalId() {
-		return ordenOriginalId;
-	}
-
-	public CausalReprogramacion getCausalReprogramacion() {
-		return causalReprogramacion;
-	}
-
-	public String getNotasReprogramacion() {
-		return notasReprogramacion;
-	}
-
-	public LocalDateTime getFechaReprogramacion() {
-		return fechaReprogramacion;
-	}
-
-	public String getUsuarioReprogramacion() {
-		return usuarioReprogramacion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setNumeroOrden(String value) {
-		this.numeroOrden = coalesce(value, "");
-	}
-
-	protected void setFechaOrden(LocalDate fechaOrden) {
-		this.fechaOrden = fechaOrden;
-	}
-
-	protected void setNumeroOrdenCompra(String value) {
-		this.numeroOrdenCompra = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setEstadoOrden(EstadoOrdenType estadoOrden) {
-		this.estadoOrden = estadoOrden;
-	}
-
-	protected void setEstadoDistribucion(EstadoDistribucionType estadoDistribucion) {
-		this.estadoDistribucion = estadoDistribucion;
-	}
-
-	protected void setEstadoAlistamiento(EstadoAlistamientoType estadoAlistamiento) {
-		this.estadoAlistamiento = estadoAlistamiento;
-	}
-
-	protected void setEstadoCumplidos(EstadoCumplidosType estadoCumplidos) {
-		this.estadoCumplidos = estadoCumplidos;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setCliente(Cliente cliente) {
-		this.cliente = cliente;
-		this.setClienteCodigo((this.cliente != null) ? this.cliente.getCodigo() : "");
-	}
-
-	protected void setClienteCodigo(String clienteCodigo) {
-		this.clienteCodigo = clienteCodigo;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setTipoServicio(TipoServicio tipoServicio) {
-		this.tipoServicio = tipoServicio;
-	}
-
-	protected void setTipoServicioCodigoAlterno(String value) {
-		this.tipoServicioCodigoAlterno = coalesce(value, "");
-	}
-
-	protected void setRequiereServicioDistribucion(boolean requiereServicioDistribucion) {
-		this.requiereServicioDistribucion = requiereServicioDistribucion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setCiudadDestino(Ciudad ciudadDestino) {
-		this.ciudadDestino = ciudadDestino;
-	}
-
-	protected void setDestinoCiudadNombre(String value) {
-		this.destinoCiudadNombre = coalesce(value, "");
-	}
-
-	protected void setDestinoDireccion(String value) {
-		this.destinoDireccion = coalesce(value, "");
-	}
-
-	protected void setDestinoIndicaciones(String value) {
-		this.destinoIndicaciones = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setRequiereConfirmacionCitaEntrega(boolean requiereConfirmacionCitaEntrega) {
-		this.requiereConfirmacionCitaEntrega = requiereConfirmacionCitaEntrega;
-	}
-
-	protected void setFechaEntregaSugeridaMinima(LocalDate fechaEntregaSugeridaMinima) {
-		this.fechaEntregaSugeridaMinima = fechaEntregaSugeridaMinima;
-	}
-
-	protected void setFechaEntregaSugeridaMaxima(LocalDate fechaEntregaSugeridaMaxima) {
-		this.fechaEntregaSugeridaMaxima = fechaEntregaSugeridaMaxima;
-	}
-
-	protected void setHoraEntregaSugeridaMinima(LocalTime horaEntregaSugeridaMinima) {
-		this.horaEntregaSugeridaMinima = horaEntregaSugeridaMinima;
-	}
-
-	protected void setHoraEntregaSugeridaMaxima(LocalTime horaEntregaSugeridaMaxima) {
-		this.horaEntregaSugeridaMaxima = horaEntregaSugeridaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setCiudadOrigen(Ciudad ciudadOrigen) {
-		this.ciudadOrigen = ciudadOrigen;
-	}
-
-	protected void setOrigenCiudadNombre(String value) {
-		this.origenCiudadNombre = coalesce(value, "");
-	}
-
-	protected void setOrigenDireccion(String value) {
-		this.origenDireccion = coalesce(value, "");
-	}
-
-	protected void setOrigenIndicaciones(String value) {
-		this.origenIndicaciones = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setRequiereConfirmacionCitaRecogida(boolean requiereConfirmacionCitaRecogida) {
-		this.requiereConfirmacionCitaRecogida = requiereConfirmacionCitaRecogida;
-	}
-
-	protected void setFechaRecogidaSugeridaMinima(LocalDate fechaRecogidaSugeridaMinima) {
-		this.fechaRecogidaSugeridaMinima = fechaRecogidaSugeridaMinima;
-	}
-
-	protected void setFechaRecogidaSugeridaMaxima(LocalDate fechaRecogidaSugeridaMaxima) {
-		this.fechaRecogidaSugeridaMaxima = fechaRecogidaSugeridaMaxima;
-	}
-
-	protected void setHoraRecogidaSugeridaMinima(LocalTime horaRecogidaSugeridaMinima) {
-		this.horaRecogidaSugeridaMinima = horaRecogidaSugeridaMinima;
-	}
-
-	protected void setHoraRecogidaSugeridaMaxima(LocalTime horaRecogidaSugeridaMaxima) {
-		this.horaRecogidaSugeridaMaxima = horaRecogidaSugeridaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setCanal(Canal canal) {
-		this.canal = canal;
-	}
-
-	protected void setCanalCodigoAlterno(String value) {
-		this.canalCodigoAlterno = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setDestinatario(Destinatario destinatario) {
-		this.destinatario = destinatario;
-	}
-
-	protected void setDestinatarioNumeroIdentificacion(String value) {
-		this.destinatarioNumeroIdentificacion = coalesce(value, "");
-	}
-
-	protected void setDestinatarioNombre(String value) {
-		this.destinatarioNombre = coalesce(value, "");
-	}
-
-	protected void setDestinatarioContacto(Contacto value) {
-		this.destinatarioContacto = coalesce(value, new Contacto("", "", ""));
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setDestino(Destino destino) {
-		this.destino = destino;
-	}
-
-	protected void setDestinoCodigo(String value) {
-		this.destinoCodigo = coalesce(value, "");
-	}
-
-	protected void setDestinoNombre(String value) {
-		this.destinoNombre = coalesce(value, "");
-	}
-
-	protected void setDestinoContacto(Contacto value) {
-		this.destinoContacto = coalesce(value, new Contacto("", "", ""));
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setOrigen(Destino origen) {
-		this.origen = origen;
-	}
-
-	protected void setOrigenCodigo(String value) {
-		this.origenCodigo = coalesce(value, "");
-	}
-
-	protected void setOrigenNombre(String value) {
-		this.origenNombre = coalesce(value, "");
-	}
-
-	protected void setOrigenContacto(Contacto value) {
-		this.origenContacto = coalesce(value, new Contacto("", "", ""));
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setValorRecaudo(Integer valorRecaudo) {
-		this.valorRecaudo = valorRecaudo;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setNotasConfirmacion(String value) {
-		this.notasConfirmacion = coalesce(value, "");
-	}
-
-	protected void setFechaConfirmacion(LocalDateTime fechaConfirmacion) {
-		this.fechaConfirmacion = fechaConfirmacion;
-	}
-
-	protected void setUsuarioConfirmacion(String value) {
-		this.usuarioConfirmacion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCitaEntrega(LocalDate fechaCitaEntrega) {
-		this.fechaCitaEntrega = fechaCitaEntrega;
-	}
-
-	protected void setHoraCitaEntregaMinima(LocalTime horaCitaEntregaMinima) {
-		this.horaCitaEntregaMinima = horaCitaEntregaMinima;
-	}
-
-	protected void setHoraCitaEntregaMaxima(LocalTime horaCitaEntregaMaxima) {
-		this.horaCitaEntregaMaxima = horaCitaEntregaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCitaRecogida(LocalDate fechaCitaRecogida) {
-		this.fechaCitaRecogida = fechaCitaRecogida;
-	}
-
-	protected void setHoraCitaRecogidaMinima(LocalTime horaCitaRecogidaMinima) {
-		this.horaCitaRecogidaMinima = horaCitaRecogidaMinima;
-	}
-
-	protected void setHoraCitaRecogidaMaxima(LocalTime horaCitaRecogidaMaxima) {
-		this.horaCitaRecogidaMaxima = horaCitaRecogidaMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaAlistamiento(LocalDate fechaAlistamiento) {
-		this.fechaAlistamiento = fechaAlistamiento;
-	}
-
-	protected void setHoraAlistamientoMinima(LocalTime horaAlistamientoMinima) {
-		this.horaAlistamientoMinima = horaAlistamientoMinima;
-	}
-
-	protected void setHoraAlistamientoMaxima(LocalTime horaAlistamientoMaxima) {
-		this.horaAlistamientoMaxima = horaAlistamientoMaxima;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setTipoVehiculoPlanificado(TipoVehiculo tipoVehiculoPlanificado) {
-		this.tipoVehiculoPlanificado = tipoVehiculoPlanificado;
-	}
-
-	protected void setValorFletePlanificado(Integer valorFletePlanificado) {
-		this.valorFletePlanificado = valorFletePlanificado;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setNotasAceptacion(String value) {
-		this.notasAceptacion = coalesce(value, "");
-	}
-
-	protected void setFechaAceptacion(LocalDateTime fechaAceptacion) {
-		this.fechaAceptacion = fechaAceptacion;
-	}
-
-	protected void setUsuarioAceptacion(String value) {
-		this.usuarioAceptacion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setCorteRutaId(Integer corteRutaId) {
-		this.corteRutaId = corteRutaId;
-	}
-
-	protected void setFechaCorteRuta(LocalDateTime fechaCorteRuta) {
-		this.fechaCorteRuta = fechaCorteRuta;
-	}
-
-	protected void setUsuarioCorteRuta(String value) {
-		this.usuarioCorteRuta = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setRutaId(Integer rutaId) {
-		this.rutaId = rutaId;
-	}
-
-	protected void setSecuenciaRuta(Integer secuenciaRuta) {
-		this.secuenciaRuta = secuenciaRuta;
-	}
-
-	protected void setNumeroCajas(Integer numeroCajas) {
-		this.numeroCajas = numeroCajas;
-	}
-
-	protected void setFechaAsignacionRuta(LocalDateTime fechaAsignacionRuta) {
-		this.fechaAsignacionRuta = fechaAsignacionRuta;
-	}
-
-	protected void setUsuarioAsignacionRuta(String value) {
-		this.usuarioAsignacionRuta = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaEntregaEstimada(LocalDateTime fechaEntregaEstimada) {
-		this.fechaEntregaEstimada = fechaEntregaEstimada;
-	}
-
-	protected void setFechaEntrega(LocalDateTime fechaEntrega) {
-		this.fechaEntrega = fechaEntrega;
-	}
-
-	protected void setFechaEntregaInicio(LocalDateTime fechaEntregaInicio) {
-		this.fechaEntregaInicio = fechaEntregaInicio;
-	}
-
-	protected void setFechaEntregaFin(LocalDateTime fechaEntregaFin) {
-		this.fechaEntregaFin = fechaEntregaFin;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaRecogidaEstimada(LocalDateTime fechaRecogidaEstimada) {
-		this.fechaRecogidaEstimada = fechaRecogidaEstimada;
-	}
-
-	protected void setFechaRecogida(LocalDateTime fechaRecogida) {
-		this.fechaRecogida = fechaRecogida;
-	}
-
-	protected void setFechaRecogidaInicio(LocalDateTime fechaRecogidaInicio) {
-		this.fechaRecogidaInicio = fechaRecogidaInicio;
-	}
-
-	protected void setFechaRecogidaFin(LocalDateTime fechaRecogidaFin) {
-		this.fechaRecogidaFin = fechaRecogidaFin;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setFechaCreacion(LocalDateTime fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
-	protected void setUsuarioCreacion(String value) {
-		this.usuarioCreacion = coalesce(value, "");
-	}
-
-	protected void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
-	}
-
-	protected void setUsuarioActualizacion(String value) {
-		this.usuarioActualizacion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setCausalAnulacion(CausalAnulacion causalAnulacion) {
-		this.causalAnulacion = causalAnulacion;
-	}
-
-	protected void setNotasAnulacion(String value) {
-		this.notasAnulacion = coalesce(value, "");
-	}
-
-	protected void setFechaAnulacion(LocalDateTime fechaAnulacion) {
-		this.fechaAnulacion = fechaAnulacion;
-	}
-
-	protected void setUsuarioAnulacion(String value) {
-		this.usuarioAnulacion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	protected void setOrdenOriginalId(Integer ordenOriginalId) {
-		this.ordenOriginalId = ordenOriginalId;
-	}
-
-	protected void setCausalReprogramacion(CausalReprogramacion causalReprogramacion) {
-		this.causalReprogramacion = causalReprogramacion;
-	}
-
-	protected void setNotasReprogramacion(String notasReprogramacion) {
-		this.notasReprogramacion = notasReprogramacion;
-	}
-
-	protected void setFechaReprogramacion(LocalDateTime fechaReprogramacion) {
-		this.fechaReprogramacion = fechaReprogramacion;
-	}
-
-	protected void setUsuarioReprogramacion(String usuarioReprogramacion) {
-		this.usuarioReprogramacion = usuarioReprogramacion;
-	}
-
 	// ---------------------------------------------------------------------------------------------------------
 	protected Set<LineaOrden> getInternalLineas() {
+		if (this.lineas == null) {
+			this.lineas = new HashSet<>();
+		}
 		return lineas;
 	}
 
@@ -1563,14 +739,14 @@ public class Orden implements Serializable {
 		this.lineas = set;
 	}
 
-	public List<LineaOrden> getLineas() {
-		List<LineaOrden> sorted = new ArrayList<>(getInternalLineas());
-		PropertyComparator.sort(sorted, new MutableSortDefinition("numeroItem", true, true));
-		return Collections.unmodifiableList(sorted);
-	}
+	// public List<LineaOrden> getLineas() {
+	// List<LineaOrden> sorted = new ArrayList<>(getInternalLineas());
+	// PropertyComparator.sort(sorted, new MutableSortDefinition("numeroItem",
+	// true, true));
+	// return Collections.unmodifiableList(sorted);
+	// }
 
 	public boolean addLinea(LineaOrden e) {
-		e.setOrden(this);
 		e.setNumeroItem(this.getMaximoNumeroItem() + 1);
 		return this.getInternalLineas().add(e);
 	}
@@ -1587,7 +763,6 @@ public class Orden implements Serializable {
 	}
 
 	public boolean removeLinea(LineaOrden e) {
-		// e.setOrden(null);
 		boolean rc = this.getInternalLineas().remove(e);
 		return rc;
 	}
@@ -1599,20 +774,10 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	protected Set<MensajeEmbeddable> getInternalMensajes() {
-		return mensajes;
-	}
-
-	public List<MensajeEmbeddable> getMensajes() {
-		List<MensajeEmbeddable> sorted = new ArrayList<>(getInternalMensajes());
-		PropertyComparator.sort(sorted, new MutableSortDefinition("severidad", true, true));
-		return Collections.unmodifiableList(sorted);
-	}
-
-	public void setMensajes(Set<MensajeEmbeddable> set) {
-		if (this.mensajes != null) {
-			this.mensajes.clear();
+		if (this.mensajes == null) {
+			this.mensajes = new HashSet<>();
 		}
-		this.mensajes = set;
+		return mensajes;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------

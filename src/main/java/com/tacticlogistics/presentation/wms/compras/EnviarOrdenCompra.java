@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -17,7 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.tacticlogistics.application.services.clientes.dicermex.OrdenesDeCompraService;
+import com.tacticlogistics.domain.model.ordenes.LineaOrden;
+import com.tacticlogistics.domain.model.ordenes.Orden;
 
 @Component
 public class EnviarOrdenCompra {
@@ -28,14 +34,16 @@ public class EnviarOrdenCompra {
 	private String directorioHostIn;
 
 	@Autowired
+	private OrdenesDeCompraService ocService;
+
+	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	//@Scheduled(fixedRate = 60000)
+	@Scheduled(fixedRate = 1000 * 60 * 1)
 	public void enviarOrdenesWMS() {
 		try {
 
-			List<OrdenCompra> ordenes = jdbcTemplate.query(
-					"select * from wms.ordenes_compra where numero_orden = 'SMX-017'", new OrdenCompraRowMapper());
+			List<OrdenCompra> ordenes = getOrdenesDeCompraHabilitadas();
 
 			ordenes = consolidarLineasOrden(ordenes);
 
@@ -54,15 +62,51 @@ public class EnviarOrdenCompra {
 		}
 	}
 
+	private List<OrdenCompra> getOrdenesDeCompraHabilitadas() {
+		List<Orden> ordenes = ocService.getOrdenesDeCompraPendientesPorAlertarAlWms();
+		
+		// @formatter:off
+		return ordenes
+				.stream()
+				.map(orden -> {
+					OrdenCompra oc =new OrdenCompra();
+					String bodegaDestinoCodigo = orden.getLineas().stream().findFirst().get().getBodegaDestinoCodigo();
+
+					oc.setIdOrden(orden.getId());
+					oc.setNumeroOrden("TC-" + orden.getId() + '-' + orden.getNumeroOrden());
+					oc.setProveedor(orden.getCliente().getCodigoAlternoWms());
+					oc.setClienteId(orden.getCliente().getCodigoAlternoWms());
+					oc.setBodega(bodegaDestinoCodigo);
+					oc.setTipoOrden("REC");
+					oc.setEstadoOrden("OPEN");
+					
+					for (LineaOrden e : orden.getLineas()) {
+						LineaOrdenCompra ocLinea = new LineaOrdenCompra();
+						
+						ocLinea.setNumeroLinea(e.getNumeroItem());
+						ocLinea.setCantidadEsperada(e.getCantidadPlanificada());
+						ocLinea.setCodigoProducto(e.getProductoCodigo());
+						ocLinea.setEstadoInventarioEsperado(e.getEstadoInventarioDestinoId());
+						ocLinea.setLote(e.getLote());
+						ocLinea.setEstampillado(e.getRequerimientoEstampillado());
+
+						oc.addLinea(ocLinea);
+					}
+					
+					return oc;
+				}).collect(Collectors.toList());
+		// @formatter:on
+	}
+
 	private void actualizarOrdenes(List<OrdenCompra> ordenes) {
+		// @formatter:off
+		List<Integer> ordenesId = ordenes
+				.stream()
+				.map(orden -> orden.getIdOrden())
+				.collect(Collectors.toList());
+		// @formatter:on
 
-		for (OrdenCompra oc : ordenes) {
-			jdbcTemplate.execute(""
-					+ " update ordenes.ordenes "
-					+ "  set id_estado_alistamiento = 'ALERTADA'"
-					+ "  where id_orden = " + oc.getIdOrden());
-		}
-
+		ocService.preAlertarOrdenesDeCompraAlWms(ordenesId);
 	}
 
 	private void writeFiles(OrdenCompra oc) throws IOException, UnsupportedEncodingException {

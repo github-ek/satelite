@@ -40,7 +40,6 @@ import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
-import com.tacticlogistics.application.tasks.etl.readers.FlatFileReaderUTF16;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.domain.model.calendario.Calendario;
 import com.tacticlogistics.domain.model.calendario.DiaDeSemanaType;

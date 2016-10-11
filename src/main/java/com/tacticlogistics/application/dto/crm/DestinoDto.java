@@ -3,7 +3,6 @@ package com.tacticlogistics.application.dto.crm;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.commons.lang.NotImplementedException;
 
 import com.tacticlogistics.domain.model.crm.Destino;
 
@@ -50,7 +49,7 @@ public class DestinoDto  {
 
     public DestinoDto(Destino model) {
         super();
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
     
     public Integer getId() {

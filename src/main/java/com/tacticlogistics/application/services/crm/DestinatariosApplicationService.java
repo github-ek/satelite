@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Sort;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tacticlogistics.application.dto.crm.DestinatarioDto;
 import com.tacticlogistics.application.dto.etl.ETLDestinatarioDto;
-import com.tacticlogistics.application.dto.oms.OmsDestinatarioDto;
 import com.tacticlogistics.domain.model.common.IdentificacionType;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
 import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
@@ -43,16 +41,6 @@ public class DestinatariosApplicationService {
     private DestinatarioRepository destinatarioRepository;
 
     // ---------------------------------------------------------------------------------------------------------
-    public OmsDestinatarioDto findOnePorId(Integer id) throws DataAccessException {
-        Destinatario model = destinatarioRepository.findOne(id);
-        OmsDestinatarioDto dto = null;
-
-        if (model != null) {
-            dto = map(model);
-        }
-
-        return dto;
-    }
 
     // ---------------------------------------------------------------------------------------------------------
     public List<Object> findAllDestinatarioPorClientePorCanalPorTipoServicio(Integer clienteId,
@@ -238,35 +226,4 @@ public class DestinatariosApplicationService {
         return o;
     }
 
-    private OmsDestinatarioDto map(Destinatario model) {
-        ModelMapper modelMapper = new ModelMapper();
-
-        OmsDestinatarioDto dto;
-        dto = modelMapper.map(model, OmsDestinatarioDto.class);
-
-        if (model.getClienteId() != null) {
-            Cliente e = clienteRepository.findOne(model.getClienteId());
-            if (e != null) {
-                dto.setClienteCodigo(e.getCodigo());
-                dto.setClienteNombre(e.getNombre());
-            }
-        }
-
-        if (model.getCanalId() != null) {
-            Canal e = canalRepository.findOne(model.getCanalId());
-            if (e != null) {
-                dto.setCanalCodigo(e.getCodigo());
-                dto.setCanalNombre(e.getNombre());
-            }
-        }
-
-        if (model.getDireccion().getCiudadId() != null) {
-            Ciudad e = ciudadRepository.findOne(model.getDireccion().getCiudadId());
-            if (e != null) {
-                dto.setDireccionCiudadNombre(e.getNombreAlterno());
-            }
-        }
-
-        return dto;
-    }
 }

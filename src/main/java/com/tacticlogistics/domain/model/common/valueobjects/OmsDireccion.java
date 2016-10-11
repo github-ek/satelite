@@ -2,6 +2,7 @@ package com.tacticlogistics.domain.model.common.valueobjects;
 
 import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import com.tacticlogistics.common.ddd.AssertionConcern;
 
 @Embeddable
-public class OmsDireccion extends AssertionConcern {
+public class OmsDireccion extends AssertionConcern implements Serializable{
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 1L;
 

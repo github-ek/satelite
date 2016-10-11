@@ -91,7 +91,7 @@ public class OmsOrden implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_alistamiento", nullable = false, length = 50)
 	@NotNull
-	private EstadoAlistamientoType estadoAlistamiento;
+	private EstadoAlmacenamientoType estadoAlistamiento;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "id_estado_cumplidos", nullable = false, length = 50)
@@ -531,7 +531,7 @@ public class OmsOrden implements Serializable {
 
 		this.setEstadoOrden(EstadoOrdenType.NO_CONFIRMADA);
 		this.setEstadoDistribucion(EstadoDistribucionType.NO_PLANIFICADA);
-		this.setEstadoAlistamiento(EstadoAlistamientoType.NO_ALERTADA);
+		this.setEstadoAlistamiento(EstadoAlmacenamientoType.NO_ALERTADA);
 		this.setEstadoCumplidos(EstadoCumplidosType.NO_REPORTADOS);
 
 		// ---------------------------------------------------------------------------------------------------------
@@ -800,7 +800,7 @@ public class OmsOrden implements Serializable {
 		return estadoDistribucion;
 	}
 
-	public EstadoAlistamientoType getEstadoAlistamiento() {
+	public EstadoAlmacenamientoType getEstadoAlistamiento() {
 		return estadoAlistamiento;
 	}
 
@@ -1217,7 +1217,7 @@ public class OmsOrden implements Serializable {
 		this.estadoDistribucion = estadoDistribucion;
 	}
 
-	protected void setEstadoAlistamiento(EstadoAlistamientoType estadoAlistamiento) {
+	protected void setEstadoAlistamiento(EstadoAlmacenamientoType estadoAlistamiento) {
 		this.estadoAlistamiento = estadoAlistamiento;
 	}
 

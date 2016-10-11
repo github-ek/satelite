@@ -22,7 +22,6 @@ import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
 import com.tacticlogistics.domain.model.crm.Canal;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
-import com.tacticlogistics.domain.model.crm.ClienteTipoServicioAssociation;
 import com.tacticlogistics.domain.model.crm.Destinatario;
 import com.tacticlogistics.domain.model.crm.Destino;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
@@ -326,7 +325,7 @@ public class OrdenesApplicationService {
 		model.setValorDeclaradoPorUnidad(dto.getValorDeclaradoPorUnidad());
 		model.setNotas(dto.getNotas());
 
-		model.setFechaActualizacion(new Date());
+		model.setFechaActualizacion(LocalDateTime.now());
 		model.setUsuarioActualizacion(dtoOrden.getUsuarioConfirmacion());
 
 		model.setFechaCreacion(model.getFechaActualizacion());

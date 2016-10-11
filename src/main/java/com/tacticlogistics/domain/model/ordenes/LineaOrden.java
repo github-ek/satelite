@@ -1,10 +1,8 @@
 package com.tacticlogistics.domain.model.ordenes;
 
-import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -16,8 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -27,21 +23,24 @@ import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.domain.model.wms.Unidad;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 @Entity
 @Table(name = "LineasOrden", catalog = "ordenes", uniqueConstraints = {
 		@UniqueConstraint(columnNames = { "id_orden", "numeroItem" }) })
-
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class LineaOrden implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_linea_orden", unique = true, nullable = false)
+	@Column(name = "id_linea_orden")
 	private Integer id;
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "id_orden", nullable = false)
-	private Orden orden;
 
 	private int numeroItem;
 
@@ -49,52 +48,49 @@ public class LineaOrden implements Serializable {
 	@NotNull
 	private String descripcion;
 
-	@Column(nullable = false, name = "cantidad")
-	@NotNull
+	@Column(name = "cantidad")
 	private int cantidadSolicitada;
-	private Integer cantidadPlanificada;
+
+	private int cantidadPlanificada;
+
 	private Integer cantidadAlistada;
+
 	private Integer cantidadEntregada;
+
 	private Integer cantidadNoEntregada;
+
 	private Integer cantidadNoEntregadaLegalizada;
+
 	private Integer cantidadSobrante;
+
 	private Integer cantidadSobranteLegalizada;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_producto", nullable = true)
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "id_producto")
 	private Producto producto;
 
-	@Column(nullable = false, length = 50, name = "codigo_producto")
-	private String productoCodigo;
-
-//	@Column(nullable = false, length = 50, name = "codigo_alterno_producto")
-//	private String productoCodigoAlterno;
-
-	// ---------------------------------------------------------------------------------------------------------
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_unidad", nullable = true)
-	private Unidad unidad;
-
-	@Column(nullable = false, length = 2, name = "codigo_unidad")
+	@Column(name = "codigo_producto", nullable = false, length = 50)
 	@NotNull
-	private String unidadCodigo;
-
-//	@Column(nullable = false, length = 50, name = "codigo_alterno_unidad")
-//	private String unidadCodigoAlterno;
+	private String productoCodigo;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_tipo_contenido", nullable = true)
+	@JoinColumn(name = "id_unidad")
+	private Unidad unidad;
+
+	@Column(name = "codigo_unidad",nullable = false, length = 2)
+	@NotNull
+	private String unidadCodigo;
+
+	// ---------------------------------------------------------------------------------------------------------
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "id_tipo_contenido")
 	private TipoContenido tipoContenido;
 
 	@Column(nullable = false, length = 20)
 	@NotNull
 	private String tipoContenidoCodigo;
-
-//	@Column(nullable = false, length = 50)
-//	@NotNull
-//	private String tipoContenidoCodigoAlterno;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Embedded
@@ -102,7 +98,7 @@ public class LineaOrden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_bodega_origen", nullable = true)
+	@JoinColumn(name = "id_bodega_origen")
 	private Bodega bodegaOrigen;
 
 	@Column(nullable = false, length = 32)
@@ -123,7 +119,7 @@ public class LineaOrden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_bodega_destino", nullable = true)
+	@JoinColumn(name = "id_bodega_destino")
 	private Bodega bodegaDestino;
 
 	@Column(nullable = false, length = 32)
@@ -135,6 +131,7 @@ public class LineaOrden implements Serializable {
 	private String bodegaDestinoCodigoAlterno;
 
 	@Column(name = "id_estado_inventario_destino", nullable = false, length = 4)
+	@NotNull
 	private String estadoInventarioDestinoId;
 
 	@Column(nullable = false, length = 35)
@@ -192,10 +189,12 @@ public class LineaOrden implements Serializable {
 	private String requerimientoPinado;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true, length = 100)
+	@Column(nullable = false, length = 100)
+	@NotNull
 	private String predistribucionDestinoFinal;
 
-	@Column(nullable = true, length = 100)
+	@Column(nullable = false, length = 100)
+	@NotNull
 	private String predistribucionRotulo;
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -203,22 +202,21 @@ public class LineaOrden implements Serializable {
 	private Integer valorDeclaradoPorUnidad;
 
 	@Column(nullable = false, length = 200)
+	@NotNull
 	private String notas;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	@NotNull
-	private Date fechaCreacion;
+	private LocalDateTime fechaCreacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
 	private String usuarioCreacion;
 
-	@Column(nullable = false, columnDefinition = "DATETIME2(0)")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false, length = 50)
 	@NotNull
-	private Date fechaActualizacion;
+	private LocalDateTime fechaActualizacion;
 
 	@Column(nullable = false, length = 50)
 	@NotNull
@@ -240,13 +238,10 @@ public class LineaOrden implements Serializable {
 		this.setCantidadSobranteLegalizada(0);
 		this.setProducto(null);
 		this.setProductoCodigo("");
-		//this.setProductoCodigoAlterno("");
 		this.setUnidad(null);
 		this.setUnidadCodigo("");
-		//this.setUnidadCodigoAlterno("");
 		this.setTipoContenido(null);
 		this.setTipoContenidoCodigo("");
-		//this.setTipoContenidoCodigoAlterno("");
 		this.setDimensiones(null);
 		this.setBodegaOrigen(null);
 		this.setBodegaOrigenCodigo("");
@@ -281,95 +276,6 @@ public class LineaOrden implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	public Integer getId() {
-		return id;
-	}
-
-	public Orden getOrden() {
-		return orden;
-	}
-
-	public int getNumeroItem() {
-		return numeroItem;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public int getCantidadSolicitada() {
-		return cantidadSolicitada;
-	}
-
-	public Integer getCantidadPlanificada() {
-		return cantidadPlanificada;
-	}
-
-	public Integer getCantidadAlistada() {
-		return cantidadAlistada;
-	}
-
-	public Integer getCantidadEntregada() {
-		return cantidadEntregada;
-	}
-
-	public Integer getCantidadNoEntregada() {
-		return cantidadNoEntregada;
-	}
-
-	public Integer getCantidadNoEntregadaLegalizada() {
-		return cantidadNoEntregadaLegalizada;
-	}
-
-	public Integer getCantidadSobrante() {
-		return cantidadSobrante;
-	}
-
-	public Integer getCantidadSobranteLegalizada() {
-		return cantidadSobranteLegalizada;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Producto getProducto() {
-		return producto;
-	}
-
-	public String getProductoCodigo() {
-		return productoCodigo;
-	}
-
-//	public String getProductoCodigoAlterno() {
-//		return productoCodigoAlterno;
-//	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Unidad getUnidad() {
-		return unidad;
-	}
-
-	public String getUnidadCodigo() {
-		return unidadCodigo;
-	}
-
-//	public String getUnidadCodigoAlterno() {
-//		return unidadCodigoAlterno;
-//	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public TipoContenido getTipoContenido() {
-		return tipoContenido;
-	}
-
-	public String getTipoContenidoCodigo() {
-		return tipoContenidoCodigo;
-	}
-
-//	public String getTipoContenidoCodigoAlterno() {
-//		return tipoContenidoCodigoAlterno;
-//	}
-
-	// ---------------------------------------------------------------------------------------------------------
 	public BigDecimal getLargoPorUnidad() {
 		return getDimensiones().getLargoPorUnidad();
 	}
@@ -397,362 +303,11 @@ public class LineaOrden implements Serializable {
 		return dimensiones;
 	}
 
-	// ---------------------------------------------------------------------------------------------------------
-	public Bodega getBodegaOrigen() {
-		return bodegaOrigen;
-	}
-
-	public String getBodegaOrigenCodigo() {
-		return bodegaOrigenCodigo;
-	}
-
-	public String getBodegaOrigenCodigoAlterno() {
-		return bodegaOrigenCodigoAlterno;
-	}
-
-	public String getEstadoInventarioOrigenId() {
-		return estadoInventarioOrigenId;
-	}
-
-	public String getNumeroOrdenWmsOrigen() {
-		return numeroOrdenWmsOrigen;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Bodega getBodegaDestino() {
-		return bodegaDestino;
-	}
-
-	public String getBodegaDestinoCodigo() {
-		return bodegaDestinoCodigo;
-	}
-
-	public String getBodegaDestinoCodigoAlterno() {
-		return bodegaDestinoCodigoAlterno;
-	}
-
-	public String getEstadoInventarioDestinoId() {
-		return estadoInventarioDestinoId;
-	}
-
-	public String getNumeroOrdenWmsDestino() {
-		return numeroOrdenWmsDestino;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public String getLote() {
-		return lote;
-	}
-
-	public String getSerial() {
-		return serial;
-	}
-
-	public String getCosecha() {
-		return cosecha;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public String getRequerimientoEstampillado() {
-		return requerimientoEstampillado;
-	}
-
-	public String getRequerimientoSalud() {
-		return requerimientoSalud;
-	}
-
-	public String getRequerimientoImporte() {
-		return requerimientoImporte;
-	}
-
-	public String getRequerimientoDistribuido() {
-		return requerimientoDistribuido;
-	}
-
-	public String getRequerimientoNutricional() {
-		return requerimientoNutricional;
-	}
-
-	public String getRequerimientoBl() {
-		return requerimientoBl;
-	}
-
-	public String getRequerimientoFondoCuenta() {
-		return requerimientoFondoCuenta;
-	}
-
-	public String getRequerimientoOrigen() {
-		return requerimientoOrigen;
-	}
-
-	public String getRequerimientoPinado() {
-		return requerimientoPinado;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public String getPredistribucionDestinoFinal() {
-		return predistribucionDestinoFinal;
-	}
-
-	public String getPredistribucionRotulo() {
-		return predistribucionRotulo;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Integer getValorDeclaradoPorUnidad() {
-		return valorDeclaradoPorUnidad;
-	}
-
-	public String getNotas() {
-		return notas;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public Date getFechaCreacion() {
-		return fechaCreacion;
-	}
-
-	public String getUsuarioCreacion() {
-		return usuarioCreacion;
-	}
-
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
-	}
-
-	public String getUsuarioActualizacion() {
-		return usuarioActualizacion;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public void setOrden(Orden orden) {
-		this.orden = orden;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setNumeroItem(int numeroItem) {
-		this.numeroItem = numeroItem;
-	}
-
-	public void setDescripcion(String value) {
-		this.descripcion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setCantidadSolicitada(int cantidadSolicitada) {
-		this.cantidadSolicitada = cantidadSolicitada;
-	}
-
-	public void setCantidadPlanificada(int cantidadPlanificada) {
-		this.cantidadPlanificada = cantidadPlanificada;
-	}
-
-	public void setCantidadAlistada(int cantidadAlistada) {
-		this.cantidadAlistada = cantidadAlistada;
-	}
-
-	public void setCantidadEntregada(int cantidadEntregada) {
-		this.cantidadEntregada = cantidadEntregada;
-	}
-
-	public void setCantidadNoEntregada(int cantidadNoEntregada) {
-		this.cantidadNoEntregada = cantidadNoEntregada;
-	}
-
-	public void setCantidadNoEntregadaLegalizada(int cantidadNoEntregadaLegalizada) {
-		this.cantidadNoEntregadaLegalizada = cantidadNoEntregadaLegalizada;
-	}
-
-	public void setCantidadSobrante(int cantidadSobrante) {
-		this.cantidadSobrante = cantidadSobrante;
-	}
-
-	public void setCantidadSobranteLegalizada(int cantidadSobranteLegalizada) {
-		this.cantidadSobranteLegalizada = cantidadSobranteLegalizada;
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setProducto(Producto producto) {
-		this.producto = producto;
-	}
-
-	public void setProductoCodigo(String value) {
-		this.productoCodigo = coalesce(value, "");
-	}
-
-//	public void setProductoCodigoAlterno(String value) {
-//		this.productoCodigoAlterno = coalesce(value, "");
-//	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setUnidad(Unidad unidad) {
-		this.unidad = unidad;
-	}
-
-	public void setUnidadCodigo(String value) {
-		this.unidadCodigo = coalesce(value, "");
-	}
-
-//	public void setUnidadCodigoAlterno(String value) {
-//		this.unidadCodigoAlterno = coalesce(value, "");
-//	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setTipoContenido(TipoContenido tipoContenido) {
-		this.tipoContenido = tipoContenido;
-	}
-
-	public void setTipoContenidoCodigo(String value) {
-		this.tipoContenidoCodigo = coalesce(value, "");
-	}
-
-//	public void setTipoContenidoCodigoAlterno(String value) {
-//		this.tipoContenidoCodigoAlterno = coalesce(value, "");
-//	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setDimensiones(Dimensiones dimensiones) {
-		this.dimensiones = coalesce(dimensiones, new Dimensiones());
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setBodegaOrigen(Bodega bodegaOrigen) {
-		this.bodegaOrigen = bodegaOrigen;
-	}
-
-	public void setBodegaOrigenCodigo(String value) {
-		this.bodegaOrigenCodigo = coalesce(value, "");
-	}
-
-	public void setBodegaOrigenCodigoAlterno(String value) {
-		this.bodegaOrigenCodigoAlterno = coalesce(value, "");
-	}
-
-	public void setEstadoInventarioOrigenId(String value) {
-		this.estadoInventarioOrigenId = coalesce(value, "");
-	}
-
-	public void setNumeroOrdenWmsOrigen(String value) {
-		this.numeroOrdenWmsOrigen = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setBodegaDestino(Bodega bodegaDestino) {
-		this.bodegaDestino = bodegaDestino;
-	}
-
-	public void setBodegaDestinoCodigo(String value) {
-		this.bodegaDestinoCodigo = coalesce(value, "");
-	}
-
-	public void setBodegaDestinoCodigoAlterno(String value) {
-		this.bodegaDestinoCodigoAlterno = coalesce(value, "");
-	}
-
-	public void setEstadoInventarioDestinoId(String value) {
-		this.estadoInventarioDestinoId = coalesce(value, "");
-	}
-
-	public void setNumeroOrdenWmsDestino(String value) {
-		this.numeroOrdenWmsDestino = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setLote(String value) {
-		this.lote = coalesce(value, "");
-	}
-
-	public void setSerial(String value) {
-		this.serial = coalesce(value, "");
-	}
-
-	public void setCosecha(String value) {
-		this.cosecha = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setRequerimientoEstampillado(String value) {
-		this.requerimientoEstampillado = coalesce(value, "");
-	}
-
-	public void setRequerimientoSalud(String value) {
-		this.requerimientoSalud = coalesce(value, "");
-	}
-
-	public void setRequerimientoImporte(String value) {
-		this.requerimientoImporte = coalesce(value, "");
-	}
-
-	public void setRequerimientoDistribuido(String value) {
-		this.requerimientoDistribuido = coalesce(value, "");
-	}
-
-	public void setRequerimientoNutricional(String value) {
-		this.requerimientoNutricional = coalesce(value, "");
-	}
-
-	public void setRequerimientoBl(String value) {
-		this.requerimientoBl = coalesce(value, "");
-	}
-
-	public void setRequerimientoFondoCuenta(String value) {
-		this.requerimientoFondoCuenta = coalesce(value, "");
-	}
-
-	public void setRequerimientoOrigen(String value) {
-		this.requerimientoOrigen = coalesce(value, "");
-	}
-
-	public void setRequerimientoPinado(String value) {
-		this.requerimientoPinado = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setPredistribucionDestinoFinal(String value) {
-		this.predistribucionDestinoFinal = coalesce(value, "");
-	}
-
-	public void setPredistribucionRotulo(String value) {
-		this.predistribucionRotulo = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setValorDeclaradoPorUnidad(Integer valorDeclaradoPorUnidad) {
-		this.valorDeclaradoPorUnidad = valorDeclaradoPorUnidad;
-	}
-
-	public void setNotas(String value) {
-		this.notas = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
-	public void setUsuarioCreacion(String value) {
-		this.usuarioCreacion = coalesce(value, "");
-	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
-	}
-
-	public void setUsuarioActualizacion(String value) {
-		this.usuarioActualizacion = coalesce(value, "");
-	}
-
-	// ---------------------------------------------------------------------------------------------------------
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + numeroItem;
-		result = prime * result + ((orden == null) ? 0 : orden.hashCode());
 		return result;
 	}
 
@@ -767,72 +322,6 @@ public class LineaOrden implements Serializable {
 		LineaOrden other = (LineaOrden) obj;
 		if (numeroItem != other.numeroItem)
 			return false;
-		if (orden == null) {
-			if (other.orden != null)
-				return false;
-		} else if (!orden.equals(other.orden))
-			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "LineaOrden [" + (id != null ? "id=" + id + ", " : "") + (orden != null ? "orden=" + orden + ", " : "")
-				+ "numeroItem=" + numeroItem + ", " + (descripcion != null ? "descripcion=" + descripcion + ", " : "")
-				+ "cantidadSolicitada=" + cantidadSolicitada + ", "
-				+ (cantidadPlanificada != null ? "cantidadPlanificada=" + cantidadPlanificada + ", " : "")
-				+ (cantidadAlistada != null ? "cantidadAlistada=" + cantidadAlistada + ", " : "")
-				+ (cantidadEntregada != null ? "cantidadEntregada=" + cantidadEntregada + ", " : "")
-				+ (cantidadNoEntregada != null ? "cantidadNoEntregada=" + cantidadNoEntregada + ", " : "")
-				+ (cantidadNoEntregadaLegalizada != null
-						? "cantidadNoEntregadaLegalizada=" + cantidadNoEntregadaLegalizada + ", " : "")
-				+ (cantidadSobrante != null ? "cantidadSobrante=" + cantidadSobrante + ", " : "")
-				+ (cantidadSobranteLegalizada != null
-						? "cantidadSobranteLegalizada=" + cantidadSobranteLegalizada + ", " : "")
-				+ (producto != null ? "producto=" + producto + ", " : "")
-				+ (productoCodigo != null ? "productoCodigo=" + productoCodigo + ", " : "")
-				+ (unidad != null ? "unidad=" + unidad + ", " : "")
-				+ (unidadCodigo != null ? "unidadCodigo=" + unidadCodigo + ", " : "")
-				+ (tipoContenido != null ? "tipoContenido=" + tipoContenido + ", " : "")
-				+ (tipoContenidoCodigo != null ? "tipoContenidoCodigo=" + tipoContenidoCodigo + ", " : "")
-				+ (dimensiones != null ? "dimensiones=" + dimensiones + ", " : "")
-				+ (bodegaOrigen != null ? "bodegaOrigen=" + bodegaOrigen + ", " : "")
-				+ (bodegaOrigenCodigo != null ? "bodegaOrigenCodigo=" + bodegaOrigenCodigo + ", " : "")
-				+ (bodegaOrigenCodigoAlterno != null ? "bodegaOrigenCodigoAlterno=" + bodegaOrigenCodigoAlterno + ", "
-						: "")
-				+ (estadoInventarioOrigenId != null ? "estadoInventarioOrigenId=" + estadoInventarioOrigenId + ", "
-						: "")
-				+ (numeroOrdenWmsOrigen != null ? "numeroOrdenWmsOrigen=" + numeroOrdenWmsOrigen + ", " : "")
-				+ (bodegaDestino != null ? "bodegaDestino=" + bodegaDestino + ", " : "")
-				+ (bodegaDestinoCodigo != null ? "bodegaDestinoCodigo=" + bodegaDestinoCodigo + ", " : "")
-				+ (bodegaDestinoCodigoAlterno != null
-						? "bodegaDestinoCodigoAlterno=" + bodegaDestinoCodigoAlterno + ", " : "")
-				+ (estadoInventarioDestinoId != null ? "estadoInventarioDestinoId=" + estadoInventarioDestinoId + ", "
-						: "")
-				+ (numeroOrdenWmsDestino != null ? "numeroOrdenWmsDestino=" + numeroOrdenWmsDestino + ", " : "")
-				+ (lote != null ? "lote=" + lote + ", " : "") + (serial != null ? "serial=" + serial + ", " : "")
-				+ (cosecha != null ? "cosecha=" + cosecha + ", " : "")
-				+ (requerimientoEstampillado != null ? "requerimientoEstampillado=" + requerimientoEstampillado + ", "
-						: "")
-				+ (requerimientoSalud != null ? "requerimientoSalud=" + requerimientoSalud + ", " : "")
-				+ (requerimientoImporte != null ? "requerimientoImporte=" + requerimientoImporte + ", " : "")
-				+ (requerimientoDistribuido != null ? "requerimientoDistribuido=" + requerimientoDistribuido + ", "
-						: "")
-				+ (requerimientoNutricional != null ? "requerimientoNutricional=" + requerimientoNutricional + ", "
-						: "")
-				+ (requerimientoBl != null ? "requerimientoBl=" + requerimientoBl + ", " : "")
-				+ (requerimientoFondoCuenta != null ? "requerimientoFondoCuenta=" + requerimientoFondoCuenta + ", "
-						: "")
-				+ (requerimientoOrigen != null ? "requerimientoOrigen=" + requerimientoOrigen + ", " : "")
-				+ (requerimientoPinado != null ? "requerimientoPinado=" + requerimientoPinado + ", " : "")
-				+ (predistribucionDestinoFinal != null
-						? "predistribucionDestinoFinal=" + predistribucionDestinoFinal + ", " : "")
-				+ (predistribucionRotulo != null ? "predistribucionRotulo=" + predistribucionRotulo + ", " : "")
-				+ (valorDeclaradoPorUnidad != null ? "valorDeclaradoPorUnidad=" + valorDeclaradoPorUnidad + ", " : "")
-				+ (notas != null ? "notas=" + notas + ", " : "")
-				+ (fechaCreacion != null ? "fechaCreacion=" + fechaCreacion + ", " : "")
-				+ (usuarioCreacion != null ? "usuarioCreacion=" + usuarioCreacion + ", " : "")
-				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
-				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion : "") + "]";
 	}
 }

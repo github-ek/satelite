@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Sort;
@@ -588,51 +587,7 @@ public class OmsApplicationService {
 	}
 
 	protected OmsOrdenDto map(OmsOrden orden) {
-		ModelMapper modelMapper = new ModelMapper();
-
-		OmsOrdenDto dto;
-		dto = modelMapper.map(orden, OmsOrdenDto.class);
-
-		if (orden.getTipoServicio() != null) {
-			dto.setTipoServicioNombre(orden.getTipoServicio().getNombre());
-		}
-
-		dto.setClienteCodigo(orden.getClienteCodigo());
-		if (orden.getCliente() != null) {
-			dto.setClienteNombre(orden.getCliente().getNombre());
-		}
-
-		if (orden.getNumeroConsolidado() != null) {
-			dto.setNumeroDocumentoConsolidadoCliente(orden.getNumeroConsolidado());
-		}
-
-		if (orden.getCiudadDestino() != null) {
-			dto.setDestinoCiudadNombre(orden.getCiudadDestino().getNombreAlterno());
-		}
-
-		if (orden.getCiudadOrigen() != null) {
-			dto.setDestinoCiudadNombre(orden.getCiudadOrigen().getNombreAlterno());
-		}
-
-		dto.setCanalCodigoAlterno(orden.getCanalCodigoAlterno());
-		if (orden.getCanal() != null) {
-			dto.setCanalCodigo(orden.getCanal().getCodigo());
-			dto.setCanalNombre(orden.getCanal().getNombre());
-		}
-
-		if (orden.getDestinatario() != null) {
-			dto.setDestinatarioNombre(orden.getDestinatarioNombre());
-			dto.setDestinatarioNumeroIdentificacion(orden.getDestinatarioNumeroIdentificacion());
-		}
-
-		if (orden.getDestino() != null) {
-			dto.setDestinoNombre(orden.getDestinoNombre());
-		}
-
-		if (orden.getOrigen() != null) {
-			dto.setDestinoNombre(orden.getDestinoNombre());
-		}
-
-		return dto;
+		
+		return null;
 	}
 }

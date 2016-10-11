@@ -60,7 +60,7 @@ public class DestinatariosRemitentesController {
         OmsDestinatarioDto dto = null;
 
         try {
-            dto = destinatariosService.findOnePorId(id);
+            dto = null;
         } catch (Exception e) {
             // TODO e.printStackTrace()
             e.printStackTrace();

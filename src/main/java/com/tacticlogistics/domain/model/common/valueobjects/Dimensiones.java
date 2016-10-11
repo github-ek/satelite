@@ -1,12 +1,13 @@
 package com.tacticlogistics.domain.model.common.valueobjects;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Dimensiones {
+public class Dimensiones implements Serializable{
 
     @Column(nullable = true, precision = 12, scale = 4)
     private BigDecimal largoPorUnidad;
