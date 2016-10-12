@@ -1,4 +1,4 @@
-package com.tacticlogistics.presentation.wms.compras;
+package com.tacticlogistics.jda.wms.tasks.compras;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

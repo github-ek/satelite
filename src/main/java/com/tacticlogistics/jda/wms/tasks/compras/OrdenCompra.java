@@ -1,4 +1,4 @@
-package com.tacticlogistics.presentation.wms.compras;
+package com.tacticlogistics.jda.wms.tasks.compras;
 
 import java.util.ArrayList;
 import java.util.List;

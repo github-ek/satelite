@@ -1,4 +1,4 @@
-package com.tacticlogistics.presentation.wms.compras;
+package com.tacticlogistics.jda.wms.tasks.compras;
 
 public class LineaOrdenCompra {
 	

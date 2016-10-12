@@ -29,6 +29,11 @@
 			<artifactId>sqljdbc42</artifactId>
 			<version>6.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Incluidas directamente. No por Spring Boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -87,7 +92,7 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.14</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.any23</groupId>
 			<artifactId>apache-any23-encoding</artifactId>
@@ -124,17 +129,22 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 
- 	<build>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-	</build> 
+	</build>
 
 
 	<packaging>war</packaging>

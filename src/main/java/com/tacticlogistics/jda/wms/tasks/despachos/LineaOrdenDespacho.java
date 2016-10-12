@@ -1,4 +1,4 @@
-package com.tacticlogistics.presentation.wms.despachos;
+package com.tacticlogistics.jda.wms.tasks.despachos;
 
 public class LineaOrdenDespacho {
 	
