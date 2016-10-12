@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.clientes.dicermex.compras.almacenamiento.AlertasWmsService;
+import com.tacticlogistics.clientes.dicermex.compras.almacenamiento.alertas.AlertasWmsService;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.Regla;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaBodegaDestino;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaBodegaOrigen;

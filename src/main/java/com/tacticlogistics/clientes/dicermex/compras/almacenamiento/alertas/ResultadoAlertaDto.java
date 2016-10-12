@@ -1,4 +1,4 @@
-package com.tacticlogistics.clientes.dicermex.compras.almacenamiento;
+package com.tacticlogistics.clientes.dicermex.compras.almacenamiento.alertas;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
