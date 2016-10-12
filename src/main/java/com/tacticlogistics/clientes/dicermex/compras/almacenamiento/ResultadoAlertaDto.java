@@ -1,4 +1,4 @@
-package com.tacticlogistics.application.services.clientes.dicermex;
+package com.tacticlogistics.clientes.dicermex.compras.almacenamiento;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class ResultadoPreAlertaOrdenDeCompraDto {
+public class ResultadoAlertaDto {
 	private String numeroOrdenWms;
-	private ResultadoPreAlertaType resultado;
+	private ResultadoAlertaType resultado;
 	String mensaje;
 }

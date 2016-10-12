@@ -1,18 +1,12 @@
-package com.tacticlogistics.application.services.clientes.dicermex;
-
-import static org.springframework.data.domain.ExampleMatcher.matching;
+package com.tacticlogistics.clientes.dicermex.compras.prealertas;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional(readOnly = true)
 @Slf4j
-public class OrdenesDeCompraService {
+public class PreAlertasService {
 
 	private static final String CODIGO_CLIENTE = "DICERMEX";
 
@@ -78,7 +72,7 @@ public class OrdenesDeCompraService {
 
 	private static TipoServicio servicio;
 
-	public MensajesDto preAlertarOrConfirmarOrdenDeCompra(OrdenDeCompraDto dto) {
+	public MensajesDto alertarOrdenDeCompra(OrdenDeCompraDto dto) {
 		Orden compra = ordenRepository.findFirstByClienteIdAndNumeroOrden(getCliente().getId(), dto.getNumeroOrden());
 
 		if (compra == null) {
@@ -88,206 +82,19 @@ public class OrdenesDeCompraService {
 		}
 	}
 
-	public List<Orden> getOrdenesDeCompraPendientesPorAlertarAlWms() {
-		TipoServicio servicio = new TipoServicio();
-		servicio.setId(this.getServicio().getId());
-
-		//@formatter:off
-		Orden probe = Orden
-				.builder()
-				.tipoServicio(servicio)
-				.requiereServicioDistribucion(false)
-				.estadoOrden(EstadoOrdenType.ACEPTADA)
-				.estadoAlmacenamiento(EstadoAlmacenamientoType.NO_ALERTADA)
-				.build();
-		
-		ExampleMatcher matcher = matching()
-				.withIgnorePaths("requiereConfirmacionCitaEntrega")  
-				.withIgnorePaths("requiereConfirmacionCitaRecogida")
-				.withIgnorePaths("tipoServicio.admiteBodegasComoDestino")
-				.withIgnorePaths("tipoServicio.admiteBodegasComoOrigen")
-				.withIgnorePaths("tipoServicio.admiteDireccionesComoDestino")
-				.withIgnorePaths("tipoServicio.admiteDireccionesComoOrigen")
-				.withIgnorePaths("tipoServicio.activo")
-				.withIgnorePaths("tipoServicio.ordinal");
-		//@formatter:on
-
-		List<Orden> ordenes = ordenRepository.findAll(Example.of(probe, matcher));
-
-		for (Orden e : ordenes) {
-			Cliente cliente = e.getCliente();
-			log.info("load {}", cliente.getCodigoAlternoWms());
-			Set<LineaOrden> lineas = e.getLineas();
-			for (LineaOrden l : lineas) {
-				log.info("load {}", l.getNumeroItem());
-			}
-		}
-		return ordenes;
-	}
-
-	// TODO INCLUIR FECHA Y HORA DE PRE ALERTA AL WMS
-	@Transactional(readOnly = false)
-	public void preAlertarOrdenesDeCompraAlWms(List<Integer> ordenesId) {
-		for (Integer id : ordenesId) {
-			Orden compra = ordenRepository.findOne(id);
-			if (compra != null) {
-				compra.setEstadoOrden(EstadoOrdenType.EJECUCION);
-				compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_NO_CONFIRMADA);
-				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
-				for (val e : compra.getLineas()) {
-					e.setNumeroOrdenWmsDestino("TC-" + compra.getId() + '-' + compra.getNumeroOrden());
-				}
-				ordenRepository.save(compra);
-			}
-		}
-	}
-
-	// TODO INCLUIR COOLUMNA PARA EL MENSAJE DE ERROR
-	@Transactional(readOnly = false)
-	public void confirmarAlertaDeOrdenesDeCompraAlWms(List<ResultadoPreAlertaOrdenDeCompraDto> resultados) {
-		for (val e : resultados) {
-			String partes[] = e.getNumeroOrdenWms().split("-");
-			int id = Integer.parseInt(partes[1]);
-
-			Orden compra = ordenRepository.findOne(id);
-			if (compra != null) {
-				if (e.getResultado() == ResultadoPreAlertaType.OK) {
-					compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA);
-				} else {
-					compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_CON_ERROR);
-				}
-				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
-				ordenRepository.save(compra);
-			}
-		}
-	}
-
-	@Transactional(readOnly = false)
-	public void confirmarReciboDeOrdenesDeCompra(List<ResultadoAlmacenamientoOrdenDeCompraDto> resultados) {
-		for (val e : resultados) {
-			String partes[] = e.getNumeroOrdenWms().split("-");
-			int id = Integer.parseInt(partes[1]);
-
-			Orden compra = ordenRepository.findOne(id);
-			if (compra != null) {
-				String clienteCodigoWms = compra.getCliente().getCodigoAlternoWms();
-				String bodegaDestinoCodigo = compra.getLineas().stream().findFirst().get().getBodegaDestinoCodigo();
-				// val max = compra.getLineas().stream().mapToInt((x) ->
-				// a.getNumeroItem()).summaryStatistics().getMax();
-				int secuenciaNumeroItem = 9000;
-
-				if (!clienteCodigoWms.equals(e.getClienteCodigoWms())) {
-					throw new RuntimeException(
-							"Orden " + e.getNumeroOrdenWms() + ":" + "Cliente diferente al original");
-				}
-
-				if (!bodegaDestinoCodigo.equals(e.getBodegaCodigo())) {
-					throw new RuntimeException("Orden " + e.getNumeroOrdenWms() + ":" + "Bodega diferente al original");
-				}
-
-				if (!compra.getEstadoAlmacenamiento().equals(EstadoAlmacenamientoType.ALERTADA)) {
-					throw new RuntimeException("Orden " + e.getNumeroOrdenWms() + ":" + "Se encuentra en el estado "
-							+ compra.getEstadoAlmacenamiento().toString() + ". La orden debe estar en estado "
-							+ EstadoAlmacenamientoType.ALERTADA.toString());
-				}
-				// Validar lineas y sublineas no repetidas
-				for (val l : e.getLineas()) {
-					if (l.getNumeroSubLinea() == 0) {
-						// UPDATE
-						val linea = compra.getLineas().stream().filter(a -> a.getNumeroItem() == l.getNumeroItem())
-								.findFirst();
-						if (!linea.isPresent()) {
-							throw new RuntimeException("Orden " + e.getNumeroOrdenWms() + "Linea " + l.getNumeroItem()
-									+ ":" + "No existe el numero de linea");
-						}
-
-						if (linea.get().getCantidadPlanificada() != l.getCantidadPlanificada()) {
-							throw new RuntimeException("Orden " + e.getNumeroOrdenWms() + "Linea " + l.getNumeroItem()
-									+ ":" + "La cantidad planificada no es igual");
-						}
-
-						update(compra.getCliente().getId(),linea.get(), l.getProductoCodigo(), l.getEstadoInventarioId(), l.getCantidadReal());
-					} else {
-						secuenciaNumeroItem++;
-						// INSERT
-					}
-				}
-				// TODO NOVEDADES
-				compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALISTADA);
-				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
-				ordenRepository.save(compra);
-			} else {
-				throw new RuntimeException("Orden " + e.getNumeroOrdenWms() + ":" + "Orden no existe");
-			}
-		}
-	}
-
-	private void update(int clienteId, LineaOrden linea, String productoCodigo, String estadoInventarioId,
-			int cantidadRecibida) {
-		// VALIDAR ESTADO INVENTARIO
-		Producto producto = null;
-		Optional<ProductoUnidadAssociation> huella = Optional.empty();
-		Unidad unidad = null;
-		Dimensiones dimensiones = null;
-
-		producto = productoRepository.findByClienteIdAndCodigo(clienteId, productoCodigo);
-		if (producto != null) {
-			huella = producto.getProductoUnidadAssociation().stream().filter(a -> a.getNivel() == 1).findFirst();
-			if (huella.isPresent()) {
-				unidad = huella.get().getUnidad();
-				dimensiones = huella.get().getDimensiones();
-			}
-		}
-
-		if (estadoInventarioId == null) {
-			throw new RuntimeException(String.format(
-					"La línea con número de registro %d, tiene el código de bodega destino \"%s\", el cual no se pudo homologar a un estado de inventario valido.",
-					linea.getNumeroItem(), estadoInventarioId));
-		}
-		if (producto == null) {
-			throw new RuntimeException(String.format(
-					"La línea con número de registro %d, tiene el código de producto \"%s\", el cual no existe.",
-					linea.getNumeroItem(), productoCodigo));
-		} else {
-			if (unidad == null) {
-				throw new RuntimeException(String.format(
-						"La línea con número de registro %d, tiene el código de producto \"%s\", el cual no tiene una huella de primer nivel.",
-						linea.getNumeroItem(), productoCodigo));
-			}
-			if (dimensiones == null) {
-				throw new RuntimeException(String.format(
-						"La línea con número de registro %d, tiene el código de producto \"%s\", el cual no tiene dimensiones.",
-						linea.getNumeroItem(), productoCodigo));
-			}
-		}
-
-		linea.setProducto(producto);
-		linea.setDescripcion(producto.getNombreLargo());
-		linea.setProductoCodigo(productoCodigo);
-		linea.setUnidad(unidad);
-		linea.setUnidadCodigo(unidad.getCodigo());
-		linea.setDimensiones(dimensiones);
-
-		linea.setEstadoInventarioDestinoId(estadoInventarioId);
-		linea.setCantidadEntregada(cantidadRecibida);
-
-		linea.setUsuarioCreacion("INTEGRACION WMS-TC");
-		linea.setFechaActualizacion(LocalDateTime.now());
-	}
-
-	// -------------------------------------------------------------------------------------------
 	@Transactional(readOnly = false)
 	private MensajesDto preAlertarOrdenDeCompra(OrdenDeCompraDto dto) {
 		final MensajesDto mensajes = new MensajesDto();
-
+		
 		final OrdenDeCompra compraCliente = validarNuevaOrdenDeCompraCliente(dto, mensajes);
-
-		try {
-			ordenDeCompraRepository.saveAndFlush(compraCliente);
-
-			mensajes.addMensaje(SeveridadType.INFO, "Orden creada exitosamente");
-		} catch (Exception e) {
-			mensajes.addMensaje(e);
+		
+		if (!mensajes.getSeveridadMaxima().equals(SeveridadType.ERROR)) {
+			try {
+				ordenDeCompraRepository.saveAndFlush(compraCliente);
+				mensajes.addMensaje(SeveridadType.INFO, "Orden creada exitosamente");
+			} catch (Exception e) {
+				mensajes.addMensaje(e);
+			}
 		}
 
 		return mensajes;
@@ -299,7 +106,9 @@ public class OrdenesDeCompraService {
 		final LocalDateTime fechaUpd = LocalDateTime.now();
 		final String usuarioUpd = dto.getTerceroCompradorId();
 
-		final OrdenDeCompra ordenDeCompra = ordenDeCompraRepository.findOne(compraId);
+		final OrdenDeCompra ordenDeCompra; 
+		
+		ordenDeCompra = ordenDeCompraRepository.findOne(compraId);
 
 		if (ordenDeCompra == null) {
 			mensajes.addMensaje(SeveridadType.ERROR,

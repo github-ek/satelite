@@ -1,7 +1,9 @@
-package com.tacticlogistics.application.services.clientes.dicermex;
+package com.tacticlogistics.clientes.dicermex.compras.planificacion;
 
 import static org.springframework.data.domain.ExampleMatcher.matching;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.application.tasks.schedules.oms.reglas.Regla;
+import com.tacticlogistics.clientes.dicermex.compras.almacenamiento.AlertasWmsService;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.Regla;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaBodegaDestino;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaBodegaOrigen;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaCatidadesPlanificadas;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaLineas;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaProductos;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.destinatario.ReglaTercero;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distribucion.ReglaCitaEntrega;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distribucion.ReglaCitaRecogida;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distribucion.ReglaPuntoEntrega;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distribucion.ReglaPuntoRecogida;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.estados.ReglaTransicionConfirmadaAceptada;
 import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
@@ -39,12 +53,13 @@ public class ValidadorOrdenesDeCompraService {
 	private static TipoServicio servicio;
 
 	@Autowired
-	private OrdenesDeCompraService ordenesDeCompraService;
+	private AlertasWmsService service;
 
 	// TODO PASAR A Servicio Generico de Ordenes
 	// TODO PROCESMIENTO POR BLOQUES DE TAMAÑOS PEQUEÑOS
 	@Transactional(readOnly = false)
-	public void validarOrdenesConfirmadas(Set<Regla<Orden>> reglas) {
+	public void validarOrdenesConfirmadas() {
+		Set<Regla<Orden>> reglas = getReglas();
 		List<Orden> ordenes = getOrdenesConfirmadas();
 
 		if (ordenes.size() > 0) {
@@ -55,7 +70,7 @@ public class ValidadorOrdenesDeCompraService {
 				registrarValidaciones(orden, mensajes);
 
 				if (pasoValidaciones(orden, mensajes)) {
-					orden.setEstadoOrden(EstadoOrdenType.ACEPTADA);
+					orden.aceptar(LocalDateTime.now(), "VALIDADOR TC", "");
 				}
 
 				ordenRepository.save(orden);
@@ -63,7 +78,7 @@ public class ValidadorOrdenesDeCompraService {
 			ordenRepository.flush();
 		}
 
-		List<Orden> list = ordenesDeCompraService.getOrdenesDeCompraPendientesPorAlertarAlWms();
+		List<Orden> list = service.getOrdenesPendientesPorAlertarAlWms();
 
 		for (Orden orden : list) {
 			log.info("Las siguientes ordenes deben ser prealertadas en el WMS", orden.getNumeroOrden());
@@ -135,6 +150,32 @@ public class ValidadorOrdenesDeCompraService {
 		return OK;
 	}
 
+	private Set<Regla<Orden>> getReglas() {
+		Set<Regla<Orden>> reglas = new HashSet<>();
+		
+		reglas.add(new ReglaTransicionConfirmadaAceptada());
+		reglas.add(new ReglaTercero());
+		
+		reglas.add(new ReglaCitaRecogida());
+		reglas.add(new ReglaPuntoRecogida());
+
+		reglas.add(new ReglaCitaEntrega());
+		reglas.add(new ReglaPuntoEntrega());
+
+		//TODO REGLA RECAUDO DEBE SER NULL PARA OC
+		//TODO REGLA TIEMPO MINIMO/MAXIMO PARA PRESTAR EL SERVICIO
+		//TODO REGLAS TIPO DE VEHICULO Y VALOR FLETE
+
+		reglas.add(new ReglaLineas());
+		reglas.add(new ReglaCatidadesPlanificadas());
+		reglas.add(new ReglaProductos());
+		
+		reglas.add(new ReglaBodegaOrigen());
+		reglas.add(new ReglaBodegaDestino());
+		
+		return reglas;
+	}
+	
 	private TipoServicio getServicio() {
 		if (servicio == null) {
 			servicio = tipoServicioRepository.findByCodigoIgnoringCase(CODIGO_SERVICIO);

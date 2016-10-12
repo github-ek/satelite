@@ -1,10 +1,10 @@
-package com.tacticlogistics.application.tasks.schedules.oms.reglas.destinatario;
+package com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.application.tasks.schedules.oms.reglas.Regla;
+import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.Regla;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 
-public class ReglaTercero implements Regla<Orden> {
+public class ReglaBodegaOrigen implements Regla<Orden> {
 
 	@Override
 	public MensajesDto validar(Orden object) {

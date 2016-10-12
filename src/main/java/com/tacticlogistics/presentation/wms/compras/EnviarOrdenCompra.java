@@ -17,11 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.tacticlogistics.application.services.clientes.dicermex.OrdenesDeCompraService;
+import com.tacticlogistics.clientes.dicermex.compras.almacenamiento.AlertasWmsService;
+import com.tacticlogistics.clientes.dicermex.compras.prealertas.PreAlertasService;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 
@@ -34,7 +34,7 @@ public class EnviarOrdenCompra {
 	private String directorioHostIn;
 
 	@Autowired
-	private OrdenesDeCompraService ocService;
+	private AlertasWmsService ocService;
 
 	@Scheduled(fixedRate = 1000 * 60 * 1)
 	public void enviarOrdenesWMS() {
@@ -60,7 +60,7 @@ public class EnviarOrdenCompra {
 	}
 
 	private List<OrdenCompra> getOrdenesDeCompraHabilitadas() {
-		List<Orden> ordenes = ocService.getOrdenesDeCompraPendientesPorAlertarAlWms();
+		List<Orden> ordenes = ocService.getOrdenesPendientesPorAlertarAlWms();
 		
 		// @formatter:off
 		return ordenes
@@ -103,7 +103,7 @@ public class EnviarOrdenCompra {
 				.collect(Collectors.toList());
 		// @formatter:on
 
-		ocService.preAlertarOrdenesDeCompraAlWms(ordenesId);
+		ocService.alertarOrdenesDeCompraAlWms(ordenesId);
 	}
 
 	private void writeFiles(OrdenCompra oc) throws IOException, UnsupportedEncodingException {

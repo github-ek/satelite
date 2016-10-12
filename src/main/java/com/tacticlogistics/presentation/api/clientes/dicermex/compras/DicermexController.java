@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.application.services.clientes.dicermex.OrdenesDeCompraService;
+import com.tacticlogistics.clientes.dicermex.compras.prealertas.PreAlertasService;
 import com.tacticlogistics.presentation.util.BadRequestException;
 
 @CrossOrigin	
@@ -17,7 +17,7 @@ import com.tacticlogistics.presentation.util.BadRequestException;
 public class DicermexController {
 
 	@Autowired
-	private OrdenesDeCompraService comprasService;
+	private PreAlertasService comprasService;
 	
 	@RequestMapping(value = "/ordenes/test", method = RequestMethod.GET)
 	public OrdenDeCompraDto test() {
@@ -83,7 +83,7 @@ public class DicermexController {
 	public MensajesDto preAlertarOrConfirmarOrdenDeCompra(@RequestBody OrdenDeCompraDto dto) {
 		MensajesDto mensajes = new MensajesDto();
 		try {
-			return comprasService.preAlertarOrConfirmarOrdenDeCompra(dto);
+			return comprasService.alertarOrdenDeCompra(dto);
 		} catch (Exception e) {
 			mensajes.addMensaje(e, dto);
 			throw new BadRequestException(mensajes);

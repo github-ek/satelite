@@ -1,4 +1,4 @@
-package com.tacticlogistics.application.tasks.schedules.oms.reglas;
+package com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
 

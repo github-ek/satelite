@@ -644,6 +644,8 @@ public class Orden implements Serializable {
 		this.setFechaCitaEntrega(fecha);
 		this.setHoraCitaEntregaMinima(hoMi);
 		this.setHoraCitaEntregaMaxima(hoMa);
+		this.setFechaAsignacionCita(null);
+		this.setUsuarioAsignacionCita("");
 	}
 
 	public void setDatosCitaRecogida(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {

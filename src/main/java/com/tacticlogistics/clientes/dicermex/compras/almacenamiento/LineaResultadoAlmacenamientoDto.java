@@ -1,6 +1,4 @@
-package com.tacticlogistics.application.services.clientes.dicermex;
-
-import com.tacticlogistics.application.services.clientes.dicermex.ResultadoPreAlertaOrdenDeCompraDto.ResultadoPreAlertaOrdenDeCompraDtoBuilder;
+package com.tacticlogistics.clientes.dicermex.compras.almacenamiento;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class LineaResultadoAlmacenamientoOrdenDeCompraDto {
+public class LineaResultadoAlmacenamientoDto {
 	private int numeroItem;
 	private int numeroSubLinea;
 	private String productoCodigo;
