@@ -36,9 +36,6 @@ public class EnviarOrdenCompra {
 	@Autowired
 	private OrdenesDeCompraService ocService;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	@Scheduled(fixedRate = 1000 * 60 * 1)
 	public void enviarOrdenesWMS() {
 		try {

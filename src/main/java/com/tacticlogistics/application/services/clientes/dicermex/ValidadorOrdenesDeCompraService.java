@@ -1,10 +1,13 @@
 package com.tacticlogistics.application.services.clientes.dicermex;
 
+import static org.springframework.data.domain.ExampleMatcher.matching;
+
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +41,6 @@ public class ValidadorOrdenesDeCompraService {
 	@Autowired
 	private OrdenesDeCompraService ordenesDeCompraService;
 
-	
 	// TODO PASAR A Servicio Generico de Ordenes
 	// TODO PROCESMIENTO POR BLOQUES DE TAMAÑOS PEQUEÑOS
 	@Transactional(readOnly = false)
@@ -60,30 +62,41 @@ public class ValidadorOrdenesDeCompraService {
 			}
 			ordenRepository.flush();
 		}
-		
+
 		List<Orden> list = ordenesDeCompraService.getOrdenesDeCompraPendientesPorAlertarAlWms();
-		
+
 		for (Orden orden : list) {
-			log.info("Las siguientes ordenes deben ser prealertadas en el WMS",orden.getNumeroOrden());
+			log.info("Las siguientes ordenes deben ser prealertadas en el WMS", orden.getNumeroOrden());
 		}
 	}
 
 	private List<Orden> getOrdenesConfirmadas() {
-		//@formatter:off
-		Example<Orden> example = Example.of(
-				Orden
-				.builder()
-				.tipoServicio(getServicio())
-				.estadoOrden(EstadoOrdenType.CONFIRMADA)
-				.build());
+		TipoServicio servicio = new TipoServicio();
+		servicio.setId(this.getServicio().getId());
+
+		// @formatter:off
+		Orden probe = Orden
+			.builder()
+			.tipoServicio(servicio)
+			.estadoOrden(EstadoOrdenType.CONFIRMADA)
+			.build();
+		
+		ExampleMatcher matcher = matching()
+			.withIgnorePaths("requiereConfirmacionCitaEntrega")  
+			.withIgnorePaths("requiereConfirmacionCitaRecogida")
+			.withIgnorePaths("tipoServicio.admiteBodegasComoDestino")
+			.withIgnorePaths("tipoServicio.admiteBodegasComoOrigen")
+			.withIgnorePaths("tipoServicio.admiteDireccionesComoDestino")
+			.withIgnorePaths("tipoServicio.admiteDireccionesComoOrigen")
+			.withIgnorePaths("tipoServicio.activo")
+			.withIgnorePaths("tipoServicio.ordinal");
 		//@formatter:on
 
-		List<Orden> ordenes = ordenRepository.findAll(example);
+		List<Orden> ordenes = ordenRepository.findAll(Example.of(probe,matcher));
 		return ordenes;
 	}
 
-	private MensajesDto validarOrdenConfirmada(Set<Regla<Orden>> reglas,
-			final com.tacticlogistics.domain.model.ordenes.Orden orden) {
+	private MensajesDto validarOrdenConfirmada(final Set<Regla<Orden>> reglas,final Orden orden) {
 		MensajesDto mensajes = new MensajesDto();
 		for (val regla : reglas) {
 			mensajes.AddMensajes(regla.validar(orden));
