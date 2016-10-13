@@ -1,4 +1,4 @@
-package com.tacticlogistics.presentation.api.clientes.dicermex.compras;
+package com.tacticlogistics.clientes.dicermex.compras.erp.prealertas;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

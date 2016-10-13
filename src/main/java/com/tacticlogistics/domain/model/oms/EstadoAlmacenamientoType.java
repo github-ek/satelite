@@ -3,13 +3,13 @@ package com.tacticlogistics.domain.model.oms;
 public enum EstadoAlmacenamientoType {
 	NO_ALERTADA,
 	ALERTADA_NO_CONFIRMADA,
-	ALERTADA_CON_ERROR,
+	ALERTADA_CON_ERRORES,
     ALERTADA,
     
     PROCESAMIENTO,
     
-    ALISTADA,
-    NO_ALISTADA,
+    PROCESADA,
+    NO_PROCESADA,
     NOVEDADES,
     
     CANCELADA,

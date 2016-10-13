@@ -41,6 +41,7 @@ import com.tacticlogistics.domain.model.oms.CausalReprogramacion;
 import com.tacticlogistics.domain.model.oms.EstadoAlmacenamientoType;
 import com.tacticlogistics.domain.model.oms.EstadoCumplidosType;
 import com.tacticlogistics.domain.model.oms.EstadoDistribucionType;
+import com.tacticlogistics.domain.model.oms.EstadoNotificacionType;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.tms.TipoVehiculo;
 
@@ -80,7 +81,7 @@ public class Orden implements Serializable {
 	private EstadoOrdenType estadoOrden;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "id_estado_alistamiento", nullable = false, length = 50)
+	@Column(name = "id_estado_almacenamiento", nullable = false, length = 50)
 	@NotNull
 	private EstadoAlmacenamientoType estadoAlmacenamiento;
 
@@ -93,6 +94,11 @@ public class Orden implements Serializable {
 	@Column(name = "id_estado_cumplidos", nullable = false, length = 50)
 	@NotNull
 	private EstadoCumplidosType estadoCumplidos;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "id_estado_notificacion", nullable = false, length = 50)
+	@NotNull
+	private EstadoNotificacionType estadoNotificacion;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -268,23 +274,13 @@ public class Orden implements Serializable {
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true)
-	private LocalDate fechaCitaEntrega;
+	private LocalDate fechaCita;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private LocalTime horaCitaEntregaMinima;
+	private LocalTime horaCitaMinima;
 
 	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private LocalTime horaCitaEntregaMaxima;
-
-	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true)
-	private LocalDate fechaCitaRecogida;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private LocalTime horaCitaRecogidaMinima;
-
-	@Column(nullable = true, columnDefinition = "TIME(0)")
-	private LocalTime horaCitaRecogidaMaxima;
+	private LocalTime horaCitaMaxima;
 
 	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = true)
@@ -364,19 +360,6 @@ public class Orden implements Serializable {
 	private LocalDateTime fechaEntregaFin;
 
 	// ---------------------------------------------------------------------------------------------------------
-	@Column(nullable = true)
-	private LocalDateTime fechaRecogidaEstimada;
-
-	@Column(nullable = true)
-	private LocalDateTime fechaRecogida;
-
-	@Column(nullable = true)
-	private LocalDateTime fechaRecogidaInicio;
-
-	@Column(nullable = true)
-	private LocalDateTime fechaRecogidaFin;
-
-	// ---------------------------------------------------------------------------------------------------------
 	@Column(nullable = false)
 	private LocalDateTime fechaCreacion;
 
@@ -440,17 +423,7 @@ public class Orden implements Serializable {
 			if (this.getFechaEntregaSugeridaMinima() != null) {
 				if (this.getFechaEntregaSugeridaMaxima() != null) {
 					if (this.getFechaEntregaSugeridaMinima().equals(this.getFechaEntregaSugeridaMaxima())) {
-						this.setFechaCitaEntrega(this.getFechaEntregaSugeridaMaxima());
-					}
-				}
-			}
-		}
-
-		if (!this.isRequiereConfirmacionCitaRecogida()) {
-			if (this.getFechaRecogidaSugeridaMinima() != null) {
-				if (this.getFechaRecogidaSugeridaMaxima() != null) {
-					if (this.getFechaRecogidaSugeridaMinima().equals(this.getFechaRecogidaSugeridaMaxima())) {
-						this.setFechaCitaRecogida(this.getFechaRecogidaSugeridaMaxima());
+						this.setFechaCita(this.getFechaEntregaSugeridaMaxima());
 					}
 				}
 			}
@@ -499,6 +472,7 @@ public class Orden implements Serializable {
 		this.setEstadoDistribucion(EstadoDistribucionType.NO_PLANIFICADA);
 		this.setEstadoAlmacenamiento(EstadoAlmacenamientoType.NO_ALERTADA);
 		this.setEstadoCumplidos(EstadoCumplidosType.NO_REPORTADOS);
+		this.setEstadoNotificacion(EstadoNotificacionType.SIN_NOTIFICAR);
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.setDatosOrden("", null, "", null, null, "", true);
@@ -524,15 +498,13 @@ public class Orden implements Serializable {
 		this.setDatosConfirmacion("", null, "");
 
 		// ---------------------------------------------------------------------------------------------------------
-		this.setDatosCitaEntrega(null, null, null);
-		this.setDatosCitaRecogida(null, null, null);
+		this.setDatosCita(null, null, null);
 		this.setDatosCitaAlistamiento(null, null, null);
 
 		this.setDatosPlanificacionPrimaria(null, null);
 		this.setDatosAceptacion(null, "", "");
 
 		this.setDatosEntrega(null, null, null);
-		this.setDatosRecogida(null, null, null);
 
 		// ---------------------------------------------------------------------------------------------------------
 		this.setDatosCorteRuta(null, "", null);
@@ -640,18 +612,12 @@ public class Orden implements Serializable {
 		this.setUsuarioConfirmacion(usuario);
 	}
 
-	public void setDatosCitaEntrega(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
-		this.setFechaCitaEntrega(fecha);
-		this.setHoraCitaEntregaMinima(hoMi);
-		this.setHoraCitaEntregaMaxima(hoMa);
+	public void setDatosCita(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
+		this.setFechaCita(fecha);
+		this.setHoraCitaMinima(hoMi);
+		this.setHoraCitaMaxima(hoMa);
 		this.setFechaAsignacionCita(null);
 		this.setUsuarioAsignacionCita("");
-	}
-
-	public void setDatosCitaRecogida(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
-		this.setFechaCitaRecogida(fecha);
-		this.setHoraCitaRecogidaMinima(hoMi);
-		this.setHoraCitaRecogidaMaxima(hoMa);
 	}
 
 	public void setDatosCitaAlistamiento(LocalDate fecha, LocalTime hoMi, LocalTime hoMa) {
@@ -690,13 +656,6 @@ public class Orden implements Serializable {
 		this.setFechaEntrega(fechaEntrega);
 		this.setFechaEntregaInicio(fechaEntregaInicio);
 		this.setFechaEntregaFin(fechaEntregaFin);
-	}
-
-	public void setDatosRecogida(LocalDateTime fechaRecogida, LocalDateTime fechaRecogidaInicio,
-			LocalDateTime fechaRecogidaFin) {
-		this.setFechaRecogida(fechaRecogida);
-		this.setFechaRecogidaInicio(fechaRecogidaInicio);
-		this.setFechaRecogidaFin(fechaRecogidaFin);
 	}
 
 	public void setDatosCreacion(String usuario, LocalDateTime fecha) {

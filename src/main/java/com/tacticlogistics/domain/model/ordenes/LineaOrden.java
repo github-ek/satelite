@@ -48,7 +48,6 @@ public class LineaOrden implements Serializable {
 	@NotNull
 	private String descripcion;
 
-	@Column(name = "cantidad")
 	private int cantidadSolicitada;
 
 	private int cantidadPlanificada;
@@ -70,7 +69,7 @@ public class LineaOrden implements Serializable {
 	@JoinColumn(name = "id_producto")
 	private Producto producto;
 
-	@Column(name = "codigo_producto", nullable = false, length = 50)
+	@Column(nullable = false, length = 50)
 	@NotNull
 	private String productoCodigo;
 
@@ -79,7 +78,7 @@ public class LineaOrden implements Serializable {
 	@JoinColumn(name = "id_unidad")
 	private Unidad unidad;
 
-	@Column(name = "codigo_unidad",nullable = false, length = 2)
+	@Column(nullable = false, length = 2)
 	@NotNull
 	private String unidadCodigo;
 

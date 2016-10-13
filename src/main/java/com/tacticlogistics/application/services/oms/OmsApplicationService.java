@@ -24,11 +24,11 @@ import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAsso
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
 import com.tacticlogistics.domain.model.oms.CausalAnulacion;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
-import com.tacticlogistics.domain.model.oms.OmsOrden;
+import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.domain.model.seguridad.Usuario;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
 import com.tacticlogistics.infrastructure.persistence.oms.CausalAnulacionRepository;
-import com.tacticlogistics.infrastructure.persistence.oms.OmsOrdenRepository;
+import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 import com.tacticlogistics.infrastructure.services.Basic;
 
@@ -48,7 +48,7 @@ public class OmsApplicationService {
 	private CausalAnulacionRepository causalAnulacionOrdenRepository;
 
 	@Autowired
-	private OmsOrdenRepository ordenRepository;
+	private OrdenRepository ordenRepository;
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
@@ -57,7 +57,7 @@ public class OmsApplicationService {
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	public OmsOrdenDto findOneOrdenPorId(Integer id) throws DataAccessException {
-		OmsOrden orden = ordenRepository.findOne(id);
+		Orden orden = ordenRepository.findOne(id);
 		OmsOrdenDto dto = null;
 
 		if (orden != null) {
@@ -70,7 +70,8 @@ public class OmsApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Resumen
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findResumenPorCediDespachosPrimaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
+	public List<Object> findResumenPorCediDespachosPrimaria(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_DESPACHOS_PRIMARIA,
 				getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen());
 	}
@@ -82,13 +83,15 @@ public class OmsApplicationService {
 
 	}
 
-	public List<Object> findResumenPorCediRecibosPrimaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
+	public List<Object> findResumenPorCediRecibosPrimaria(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_RECIBOS,
 				getQueryResumenPorCediRecibos());
 
 	}
 
-	public List<Object> findResumenPorCediRecogidasSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
+	public List<Object> findResumenPorCediRecogidasSecundaria(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_RECOGIDAS_SECUNDARIA,
 				getQueryResumenPorCediRecibos());
 
@@ -100,20 +103,22 @@ public class OmsApplicationService {
 
 	}
 
-	public List<Object> findResumenPorCediDespachosTraslado(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
+	public List<Object> findResumenPorCediDespachosTraslado(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_TRASLADOS,
 				getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen());
 
 	}
 
-	public List<Object> findResumenPorCediRecibosTraslado(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta) {
+	public List<Object> findResumenPorCediRecibosTraslado(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta) {
 		return findResumenEstadoOrdenesPorCeDiOrigen(usuarioId, fechaDesde, fechaHasta, SERVICIO_TRASLADOS,
 				getQueryResumenPorCediRecibos());
 
 	}
 
-	private List<Object> findResumenEstadoOrdenesPorCeDiOrigen(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int tipoServicioId, String sql) {
+	private List<Object> findResumenEstadoOrdenesPorCeDiOrigen(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -206,15 +211,15 @@ public class OmsApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Solicitudes
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findSolcitudesDeDespachoSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int clienteId, String estadoOrdenId, int bodegaOrigenId) {
+	public List<Object> findSolcitudesDeDespachoSecundaria(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta, int clienteId, String estadoOrdenId, int bodegaOrigenId) {
 		return findSolcitudesDeDespacho(usuarioId, fechaDesde, fechaHasta, clienteId, estadoOrdenId, bodegaOrigenId,
 				SERVICIO_DESPACHOS_SECUNDARIA, getQueryOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen());
 
 	}
 
-	private List<Object> findSolcitudesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta, int clienteId,
-			String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
+	private List<Object> findSolcitudesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int clienteId, String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -237,7 +242,7 @@ public class OmsApplicationService {
 			dto.put("destino_ciudad_nombre", rs.getString("destino_ciudad_nombre"));
 
 			dto.put("id_estado_orden", rs.getString("id_estado_orden"));
-			dto.put("id_estado_alistamiento", rs.getString("id_estado_alistamiento"));
+			dto.put("id_estado_almacenamiento", rs.getString("id_estado_almacenamiento"));
 			dto.put("id_estado_distribucion", rs.getString("id_estado_distribucion"));
 			dto.put("cliente_recoge", rs.getString("cliente_recoge"));
 			dto.put("id_estado_cumplidos", rs.getString("id_estado_cumplidos"));
@@ -331,15 +336,15 @@ public class OmsApplicationService {
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Excepciones
 	// ----------------------------------------------------------------------------------------------------------------
-	public List<Object> findExcepcionesDeDespachoSecundaria(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int clienteId, String estadoOrdenId, int bodegaOrigenId) {
+	public List<Object> findExcepcionesDeDespachoSecundaria(Integer usuarioId, LocalDate fechaDesde,
+			LocalDate fechaHasta, int clienteId, String estadoOrdenId, int bodegaOrigenId) {
 		return findExcepcionesDeDespacho(usuarioId, fechaDesde, fechaHasta, clienteId, estadoOrdenId, bodegaOrigenId,
 				SERVICIO_DESPACHOS_SECUNDARIA, getQueryExcepcionesDeDespachoPorClienteEstadoOrdenCediOrigen());
 
 	}
 
-	private List<Object> findExcepcionesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta, int clienteId,
-			String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
+	private List<Object> findExcepcionesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int clienteId, String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -412,8 +417,8 @@ public class OmsApplicationService {
 
 	}
 
-	private List<Object> findEntregasDeDespachos(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta, int clienteId,
-			String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
+	private List<Object> findEntregasDeDespachos(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
+			int clienteId, String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
@@ -489,12 +494,12 @@ public class OmsApplicationService {
 		notas = Basic.coalesce(notas, "");
 
 		for (Integer id : ids) {
-			OmsOrden e = ordenRepository.findOne(id);
+			Orden e = ordenRepository.findOne(id);
 
-			if (OmsOrden.transicionPermitida(e.getEstadoOrden(), nuevoEstado)) {
-				if (e.getEstadoOrden() == EstadoOrdenType.ANULADA) {
-					e.revertirAnulacion(usuarioUpd, fechaUpd, nuevoEstado);
-				}
+			if (Orden.transicionPermitida(e.getEstadoOrden(), nuevoEstado)) {
+				// if (e.getEstadoOrden() == EstadoOrdenType.ANULADA) {
+				// e.revertirAnulacion(usuarioUpd, fechaUpd, nuevoEstado);
+				// }
 
 				switch (nuevoEstado) {
 				case NO_CONFIRMADA:
@@ -506,15 +511,14 @@ public class OmsApplicationService {
 					// OPERACIÓN?
 					break;
 				case ACEPTADA:
-					e.aceptar(usuarioUpd, fechaUpd, notas);
-					break;	
+					e.aceptar(fechaUpd, usuarioUpd, notas);
+					break;
 				case ANULADA:
-					e.anular(usuarioUpd, fechaUpd, notas, null);
+					e.anular(fechaUpd, usuarioUpd, notas, null);
 					// SE DEBEN REVERTIR LOS CAMBIOS REALIZADOS DURANTE LA
 					// OPERACIÓN?
 				case EJECUCION:
 					// LO VA A HACER EL SISTEMA
-				case FINALIZADA:
 					// LO VA A HACER EL SISTEMA
 				case REPROGRAMADA:
 					// TODO
@@ -586,8 +590,8 @@ public class OmsApplicationService {
 		return list;
 	}
 
-	protected OmsOrdenDto map(OmsOrden orden) {
-		
+	protected OmsOrdenDto map(Orden orden) {
+
 		return null;
 	}
 }

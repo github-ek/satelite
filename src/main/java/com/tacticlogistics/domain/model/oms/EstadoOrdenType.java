@@ -14,10 +14,8 @@ public enum EstadoOrdenType {
 	NO_REPROGRAMADA("NO REPROGRAMADA",true,true),
 	NOVEDADES("NOVEDADES",false,false),
 
-	ANULADA("ANULADA",true,true),
+	ANULADA("ANULADA",true,true)
 	
-	FINALIZADA("FINALIZADA",false,true), 
-	EN_EJECCUCION("EN EJECCUCION", false,false)
 	;
 
 	private final String nombre;

@@ -27,7 +27,7 @@ import com.tacticlogistics.application.services.ordenes.OrdenesApplicationServic
 import com.tacticlogistics.application.services.seguridad.UsuarioApplicationService;
 import com.tacticlogistics.application.services.wms.ProductosApplicationService;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
-import com.tacticlogistics.domain.model.oms.OmsOrden;
+import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.presentation.util.BadRequestException;
 
 @CrossOrigin
@@ -283,7 +283,7 @@ public class OmsController {
 			Map<EstadoOrdenType, Boolean> m = new LinkedHashMap<>();
 			map.put(a, m);
 			for (EstadoOrdenType b : EstadoOrdenType.values()) {
-				m.put(b, OmsOrden.transicionPermitida(a, b));
+				m.put(b, Orden.transicionPermitida(a, b));
 			}
 		}
 		return map;

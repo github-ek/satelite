@@ -1,4 +1,4 @@
-package com.tacticlogistics.clientes.dicermex.compras.prealertas;
+package com.tacticlogistics.clientes.dicermex.compras.erp.prealertas;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -22,6 +22,7 @@ import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.oms.EstadoAlmacenamientoType;
 import com.tacticlogistics.domain.model.oms.EstadoCumplidosType;
 import com.tacticlogistics.domain.model.oms.EstadoDistribucionType;
+import com.tacticlogistics.domain.model.oms.EstadoNotificacionType;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
@@ -35,8 +36,6 @@ import com.tacticlogistics.infrastructure.persistence.crm.TipoServicioRepository
 import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
 import com.tacticlogistics.infrastructure.persistence.wms.BodegaRepository;
 import com.tacticlogistics.infrastructure.persistence.wms.ProductoRepository;
-import com.tacticlogistics.presentation.api.clientes.dicermex.compras.LineaOrdenDeCompraDto;
-import com.tacticlogistics.presentation.api.clientes.dicermex.compras.OrdenDeCompraDto;
 
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
@@ -221,6 +220,7 @@ public class PreAlertasService {
 				.estadoDistribucion(EstadoDistribucionType.NO_PLANIFICADA)
 				.estadoAlmacenamiento(EstadoAlmacenamientoType.NO_ALERTADA)
 				.estadoCumplidos(EstadoCumplidosType.NO_REPORTADOS)
+				.estadoNotificacion(EstadoNotificacionType.SIN_NOTIFICAR)
 				.cliente(getCliente())
 				.clienteCodigo(getCliente().getCodigo())
 				.tipoServicio(getServicio())

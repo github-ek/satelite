@@ -24,8 +24,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.j256.ormlite.dao.Dao;
-import com.tacticlogistics.clientes.dicermex.compras.almacenamiento.alertas.AlertasWmsService;
-import com.tacticlogistics.clientes.dicermex.compras.prealertas.PreAlertasService;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.PreAlertasService;
+import com.tacticlogistics.clientes.dicermex.compras.wms.alertas.AlertasWmsService;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.jda.wms.db.entities.Control;

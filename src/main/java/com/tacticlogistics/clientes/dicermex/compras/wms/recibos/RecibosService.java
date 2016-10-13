@@ -1,4 +1,4 @@
-package com.tacticlogistics.clientes.dicermex.compras.almacenamiento.recibos;
+package com.tacticlogistics.clientes.dicermex.compras.wms.recibos;
 
 import java.util.List;
 import java.util.stream.Collectors;

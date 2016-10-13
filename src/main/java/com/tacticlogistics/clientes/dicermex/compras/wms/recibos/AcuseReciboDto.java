@@ -1,4 +1,6 @@
-package com.tacticlogistics.clientes.dicermex.compras.almacenamiento.alertas;
+package com.tacticlogistics.clientes.dicermex.compras.wms.recibos;
+
+import java.math.BigInteger;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class ResultadoAlertaDto {
-	private String numeroOrdenWms;
-	private ResultadoAlertaType resultado;
-	String mensaje;
+public class AcuseReciboDto {
+	private BigInteger id;
+	private boolean error;
+	private String mensaje;
 }

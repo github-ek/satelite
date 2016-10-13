@@ -353,7 +353,7 @@ public class OrdenesApplicationService {
 		if (!dto.isRequiereConfirmacionCitaEntrega()) {
 			if (dto.getFechaEntregaSugeridaMaxima() != null) {
 				if (dto.getFechaEntregaSugeridaMaxima().equals(dto.getFechaEntregaSugeridaMinima())) {
-					model.setDatosCitaEntrega(dto.getFechaEntregaSugeridaMaxima(), dto.getHoraEntregaSugeridaMinima(),
+					model.setDatosCita(dto.getFechaEntregaSugeridaMaxima(), dto.getHoraEntregaSugeridaMinima(),
 							dto.getHoraEntregaSugeridaMaxima());
 				}
 			}
@@ -362,14 +362,14 @@ public class OrdenesApplicationService {
 		model.setRequiereConfirmacionCitaRecogida(dto.isRequiereConfirmacionCitaRecogida());
 		model.setDatosCitaRecogidaSugerida(dto.getFechaRecogidaSugeridaMinima(), dto.getFechaRecogidaSugeridaMaxima(),
 				dto.getHoraRecogidaSugeridaMinima(), dto.getHoraRecogidaSugeridaMaxima());
-		if (!dto.isRequiereConfirmacionCitaRecogida()) {
-			if (dto.getFechaRecogidaSugeridaMaxima() != null) {
-				if (dto.getFechaRecogidaSugeridaMaxima().equals(dto.getFechaRecogidaSugeridaMinima())) {
-					model.setDatosCitaRecogida(dto.getFechaRecogidaSugeridaMaxima(),
-							dto.getHoraRecogidaSugeridaMinima(), dto.getHoraRecogidaSugeridaMaxima());
-				}
-			}
-		}
+//		if (!dto.isRequiereConfirmacionCitaRecogida()) {
+//			if (dto.getFechaRecogidaSugeridaMaxima() != null) {
+//				if (dto.getFechaRecogidaSugeridaMaxima().equals(dto.getFechaRecogidaSugeridaMinima())) {
+//					model.setDatosCitaRecogida(dto.getFechaRecogidaSugeridaMaxima(),
+//							dto.getHoraRecogidaSugeridaMinima(), dto.getHoraRecogidaSugeridaMaxima());
+//				}
+//			}
+//		}
 
 		// ---------------------------------------------------------------------------------------------------------
 		model.setDatosDestinatario(canal, dto.getCanalCodigoAlterno(), tercero, dto.getDestinatarioContacto());

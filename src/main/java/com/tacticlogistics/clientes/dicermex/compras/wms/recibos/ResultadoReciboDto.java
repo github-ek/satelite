@@ -1,5 +1,6 @@
-package com.tacticlogistics.clientes.dicermex.compras.almacenamiento.recibos;
+package com.tacticlogistics.clientes.dicermex.compras.wms.recibos;
 
+import java.math.BigInteger;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResultadoReciboDto {
-	private int id;
+	private BigInteger id;
 	private String numeroOrdenWms;
 	private String clienteCodigoWms;
 	private String bodegaCodigo;

@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.clientes.dicermex.compras.prealertas.PreAlertasService;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.LineaOrdenDeCompraDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.OrdenDeCompraDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.PreAlertasService;
 import com.tacticlogistics.presentation.util.BadRequestException;
 
 @CrossOrigin	

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.clientes.dicermex.compras.almacenamiento.alertas.AlertasWmsService;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.Regla;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaBodegaDestino;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.almacenamiento.ReglaBodegaOrigen;
@@ -27,6 +26,7 @@ import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distri
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distribucion.ReglaPuntoEntrega;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.distribucion.ReglaPuntoRecogida;
 import com.tacticlogistics.clientes.dicermex.compras.planificacion.reglas.estados.ReglaTransicionConfirmadaAceptada;
+import com.tacticlogistics.clientes.dicermex.compras.wms.alertas.AlertasWmsService;
 import com.tacticlogistics.domain.model.common.valueobjects.MensajeEmbeddable;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;

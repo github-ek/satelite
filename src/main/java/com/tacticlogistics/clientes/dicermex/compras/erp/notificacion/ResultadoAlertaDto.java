@@ -1,4 +1,4 @@
-package com.tacticlogistics.clientes.dicermex.compras.almacenamiento.recibos;
+package com.tacticlogistics.clientes.dicermex.compras.erp.notificacion;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class AcuseReciboDto {
-	private int id;
-	private boolean error;
-	private String mensaje;
+public class ResultadoAlertaDto {
+	private String numeroOrdenWms;
+	private ResultadoAlertaType resultado;
+	String mensaje;
 }

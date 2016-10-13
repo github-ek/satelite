@@ -1,4 +1,4 @@
-package com.tacticlogistics.clientes.dicermex.compras.almacenamiento.alertas;
+package com.tacticlogistics.clientes.dicermex.compras.erp.notificacion;
 
 import static org.springframework.data.domain.ExampleMatcher.matching;
 
@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.oms.EstadoAlmacenamientoType;
+import com.tacticlogistics.domain.model.oms.EstadoNotificacionType;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
@@ -27,9 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional(readOnly = true)
 @Slf4j
-// TODO INCLUIR FECHA Y HORA DE PRE ALERTA AL WMS
+// TODO INCLUIR FECHA Y HORA DE notificacion AL erp
 // TODO INCLUIR COOLUMNA PARA EL MENSAJE DE ERROR
-public class AlertasWmsService {
+public class NotificacionesErpService {
 
 	private static final String CODIGO_CLIENTE = "DICERMEX";
 
@@ -43,7 +44,7 @@ public class AlertasWmsService {
 
 	private static TipoServicio servicio;
 
-	public List<Orden> getOrdenesPendientesPorAlertarAlWms() {
+	public List<Orden> getOrdenesPendientesPorNotificarAlErp() {
 		TipoServicio servicio = new TipoServicio();
 		servicio.setId(this.getServicio().getId());
 
@@ -53,7 +54,7 @@ public class AlertasWmsService {
 				.clienteCodigo(CODIGO_CLIENTE)
 				.tipoServicio(servicio)
 				.requiereServicioDistribucion(false)
-				.estadoOrden(EstadoOrdenType.ACEPTADA)
+				.estadoOrden(EstadoOrdenType.ENTREGADA)
 				.estadoAlmacenamiento(EstadoAlmacenamientoType.NO_ALERTADA)
 				.build();
 		
@@ -82,13 +83,13 @@ public class AlertasWmsService {
 	}
 
 	@Transactional(readOnly = false)
-	public void alertarOrdenesDeCompraAlWms(List<Integer> ordenesId) {
+	public void notificarOrdenesDeCompraAlErp(List<Integer> ordenesId) {
 		for (Integer id : ordenesId) {
 			Orden compra = ordenRepository.findOne(id);
 			if (compra != null) {
 				compra.setEstadoOrden(EstadoOrdenType.EJECUCION);
-				compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_NO_CONFIRMADA);
-				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
+				compra.setEstadoNotificacion(EstadoNotificacionType.NOTIFICACION);
+				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-ERP");
 				for (val e : compra.getLineas()) {
 					e.setNumeroOrdenWmsDestino("TC-" + compra.getId() + '-' + compra.getNumeroOrden());
 				}
@@ -98,7 +99,7 @@ public class AlertasWmsService {
 	}
 
 	@Transactional(readOnly = false)
-	public void confirmarResultadoDeAlertasAlWms(List<ResultadoAlertaDto> resultados) {
+	public void confirmarResultadoDeNotificacionesAlErp(List<ResultadoAlertaDto> resultados) {
 		for (val e : resultados) {
 			String partes[] = e.getNumeroOrdenWms().split("-");
 			int id = Integer.parseInt(partes[1]);
@@ -108,7 +109,7 @@ public class AlertasWmsService {
 				if (e.getResultado() == ResultadoAlertaType.OK) {
 					compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA);
 				} else {
-					compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_CON_ERROR);
+					compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_CON_ERRORES);
 				}
 				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
 				ordenRepository.save(compra);
