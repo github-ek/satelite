@@ -1,4 +1,4 @@
-package com.tacticlogistics.jda.wms.db.entities.receiving;
+package com.tacticlogistics.jda.wms.db.entities.shipment;
 
 import java.math.BigInteger;
 import java.sql.Date;
@@ -7,27 +7,25 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 
-@DatabaseTable(tableName = "uc_purchase_order_line_tcc_wms")
-public class PurchaseOrderLine {
+@DatabaseTable(tableName = "uc_shipment_line_order_tcc_wms")
+public class ShipmentOrderLine {
 	
 	@DatabaseField
 	private BigInteger transaction_id;
 	@DatabaseField
-	private String invnum;
-	@DatabaseField
-	private String supnum;
+	private String ordnum;
 	@DatabaseField
 	private String wh_id;
 	@DatabaseField
 	private String client_id;
 	@DatabaseField
-	private String invlin;
+	private String ordlin;
 	@DatabaseField
-	private int invsln;
+	private int ordsln;
 	@DatabaseField
 	private String prtnum;
 	@DatabaseField
-	private int expqty;
+	private int ordqty;
 	@DatabaseField
 	private String orgcod;
 	@DatabaseField
@@ -37,7 +35,11 @@ public class PurchaseOrderLine {
 	@DatabaseField
 	private Date mandte;
 	@DatabaseField
-	private String rcvsts;
+	private boolean splflg;
+	@DatabaseField
+	private boolean bckflg;
+	@DatabaseField
+	private String invsts;
 	@DatabaseField
 	private String inv_attr_str1;
 	@DatabaseField
@@ -59,7 +61,7 @@ public class PurchaseOrderLine {
 	@DatabaseField
 	private String inv_attr_str10;
 	
-	public PurchaseOrderLine(){
+	public ShipmentOrderLine(){
 		
 	}
 	
@@ -71,20 +73,12 @@ public class PurchaseOrderLine {
 		this.transaction_id = transaction_id;
 	}
 
-	public String getInvnum() {
-		return invnum;
+	public String getOrdnum() {
+		return ordnum;
 	}
 
-	public void setInvnum(String invnum) {
-		this.invnum = invnum;
-	}
-
-	public String getSupnum() {
-		return supnum;
-	}
-
-	public void setSupnum(String supnum) {
-		this.supnum = supnum;
+	public void setOrdnum(String ordnum) {
+		this.ordnum = ordnum;
 	}
 
 	public String getWh_id() {
@@ -103,132 +97,173 @@ public class PurchaseOrderLine {
 		this.client_id = client_id;
 	}
 
-	public String getInvlin() {
-		return invlin;
+	public String getOrdlin() {
+		return ordlin;
 	}
-	public void setInvlin(String invlin) {
-		this.invlin = invlin;
+
+	public void setOrdlin(String ordlin) {
+		this.ordlin = ordlin;
 	}
-	public int getInvsln() {
-		return invsln;
+
+	public int getOrdsln() {
+		return ordsln;
 	}
-	public void setInvsln(int invsln) {
-		this.invsln = invsln;
+
+	public void setOrdsln(int ordsln) {
+		this.ordsln = ordsln;
 	}
+
 	public String getPrtnum() {
 		return prtnum;
 	}
+
 	public void setPrtnum(String prtnum) {
 		this.prtnum = prtnum;
 	}
-	public int getExpqty() {
-		return expqty;
+
+	public int getOrdqty() {
+		return ordqty;
 	}
-	public void setExpqty(int expqty) {
-		this.expqty = expqty;
+
+	public void setOrdqty(int ordqty) {
+		this.ordqty = ordqty;
 	}
+
 	public String getOrgcod() {
 		return orgcod;
 	}
+
 	public void setOrgcod(String orgcod) {
 		this.orgcod = orgcod;
 	}
+
 	public String getLotnum() {
 		return lotnum;
 	}
+
 	public void setLotnum(String lotnum) {
 		this.lotnum = lotnum;
 	}
+
 	public Date getExpire_dte() {
 		return expire_dte;
 	}
+
 	public void setExpire_dte(Date expire_dte) {
 		this.expire_dte = expire_dte;
 	}
+
 	public Date getMandte() {
 		return mandte;
 	}
+
 	public void setMandte(Date mandte) {
 		this.mandte = mandte;
 	}
-	public String getRcvsts() {
-		return rcvsts;
+
+	public boolean isSplflg() {
+		return splflg;
 	}
-	public void setRcvsts(String rcvsts) {
-		this.rcvsts = rcvsts;
+
+	public void setSplflg(boolean splflg) {
+		this.splflg = splflg;
 	}
+
+	public boolean isBckflg() {
+		return bckflg;
+	}
+
+	public void setBckflg(boolean bckflg) {
+		this.bckflg = bckflg;
+	}
+
+	public String getInvsts() {
+		return invsts;
+	}
+
+	public void setInvsts(String invsts) {
+		this.invsts = invsts;
+	}
+
 	public String getInv_attr_str1() {
 		return inv_attr_str1;
 	}
+
 	public void setInv_attr_str1(String inv_attr_str1) {
 		this.inv_attr_str1 = inv_attr_str1;
 	}
+
 	public String getInv_attr_str2() {
 		return inv_attr_str2;
 	}
+
 	public void setInv_attr_str2(String inv_attr_str2) {
 		this.inv_attr_str2 = inv_attr_str2;
 	}
+
 	public String getInv_attr_str3() {
 		return inv_attr_str3;
 	}
+
 	public void setInv_attr_str3(String inv_attr_str3) {
 		this.inv_attr_str3 = inv_attr_str3;
 	}
+
 	public String getInv_attr_str4() {
 		return inv_attr_str4;
 	}
+
 	public void setInv_attr_str4(String inv_attr_str4) {
 		this.inv_attr_str4 = inv_attr_str4;
 	}
+
 	public String getInv_attr_str5() {
 		return inv_attr_str5;
 	}
+
 	public void setInv_attr_str5(String inv_attr_str5) {
 		this.inv_attr_str5 = inv_attr_str5;
 	}
+
 	public String getInv_attr_str6() {
 		return inv_attr_str6;
 	}
+
 	public void setInv_attr_str6(String inv_attr_str6) {
 		this.inv_attr_str6 = inv_attr_str6;
 	}
+
 	public String getInv_attr_str7() {
 		return inv_attr_str7;
 	}
+
 	public void setInv_attr_str7(String inv_attr_str7) {
 		this.inv_attr_str7 = inv_attr_str7;
 	}
+
 	public String getInv_attr_str8() {
 		return inv_attr_str8;
 	}
+
 	public void setInv_attr_str8(String inv_attr_str8) {
 		this.inv_attr_str8 = inv_attr_str8;
 	}
+
 	public String getInv_attr_str9() {
 		return inv_attr_str9;
 	}
+
 	public void setInv_attr_str9(String inv_attr_str9) {
 		this.inv_attr_str9 = inv_attr_str9;
 	}
+
 	public String getInv_attr_str10() {
 		return inv_attr_str10;
 	}
+
 	public void setInv_attr_str10(String inv_attr_str10) {
 		this.inv_attr_str10 = inv_attr_str10;
 	}
 
-	@Override
-	public String toString() {
-		return "PurchaseOrderLine [invlin=" + invlin + ", invsln=" + invsln + ", prtnum=" + prtnum + ", expqty=" + expqty
-				+ ", orgcod=" + orgcod + ", lotnum=" + lotnum + ", expire_dte=" + expire_dte + ", mandte=" + mandte
-				+ ", rcvsts=" + rcvsts + ", inv_attr_str1=" + inv_attr_str1 + ", inv_attr_str2=" + inv_attr_str2
-				+ ", inv_attr_str3=" + inv_attr_str3 + ", inv_attr_str4=" + inv_attr_str4 + ", inv_attr_str5="
-				+ inv_attr_str5 + ", inv_attr_str6=" + inv_attr_str6 + ", inv_attr_str7=" + inv_attr_str7
-				+ ", inv_attr_str8=" + inv_attr_str8 + ", inv_attr_str9=" + inv_attr_str9 + ", inv_attr_str10="
-				+ inv_attr_str10 + "]";
-	}
 	
-	
-
 }
