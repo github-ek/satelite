@@ -1,72 +1,85 @@
 package com.tacticlogistics.application.dto.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.LineaOrdenDeCompraDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.OrdenDeCompraDTO;
 import com.tacticlogistics.domain.model.common.SeveridadType;
 
-public class MensajesDto {
-	private SeveridadType severidadMaxima;
-	private Object data;
-	private List<MensajeDto> mensajes;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-	public MensajesDto() {
-		super();
-		this.setSeveridadMaxima(SeveridadType.INFO);
-		this.setData(null);
-		this.setMensajes(new ArrayList<>());
-	}
+@Data
+@NoArgsConstructor
+public class MensajesDto {
+
+	@Setter(AccessLevel.NONE)
+	private List<MensajeDTO> mensajes = new ArrayList<>();
 
 	public SeveridadType getSeveridadMaxima() {
-		return severidadMaxima;
+		// @formatter:off
+		Optional<SeveridadType> severidad = mensajes
+				.stream()
+				.map(a -> a.getSeveridad())
+				.distinct()
+				.sorted()
+				.findFirst();
+		// @formatter:on
+		return (severidad.isPresent()) ? severidad.get() : SeveridadType.INFO;
 	}
 
-	public Object getData() {
-		return data;
+	public MensajeDTO get(int index) {
+		return mensajes.get(index);
 	}
 
-	public List<MensajeDto> getMensajes() {
-		return mensajes;
+	public int size() {
+		return mensajes.size();
 	}
 
-	public void setSeveridadMaxima(SeveridadType severidadMaxima) {
-		this.severidadMaxima = severidadMaxima;
+	@JsonIgnore
+	public boolean isEmpty() {
+		return mensajes.isEmpty();
 	}
 
-	public void setData(Object data) {
-		this.data = data;
+	public Stream<MensajeDTO> stream() {
+		return mensajes.stream();
 	}
 
-	public void setMensajes(List<MensajeDto> mensajes) {
-		if (mensajes == null) {
-			mensajes = new ArrayList<>();
-		}
-		this.mensajes = mensajes;
+	public void forEach(Consumer<? super MensajeDTO> action) {
+		mensajes.forEach(action);
 	}
 
-	// ----------------------------------------------------------------------------------------------------------------
-	public MensajesDto addMensaje(SeveridadType severidad, String texto) {
-		this.addMensaje(severidad, null, texto);
-		return this;
+	public void clear() {
+		mensajes.clear();
 	}
 
-	public MensajesDto addMensaje(SeveridadType severidad, Object data, String texto) {
-		this.AddMensaje(new MensajeDto(severidad, data, texto));
-		return this;
+	public boolean add(SeveridadType severidad, String texto) {
+		return this.add(severidad, "", texto, "", "", null);
 	}
 
-	public MensajesDto addMensaje(SeveridadType severidad, String codigo, Object data, String texto, String grupo) {
-		this.AddMensaje(new MensajeDto(severidad, codigo, data, texto, grupo));
-		return this;
+	public boolean add(SeveridadType severidad, String texto, String objeto, String atributo, Object data) {
+		return this.add(severidad, "", texto, objeto, atributo, data);
 	}
 
-	public MensajesDto addMensaje(Exception e) {
-		this.addMensaje(e, null);
-		return this;
+	public boolean add(SeveridadType severidad, String codigo, String texto, String objeto, String atributo,
+			Object data) {
+		return this.add(new MensajeDTO(severidad, codigo, texto, objeto, atributo, data));
 	}
 
-	public MensajesDto addMensaje(Exception e, Object data) {
+	public boolean add(Exception e) {
+		return this.add(e, "", "", null);
+	}
+
+	public boolean add(Exception e, String objeto, String atributo, Object data) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Ocurrio una excepción de tipo:").append(e.getClass().getName()).append(".");
 
@@ -74,41 +87,18 @@ public class MensajesDto {
 			sb.append("El mensaje de la excepción es: ").append(e.getMessage());
 		}
 
-		this.AddMensaje(new MensajeDto(SeveridadType.FATAL, data, sb.toString()));
-
-		return this;
+		return this.add(new MensajeDTO(SeveridadType.ERROR, sb.toString(), objeto, atributo, data));
 	}
 
-	public MensajesDto AddMensaje(MensajeDto mensaje) {
-		mensajes.add(mensaje);
-		Optional<SeveridadType> severidad = mensajes.stream().map(a -> a.getSeveridad()).distinct().sorted()
-				.findFirst();
-		this.severidadMaxima = (severidad.isPresent()) ? severidad.get() : SeveridadType.INFO;
-		return this;
-	}
-	
-	public MensajesDto AddMensajes(MensajesDto mensajes) {
-		for (MensajeDto msj: mensajes.getMensajes()) {
-			this.AddMensaje(msj);
-		}
-		return this;
+	public boolean add(MensajeDTO e) {
+		return mensajes.add(e);
 	}
 
-	@Override
-	public String toString() {
-		final int maxLen = 5;
-		StringBuilder builder = new StringBuilder();
-		builder.append("MensajesDto [");
-		if (severidadMaxima != null) {
-			builder.append("severidadMaxima=").append(severidadMaxima).append(", ");
-		}
-		if (data != null) {
-			builder.append("data=").append(data).append(", ");
-		}
-		if (mensajes != null) {
-			builder.append("mensajes=").append(mensajes.subList(0, Math.min(mensajes.size(), maxLen)));
-		}
-		builder.append("]");
-		return builder.toString();
+	public boolean addAll(Collection<? extends MensajeDTO> c) {
+		return mensajes.addAll(c);
+	}
+
+	public boolean addAll(MensajesDto dto) {
+		return this.mensajes.addAll(dto.mensajes);
 	}
 }

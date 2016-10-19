@@ -22,55 +22,17 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer> {
 			@Param("clienteId") Integer clienteId,
 			@Param("codigoAlterno") String codigoAlterno);
 
- 
-	@Deprecated
 	@Query(""
-			+ " SELECT DISTINCT b.bodega"
-			+ " FROM Producto a"
-			+ " JOIN a.productoBodegaAssociation b"
-			+ " WHERE :tipoServicioId = :tipoServicioId"
-			+ "	AND a.cliente.id = :clienteId"
-			+ " AND a.activo = true"
-			+ " AND b.bodega.activo = true"
-			+ " AND b.bodega.direccion.ciudadId = :ciudadId"
-			+ " ORDER BY b.bodega.codigo")
-	List<Bodega> findAllByClienteIdAndCiudadIdAndTipoServicioId(
+			+ " SELECT a"
+			+ " FROM ClienteBodegaAssociation a"
+			+ " WHERE :clienteId = :clienteId"
+			+ "	AND a.clienteId = :clienteId"
+			+ "	AND a.bodegaId = :bodegaId"
+			+ "	AND a.estadoInventarioId = :estadoInventarioId"
+			)
+	List<ClienteBodegaAssociation> findByClienteIdAndBodegaIdAndEstadoInventarioId(
 			@Param("clienteId") Integer clienteId,
-			@Param("ciudadId") Integer ciudadId,
-			@Param("tipoServicioId") Integer tipoServicioId);
-
-	@Deprecated
-	@Query(""
-			+ " SELECT DISTINCT a.bodega"
-			+ " FROM ProductoBodegaAssociation a"
-			+ " WHERE a.producto.id = :productoId"
-			+ " AND a.producto.activo = true"
-			+ " AND a.bodega.activo = true"
-			+ " ORDER BY a.bodega.codigo")
-	List<Bodega> findAllByProductoId(
-			@Param("productoId") Integer productoId);
-	
-	@Deprecated
-	@Query(""
-			+ " SELECT DISTINCT a.bodega"
-			+ " FROM ProductoBodegaAssociation a"
-			+ " WHERE a.producto.id = :productoId"
-			+ " AND a.producto.activo = true"
-			+ " AND a.bodega.direccion.ciudadId = :ciudadId"
-			+ " AND a.bodega.activo = true"
-			+ " ORDER BY a.bodega.codigo")
-	List<Bodega> findAllByProductoIdAndCiudadId(
-			@Param("productoId") Integer productoId,
-			@Param("ciudadId") Integer ciudadId);	
-	
-	@Deprecated
-	@Query(""
-            + " SELECT DISTINCT a"
-            + " FROM Bodega a"
-            + " WHERE a.direccion.ciudadId = :ciudadId"
-            + " AND a.activo = true"
-            + " ORDER BY a.codigo")
-    List<Bodega> findByCiudadId(
-            @Param("ciudadId") Integer ciudadId);   
+			@Param("bodegaId") Integer bodegaId,
+			@Param("estadoInventarioId") String estadoInventarioId);
 
 }

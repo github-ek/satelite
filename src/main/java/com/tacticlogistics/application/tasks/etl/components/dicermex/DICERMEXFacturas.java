@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
@@ -104,7 +105,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	}
 
 	@Override
-	protected boolean preProcesarArchivo() {
+	protected boolean preProcesarArchivo(MensajesDto mensajes) {
 		File archivo = getArchivoLineas();
 		boolean procesar = archivo.exists();
 
@@ -113,7 +114,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		}
 
 		if (procesar) {
-			procesar = procesar && super.preProcesarArchivo();
+			procesar = procesar && super.preProcesarArchivo(mensajes);
 		}
 
 		return procesar;
@@ -178,7 +179,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	protected void adicionar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -222,14 +223,14 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 			value = dto.getNotasConfirmacion();
 			if (value.matches("@99 \\d{2}:\\d{2}\\-\\d{2}:\\d{2} @98 \\d{8}.*")) {
-				cambiarDatosFechaHoraMinimaMaximaEntrega(key, value, dto);
+				cambiarDatosFechaHoraMinimaMaximaEntrega(mensajes,key, value, dto);
 			} else {
 				if (value.matches("FECHA MINIMA \\d{8} FECHA MAXIMA \\d{8}.*")) {
-					cambiarDatosFechaMinimaMaximaEntrega(key, value, dto);
+					cambiarDatosFechaMinimaMaximaEntrega(mensajes,key, value, dto);
 				} else {
 					if (value.matches(
 							"((ENTREGAR|LUNES|MARTES|MIERCOLES|JUEVES|VIERNES|SABADO|DOMINGO)\\s){0,1}((A|P)(\\.*)M(\\.*)).*")) {
-						inferirFechaHoraEntrega(key, value, dto);
+						inferirFechaHoraEntrega(mensajes,key, value, dto);
 					}
 				}
 			}
@@ -242,12 +243,12 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 	}
 
 	@Override
-	protected Map<String, ETLOrdenDto> preCargar(Map<String, ETLOrdenDto> map) {
-		map = super.preCargar(map);
+	protected Map<String, ETLOrdenDto> preCargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
+		map = super.preCargar(map, mensajes);
 
 		Map<String, List<ETLLineaOrdenDto>> lineas = null;
 
@@ -256,7 +257,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		lineasOrdenStrategy.setDirectorioProcesados(this.getDirectorioProcesados());
 		lineasOrdenStrategy.setDirectorioErrores(this.getDirectorioErrores());
 
-		lineas = lineasOrdenStrategy.procesarLineas(getArchivoLineas());
+		lineas = lineasOrdenStrategy.procesarLineas(getArchivoLineas(),mensajes);
 
 		for (String key : map.keySet()) {
 			if (lineas.containsKey(key)) {
@@ -265,8 +266,6 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			}
 		}
 
-		this.getMensajes().getMensajes().addAll(lineasOrdenStrategy.getMensajes().getMensajes());
-
 		lineasOrdenStrategy.setDirectorioEntrada(null);
 		lineasOrdenStrategy.setDirectorioSalida(null);
 		lineasOrdenStrategy.setDirectorioProcesados(null);
@@ -274,26 +273,24 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 		final List<ClienteBodegaAssociation> bodegas = clienteRepository
 				.findClienteBodegaAssociationByClienteCodigo(this.getClienteCodigo());
-		
+
 		List<ETLOrdenDto> list = map.entrySet().stream()
 				.filter(a -> getTipoServicioCodigoAlternoTraslado().equals(a.getValue().getTipoServicioCodigoAlterno()))
-				.map(a -> a.getValue())
-				.collect(Collectors.toCollection(ArrayList::new));
+				.map(a -> a.getValue()).collect(Collectors.toCollection(ArrayList::new));
 
 		for (ETLOrdenDto dto : list) {
-			boolean traslado = dto.getLineas()
-					.stream()
-					.anyMatch(a -> 
-					{
-						if (!a.getBodegaDestinoCodigoAlterno().isEmpty()) {
-							boolean origen = bodegas.stream().anyMatch(b -> b.getCodigoAlterno().equals(a.getBodegaOrigenCodigoAlterno()));
-							boolean destino = bodegas.stream().anyMatch(b -> b.getCodigoAlterno().equals(a.getBodegaDestinoCodigoAlterno()));
-							return origen && destino;
-						}
-						return false;
-					});
-			
-			if(traslado){
+			boolean traslado = dto.getLineas().stream().anyMatch(a -> {
+				if (!a.getBodegaDestinoCodigoAlterno().isEmpty()) {
+					boolean origen = bodegas.stream()
+							.anyMatch(b -> b.getCodigoAlterno().equals(a.getBodegaOrigenCodigoAlterno()));
+					boolean destino = bodegas.stream()
+							.anyMatch(b -> b.getCodigoAlterno().equals(a.getBodegaDestinoCodigoAlterno()));
+					return origen && destino;
+				}
+				return false;
+			});
+
+			if (traslado) {
 				dto.setTipoServicioCodigo(this.getTipoServicioCodigoTraslado());
 				dto.setDestinoCiudadNombreAlterno("");
 				dto.setDestinoDireccion("");
@@ -308,19 +305,20 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLOrdenDto> map) {
+	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
 		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
 			ETLOrdenDto dto = entry.getValue();
 			try {
 				Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
 				if (orden != null) {
-					logInfo(dto.getNumeroOrden(), "", "OK");
+					logInfo(mensajes, "OK", "", "", dto.getNumeroOrden());
 				} else {
-					logWarning(dto.getNumeroOrden(), "",
-							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.");
+					logWarning(mensajes,
+							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.","", "", 
+							dto.getNumeroOrden());
 				}
 			} catch (Exception e) {
-				logError(dto.getNumeroOrden(), "", e.getMessage());
+				logError(mensajes, e.getMessage(), "", "", dto.getNumeroOrden());
 			}
 		}
 	}
@@ -331,7 +329,8 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	private void cambiarDatosFechaHoraMinimaMaximaEntrega(String key, String value, ETLOrdenDto dto) {
+	private void cambiarDatosFechaHoraMinimaMaximaEntrega(MensajesDto mensajes, String key, String value,
+			ETLOrdenDto dto) {
 		LocalDate dateValue;
 		LocalTime timeValue;
 
@@ -347,7 +346,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			dateValue = Basic.toFecha(campos[2], null, getFormatoFechaCorta());
 		} catch (ParseException e) {
-			logParseException(key, FECHA_MAXIMA, value, "");
+			logParseException(mensajes, key, FECHA_MAXIMA, value, "", "");
 		}
 		dto.setFechaEntregaSugeridaMaxima(dateValue);
 		dto.setFechaEntregaSugeridaMinima(dto.getFechaEntregaSugeridaMaxima());
@@ -356,7 +355,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			timeValue = Basic.toHora(campos[0], null, getFormatoHoraHHmm());
 		} catch (ParseException e) {
-			logParseException(key, HORA_MINIMA, value, "");
+			logParseException(mensajes, key, HORA_MINIMA, value, "", "");
 		}
 		dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -364,12 +363,13 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			timeValue = Basic.toHora(campos[1], null, getFormatoHoraHHmm());
 		} catch (ParseException e) {
-			logParseException(key, HORA_MAXIMA, value, "");
+			logParseException(mensajes, key, HORA_MAXIMA, value, "", "");
 		}
 		dto.setHoraEntregaSugeridaMaxima(timeValue);
 	}
 
-	private void cambiarDatosFechaMinimaMaximaEntrega(String key, String value, ETLOrdenDto dto) {
+	private void cambiarDatosFechaMinimaMaximaEntrega(MensajesDto mensajes, String key, String value,
+			ETLOrdenDto dto) {
 		LocalDate dateValue;
 
 		value = value.substring(0, 43);
@@ -381,7 +381,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			dateValue = Basic.toFecha(campos[1], null, getFormatoFechaCorta());
 		} catch (ParseException e) {
-			logParseException(key, FECHA_MAXIMA, value, "");
+			logParseException(mensajes, key, FECHA_MAXIMA, value, "", "");
 		}
 		dto.setFechaEntregaSugeridaMaxima(dateValue);
 
@@ -389,12 +389,12 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			dateValue = Basic.toFecha(campos[0], null, getFormatoFechaCorta());
 		} catch (ParseException e) {
-			logParseException(key, FECHA_MINIMA, value, "");
+			logParseException(mensajes, key, FECHA_MINIMA, value, "", "");
 		}
 		dto.setFechaEntregaSugeridaMinima(dateValue);
 	}
 
-	private void inferirFechaHoraEntrega(String key, String value, ETLOrdenDto dto) {
+	private void inferirFechaHoraEntrega(MensajesDto mensajes, String key, String value, ETLOrdenDto dto) {
 		value = value.replaceAll("\\.", "").replaceAll("ENTREGAR", "").replaceAll(" ", " ").trim();
 
 		if (value.matches("AM|PM")) {
@@ -459,7 +459,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			timeValue = Basic.toHora(horaMinima, null, getFormatoHoraHHmm());
 		} catch (ParseException e) {
-			logParseException(key, HORA_MINIMA, value, "");
+			logParseException(mensajes, key, HORA_MINIMA, value, "", "");
 		}
 		dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -467,7 +467,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		try {
 			timeValue = Basic.toHora(horaMaxima, null, getFormatoHoraHHmm());
 		} catch (ParseException e) {
-			logParseException(key, HORA_MAXIMA, value, "");
+			logParseException(mensajes, key, HORA_MAXIMA, value, "", "");
 		}
 		dto.setHoraEntregaSugeridaMaxima(timeValue);
 	}

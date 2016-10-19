@@ -112,9 +112,9 @@ public class ProductosController {
 		try {
 			Producto model = this.productosService.save(dto);
 			respuesta.put("producto", this.productosService.productoToDto(model));
-			mensajes.addMensaje(SeveridadType.INFO, "");
+			mensajes.add(SeveridadType.INFO, "");
 		} catch (Exception e) {
-			mensajes.addMensaje(e);
+			mensajes.add(e);
 		}
 
 		respuesta.put("mensajes", mensajes);

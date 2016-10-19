@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
@@ -76,17 +77,17 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-    @Override
-    protected Reader<File, String> getReader() {
-        return reader;
-    }
+	@Override
+	protected Reader<File, String> getReader() {
+		return reader;
+	}
 
 	@Override
 	protected String limpiar(String texto) {
 		return super.limpiar(texto).replace('\r', ' ');
 	}
 
-    // ---------------------------------------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	protected List<String> getCamposEsperados() {
 		List<String> list = new ArrayList<>();
@@ -151,7 +152,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	protected void adicionar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -194,7 +195,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
 			} catch (ParseException e) {
-				logParseException(key, FECHA_MINIMA, value, "");
+				logParseException(mensajes, key, FECHA_MINIMA, value, "", "");
 			}
 			dto.setFechaEntregaSugeridaMinima(dateValue);
 
@@ -204,7 +205,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				dateValue = Basic.toFecha(value, null, getFormatoFechaCorta());
 			} catch (ParseException e) {
-				logParseException(key, FECHA_MAXIMA, value, "");
+				logParseException(mensajes, key, FECHA_MAXIMA, value, "", "");
 			}
 			dto.setFechaEntregaSugeridaMaxima(dateValue);
 
@@ -214,7 +215,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				timeValue = Basic.toHora(value, null, getFormatoHoraHHmm());
 			} catch (ParseException e) {
-				logParseException(key, HORA_MINIMA, value, "");
+				logParseException(mensajes, key, HORA_MINIMA, value, "", "");
 			}
 			dto.setHoraEntregaSugeridaMinima(timeValue);
 
@@ -224,7 +225,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				timeValue = Basic.toHora(value, null, getFormatoHoraHHmm());
 			} catch (ParseException e) {
-				logParseException(key, HORA_MAXIMA, value, "");
+				logParseException(mensajes, key, HORA_MAXIMA, value, "", "");
 			}
 			dto.setHoraEntregaSugeridaMaxima(timeValue);
 
@@ -238,7 +239,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 				try {
 					integerValue = Basic.toEntero(value, null, getCantidadSolicitadaFormat());
 				} catch (ParseException e) {
-					logParseException(key, VALOR_RECAUDO, value, getCantidadSolicitadaFormat().toPattern());
+					logParseException(mensajes, key, VALOR_RECAUDO, value, getCantidadSolicitadaFormat().toPattern(),
+							"");
 				}
 			}
 			dto.setValorRecaudo(integerValue);
@@ -252,7 +254,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 		if (map.containsKey(key)) {
 			String value;
 			Integer integerValue;
@@ -267,7 +269,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				integerValue = Basic.toEntero(value, null, getCantidadSolicitadaFormat());
 			} catch (ParseException e) {
-				logParseException(key, LINEA_CANTIDAD_SOLICITADA, value, getCantidadSolicitadaFormat().toPattern());
+				logParseException(mensajes, key, LINEA_CANTIDAD_SOLICITADA, value,
+						getCantidadSolicitadaFormat().toPattern(), "");
 			}
 			dto.setCantidadSolicitada(integerValue);
 
@@ -287,8 +290,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			try {
 				integerValue = Basic.toEntero(value, null, getCantidadSolicitadaFormat());
 			} catch (ParseException e) {
-				logParseException(key, LINEA_VALOR_DECLARADO_POR_UNIDAD, value,
-						getCantidadSolicitadaFormat().toPattern());
+				logParseException(mensajes, key, LINEA_VALOR_DECLARADO_POR_UNIDAD, value,
+						getCantidadSolicitadaFormat().toPattern(), "");
 			}
 			dto.setValorDeclaradoPorUnidad(integerValue);
 
@@ -309,19 +312,20 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLOrdenDto> map) {
+	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
 		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
 			ETLOrdenDto dto = entry.getValue();
 			try {
 				Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
 				if (orden != null) {
-					logInfo(dto.getNumeroOrden(), "", "OK");
+					logInfo(mensajes, "OK", "", "", dto.getNumeroOrden());
 				} else {
-					logWarning(dto.getNumeroOrden(), "",
-							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.");
+					logWarning(mensajes,
+							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.",
+							"", "", dto.getNumeroOrden());
 				}
 			} catch (Exception e) {
-				logError(dto.getNumeroOrden(), "", e.getMessage());
+				logError(mensajes, e.getMessage(), "", "", dto.getNumeroOrden());
 			}
 		}
 	}

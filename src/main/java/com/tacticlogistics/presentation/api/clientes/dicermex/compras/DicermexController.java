@@ -1,6 +1,9 @@
 package com.tacticlogistics.presentation.api.clientes.dicermex.compras;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,26 +11,31 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.LineaOrdenDeCompraDto;
-import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.OrdenDeCompraDto;
 import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.PreAlertasService;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.LineaOrdenDeCompraDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.NuevaOrdenDeCompraDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.OrdenDeCompraDTO;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.OrdenDeCompraValidator;
 import com.tacticlogistics.presentation.util.BadRequestException;
 
 @CrossOrigin	
 @RestController
 @RequestMapping("/oms/dicermex")
 public class DicermexController {
-
+	@Autowired
+	private OrdenDeCompraValidator ordenDeCompraValidator;
+	
 	@Autowired
 	private PreAlertasService comprasService;
 	
 	@RequestMapping(value = "/ordenes/test", method = RequestMethod.GET)
-	public OrdenDeCompraDto test() {
-		return OrdenDeCompraDto
+	public OrdenDeCompraDTO test() {
+		// @formatter:off
+		return OrdenDeCompraDTO
 			.builder()
 			.centroOperacion("100")
 			.consecutivoDocumento("1111111")
-			.fechaDocumento("29991010")
+			.fechaDocumento("20161017")
 			.terceroProveedor("PROVIDER")
 			.notasDocumento("NOTA")
 			.sucursalProveedor("100")
@@ -79,15 +87,16 @@ public class DicermexController {
 				.build()
 					)
 			.build();
+		// @formatter:on
 	}
 	
 	@RequestMapping(value = "/ordenes/compras", method = RequestMethod.POST)
-	public MensajesDto preAlertarOrConfirmarOrdenDeCompra(@RequestBody OrdenDeCompraDto dto) {
+	public MensajesDto alertarOrdenDeCompra(@Validated @RequestBody OrdenDeCompraDTO dto) {
 		MensajesDto mensajes = new MensajesDto();
 		try {
 			return comprasService.alertarOrdenDeCompra(dto);
 		} catch (Exception e) {
-			mensajes.addMensaje(e, dto);
+			mensajes.add(e);
 			throw new BadRequestException(mensajes);
 		}
 	}

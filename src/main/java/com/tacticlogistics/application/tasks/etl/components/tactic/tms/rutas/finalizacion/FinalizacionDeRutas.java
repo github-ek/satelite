@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.ExcelWorkSheetReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
@@ -137,7 +138,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 
 	@Override
 	protected void adicionar(String key, Map<String, EntregaDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 		if (!map.containsKey(key)) {
 			String value;
 			LocalDate dateValue;
@@ -152,7 +153,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			dto.setNumeroOrden(value);
 
 			value = getValorCampo(FECHA_RUTA, campos, mapNameToIndex);
-			dateValue = getValorCampoFecha(key, FECHA_RUTA, value, getFormatoFechaCorta());
+			dateValue = getValorCampoFecha(mensajes,key, FECHA_RUTA, value, getFormatoFechaCorta());
 			dto.setFechaRuta(dateValue);
 
 			value = getValorCampo(MOVIL, campos, mapNameToIndex);
@@ -171,7 +172,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			if (value.equals("NULL")) {
 				dateTimeValue = null;
 			} else {
-				dateTimeValue = getValorCampoFechaHora(key, FECHA_ENTREGA_INICIO, value, getFormatoFechaLarga());
+				dateTimeValue = getValorCampoFechaHora(mensajes,key, FECHA_ENTREGA_INICIO, value, getFormatoFechaLarga());
 			}
 			dto.setFechaEntregaInicio(dateTimeValue);
 
@@ -180,7 +181,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 			if (value.equals("NULL")) {
 				dateTimeValue = null;
 			} else {
-				dateTimeValue = getValorCampoFechaHora(key, FECHA_ENTREGA_FIN, value, getFormatoFechaLarga());
+				dateTimeValue = getValorCampoFechaHora(mensajes,key, FECHA_ENTREGA_FIN, value, getFormatoFechaLarga());
 			}
 			dto.setFechaEntregaFin(dateTimeValue);
 
@@ -190,13 +191,13 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, EntregaDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, EntregaDto> map) {
+	protected void cargar(Map<String, EntregaDto> map, MensajesDto mensajes) {
 		log.info("Begin cargar");
 
 		for (EntregaDto dto : map.values()) {

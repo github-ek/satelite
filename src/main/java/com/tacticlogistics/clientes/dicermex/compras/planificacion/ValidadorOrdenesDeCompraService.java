@@ -52,9 +52,6 @@ public class ValidadorOrdenesDeCompraService {
 
 	private static TipoServicio servicio;
 
-	@Autowired
-	private AlertasWmsService service;
-
 	// TODO PASAR A Servicio Generico de Ordenes
 	// TODO PROCESMIENTO POR BLOQUES DE TAMAÑOS PEQUEÑOS
 	@Transactional(readOnly = false)
@@ -76,12 +73,6 @@ public class ValidadorOrdenesDeCompraService {
 				ordenRepository.save(orden);
 			}
 			ordenRepository.flush();
-		}
-
-		List<Orden> list = service.getOrdenesPendientesPorAlertarAlWms();
-
-		for (Orden orden : list) {
-			log.info("Las siguientes ordenes deben ser prealertadas en el WMS", orden.getNumeroOrden());
 		}
 	}
 
@@ -107,29 +98,28 @@ public class ValidadorOrdenesDeCompraService {
 			.withIgnorePaths("tipoServicio.ordinal");
 		//@formatter:on
 
-		List<Orden> ordenes = ordenRepository.findAll(Example.of(probe,matcher));
+		List<Orden> ordenes = ordenRepository.findAll(Example.of(probe, matcher));
 		return ordenes;
 	}
 
-	private MensajesDto validarOrdenConfirmada(final Set<Regla<Orden>> reglas,final Orden orden) {
+	private MensajesDto validarOrdenConfirmada(final Set<Regla<Orden>> reglas, final Orden orden) {
 		MensajesDto mensajes = new MensajesDto();
 		for (val regla : reglas) {
-			mensajes.AddMensajes(regla.validar(orden));
+			mensajes.addAll(regla.validar(orden));
 		}
 		return mensajes;
 	}
 
 	private void registrarValidaciones(final Orden orden, MensajesDto mensajes) {
-		for (val e : mensajes.getMensajes()) {
+		mensajes.forEach(e -> {
 			// @formatter:off
 			orden.getMensajes()
 				.add(new MensajeEmbeddable(
 						e.getSeveridad(), 
 						e.getCodigo(), 
-						e.getTexto(), 
-						e.getGrupo()));
+						e.getTexto()));
 			// @formatter:on
-		}
+		});
 	}
 
 	private boolean pasoValidaciones(final com.tacticlogistics.domain.model.ordenes.Orden orden, MensajesDto mensajes) {
@@ -152,30 +142,30 @@ public class ValidadorOrdenesDeCompraService {
 
 	private Set<Regla<Orden>> getReglas() {
 		Set<Regla<Orden>> reglas = new HashSet<>();
-		
+
 		reglas.add(new ReglaTransicionConfirmadaAceptada());
 		reglas.add(new ReglaTercero());
-		
+
 		reglas.add(new ReglaCitaRecogida());
 		reglas.add(new ReglaPuntoRecogida());
 
 		reglas.add(new ReglaCitaEntrega());
 		reglas.add(new ReglaPuntoEntrega());
 
-		//TODO REGLA RECAUDO DEBE SER NULL PARA OC
-		//TODO REGLA TIEMPO MINIMO/MAXIMO PARA PRESTAR EL SERVICIO
-		//TODO REGLAS TIPO DE VEHICULO Y VALOR FLETE
+		// TODO REGLA RECAUDO DEBE SER NULL PARA OC
+		// TODO REGLA TIEMPO MINIMO/MAXIMO PARA PRESTAR EL SERVICIO
+		// TODO REGLAS TIPO DE VEHICULO Y VALOR FLETE
 
 		reglas.add(new ReglaLineas());
 		reglas.add(new ReglaCatidadesPlanificadas());
 		reglas.add(new ReglaProductos());
-		
+
 		reglas.add(new ReglaBodegaOrigen());
 		reglas.add(new ReglaBodegaDestino());
-		
+
 		return reglas;
 	}
-	
+
 	private TipoServicio getServicio() {
 		if (servicio == null) {
 			servicio = tipoServicioRepository.findByCodigoIgnoringCase(CODIGO_SERVICIO);

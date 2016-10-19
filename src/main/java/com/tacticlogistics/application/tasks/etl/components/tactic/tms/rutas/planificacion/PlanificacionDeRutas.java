@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.ExcelWorkSheetReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
@@ -115,13 +116,13 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 
 	@Override
 	protected void adicionar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
-			Map<Integer, String> mapIndexToName) {
+			Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 		if (!map.containsKey(key)) {
 			LocalTime timeValue;
 			String value;
 
 			value = getValorCampo(HORA, campos, mapNameToIndex);
-			timeValue = getValorCampoHoraTourSolver(key, HORA.toString(), value);
+			timeValue = getValorCampoHoraTourSolver(mensajes, key, HORA.toString(), value);
 
 			RutaDto dto = new RutaDto(key, timeValue);
 
@@ -131,7 +132,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
-			Map<Integer, String> mapIndexToName) {
+			Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 
 		if (map.containsKey(key)) {
 			String value;
@@ -146,15 +147,15 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 			LineaRutaDto dto = new LineaRutaDto();
 
 			value = getValorCampo(SECUENCIA, campos, mapNameToIndex);
-			integerValue = getValorCampoDecimal(key, SECUENCIA.toString(), value, getFormatoEntero());
+			integerValue = getValorCampoDecimal(mensajes, key, SECUENCIA.toString(), value, getFormatoEntero());
 			dto.setSecuencia(integerValue);
 
 			value = getValorCampo(ID_ORDEN, campos, mapNameToIndex);
-			integerValue = getValorCampoDecimal(key, ID_ORDEN.toString(), value, getFormatoEntero());
+			integerValue = getValorCampoDecimal(mensajes, key, ID_ORDEN.toString(), value, getFormatoEntero());
 			dto.setOrdenId(integerValue);
 
 			value = getValorCampo(HORA, campos, mapNameToIndex);
-			timeValue = getValorCampoHoraTourSolver(key, HORA.toString(), value);
+			timeValue = getValorCampoHoraTourSolver(mensajes, key, HORA.toString(), value);
 			dto.setHoraEstimada(timeValue);
 
 			map.get(key).getLineas().add(dto);
@@ -169,7 +170,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	// FINALIZADO
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, RutaDto> map) {
+	protected void cargar(Map<String, RutaDto> map, MensajesDto mensajes) {
 		log.info("Begin cargar");
 
 		Integer corteRutaId = null;
@@ -238,8 +239,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 		return (Integer) result.get("rutaId");
 	}
 
-	private void incluirOrdenEnRuta(Integer ordenId, Integer rutaId, Integer secuenciaRuta,
-			LocalTime localTime) {
+	private void incluirOrdenEnRuta(Integer ordenId, Integer rutaId, Integer secuenciaRuta, LocalTime localTime) {
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
 				.withSchemaName("tms").withProcedureName("PlanificacionRutasIncluirOrdenEnRuta");
 
@@ -268,7 +268,8 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	private LocalTime getValorCampoHoraTourSolver(String key, String campo, String value) {
+	private LocalTime getValorCampoHoraTourSolver(MensajesDto mensajes, String key, String campo,
+			String value) {
 		LocalTime time = null;
 		value = value.replace(",", ".");
 		try {
@@ -278,9 +279,9 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 			}
 			time = LocalTime.ofSecondOfDay((long) ((24L * 60L * 60L * 1L) * floatValue));
 		} catch (ParseException e) {
-			logParseException(key, HORA, value, "");
+			logParseException(mensajes, key, HORA, value, "", "");
 		} catch (RuntimeException e) {
-			logParseException(key, HORA, value, "");
+			logParseException(mensajes, key, HORA, value, "", "");
 		}
 		return time;
 	}

@@ -1,5 +1,8 @@
 package com.tacticlogistics.clientes.dicermex.compras.erp.prealertas;
 
+import static com.tacticlogistics.clientes.dicermex.compras.Constantes.CODIGO_CLIENTE;
+import static com.tacticlogistics.clientes.dicermex.compras.Constantes.CODIGO_SERVICIO_COMPRAS;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.LineaOrdenDeCompraDto;
+import com.tacticlogistics.clientes.dicermex.compras.erp.prealertas.dto.OrdenDeCompraDTO;
 import com.tacticlogistics.domain.model.clientes.dicermex.LineaOrdenDeCompra;
 import com.tacticlogistics.domain.model.clientes.dicermex.OrdenDeCompra;
 import com.tacticlogistics.domain.model.common.SeveridadType;
@@ -45,10 +50,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PreAlertasService {
 
-	private static final String CODIGO_CLIENTE = "DICERMEX";
-
-	private static final String CODIGO_SERVICIO = "COMPRAS";
-
 	@Autowired
 	private ClienteRepository clienteRepository;
 
@@ -71,9 +72,15 @@ public class PreAlertasService {
 
 	private static TipoServicio servicio;
 
-	public MensajesDto alertarOrdenDeCompra(OrdenDeCompraDto dto) {
+	public MensajesDto alertarOrdenDeCompra(OrdenDeCompraDTO dto) {
 		Orden compra = ordenRepository.findFirstByClienteIdAndNumeroOrden(getCliente().getId(), dto.getNumeroOrden());
 
+		int i=1;
+		
+		for (val e : dto.getLineas()) {
+			e.setNumeroRegistro(i++);
+		}
+		
 		if (compra == null) {
 			return this.preAlertarOrdenDeCompra(dto);
 		} else {
@@ -82,39 +89,35 @@ public class PreAlertasService {
 	}
 
 	@Transactional(readOnly = false)
-	private MensajesDto preAlertarOrdenDeCompra(OrdenDeCompraDto dto) {
+	private MensajesDto preAlertarOrdenDeCompra(OrdenDeCompraDTO dto) {
 		final MensajesDto mensajes = new MensajesDto();
-		
+
 		final OrdenDeCompra compraCliente = validarNuevaOrdenDeCompraCliente(dto, mensajes);
-		
+
 		if (!mensajes.getSeveridadMaxima().equals(SeveridadType.ERROR)) {
-			try {
-				ordenDeCompraRepository.saveAndFlush(compraCliente);
-				mensajes.addMensaje(SeveridadType.INFO, "Orden creada exitosamente");
-			} catch (Exception e) {
-				mensajes.addMensaje(e);
-			}
+			ordenDeCompraRepository.saveAndFlush(compraCliente);
+			mensajes.add(SeveridadType.INFO, "Orden creada exitosamente");
 		}
 
 		return mensajes;
 	}
 
 	@Transactional(readOnly = false)
-	private MensajesDto confirmarOrdeDeCompra(OrdenDeCompraDto dto, int compraId) {
+	private MensajesDto confirmarOrdeDeCompra(OrdenDeCompraDTO dto, int compraId) {
 		final MensajesDto mensajes = new MensajesDto();
 		final LocalDateTime fechaUpd = LocalDateTime.now();
 		final String usuarioUpd = dto.getTerceroCompradorId();
 
-		final OrdenDeCompra ordenDeCompra; 
-		
+		final OrdenDeCompra ordenDeCompra;
+
 		ordenDeCompra = ordenDeCompraRepository.findOne(compraId);
 
 		if (ordenDeCompra == null) {
-			mensajes.addMensaje(SeveridadType.ERROR,
+			mensajes.add(SeveridadType.ERROR,
 					"La orden no corresponde a una orden de compra del cliente " + this.getCliente().getCodigo());
 		}
 		if (!ordenDeCompra.getOrden().getEstadoOrden().equals(EstadoOrdenType.NO_CONFIRMADA)) {
-			mensajes.addMensaje(SeveridadType.ERROR,
+			mensajes.add(SeveridadType.ERROR,
 					"La orden se encuentra en el estado " + ordenDeCompra.getOrden().getEstadoOrden().toString()
 							+ ".Solo es posible confirmar ordenes en estado "
 							+ EstadoOrdenType.NO_CONFIRMADA.toString());
@@ -143,12 +146,11 @@ public class PreAlertasService {
 		{
 			ordenDeCompra.getLineas().clear();
 
-			ordenDeCompra.setFechaDocumento(dto.getFechaDocumento());
+			ordenDeCompra.setFechaDocumento(dto.getFechaDocumento().toString());
 			ordenDeCompra.setTerceroProveedor(dto.getTerceroProveedor());
 			ordenDeCompra.setNotasDocumento(dto.getNotasDocumento());
 			ordenDeCompra.setSucursalProveedor(dto.getSucursalProveedor());
 			ordenDeCompra.setTerceroCompradorId(dto.getTerceroCompradorId());
-			ordenDeCompra.setNumeroDocumentoReferencia(dto.getNumeroDocumentoReferencia());
 			ordenDeCompra.setMonedaDocumento(dto.getMonedaDocumento());
 			ordenDeCompra.setMonedaConversion(dto.getMonedaConversion());
 			ordenDeCompra.setCentroOperacionOrdenCompra(dto.getCentroOperacionOrdenCompra());
@@ -162,12 +164,12 @@ public class PreAlertasService {
 
 		ordenDeCompraRepository.saveAndFlush(oc);
 
-		mensajes.addMensaje(SeveridadType.INFO, "Orden confirmada exitosamente");
+		mensajes.add(SeveridadType.INFO, "Orden confirmada exitosamente");
 
 		return mensajes;
 	}
 
-	private OrdenDeCompra validarNuevaOrdenDeCompraCliente(final OrdenDeCompraDto dto, final MensajesDto mensajes) {
+	private OrdenDeCompra validarNuevaOrdenDeCompraCliente(final OrdenDeCompraDTO dto, final MensajesDto mensajes) {
 		final LocalDateTime fechaUpd = LocalDateTime.now();
 		final String usuarioUpd = dto.getTerceroCompradorId();
 
@@ -187,12 +189,11 @@ public class PreAlertasService {
 				.orden(compra)
 				.centroOperacion(dto.getCentroOperacion())
 				.consecutivoDocumento(dto.getConsecutivoDocumento())
-				.fechaDocumento(dto.getFechaDocumento())
+				.fechaDocumento(dto.getFechaDocumento().toString())
 				.terceroProveedor(dto.getTerceroProveedor())
 				.notasDocumento(dto.getNotasDocumento())
 				.sucursalProveedor(dto.getSucursalProveedor())
 				.terceroCompradorId(dto.getTerceroCompradorId())
-				.numeroDocumentoReferencia(dto.getNumeroDocumentoReferencia())
 				.monedaDocumento(dto.getMonedaDocumento())
 				.monedaConversion(dto.getMonedaConversion())
 				.centroOperacionOrdenCompra(dto.getCentroOperacionOrdenCompra())
@@ -205,7 +206,7 @@ public class PreAlertasService {
 		return ordenDeCompra;
 	}
 
-	private Orden validarNuevaOrdenDeCompra(final OrdenDeCompraDto dto, final LocalDateTime fechaUpd,
+	private Orden validarNuevaOrdenDeCompra(final OrdenDeCompraDTO dto, final LocalDateTime fechaUpd,
 			final String usuarioUpd, final MensajesDto mensajes) {
 		final Contacto contacto = new Contacto("", "", "");
 
@@ -321,31 +322,31 @@ public class PreAlertasService {
 			}
 
 			if (bodega == null) {
-				mensajes.addMensaje(SeveridadType.ERROR,
+				mensajes.add(SeveridadType.ERROR,
 						String.format(
 								"La línea con número de registro %d, tiene el código de bodega destino \"%s\", el cual no se pudo homologar a una bodega valida.",
 								e.getNumeroRegistro(), e.getBodegaId()));
 			}
 			if (estadoInventario == null) {
-				mensajes.addMensaje(SeveridadType.ERROR,
+				mensajes.add(SeveridadType.ERROR,
 						String.format(
 								"La línea con número de registro %d, tiene el código de bodega destino \"%s\", el cual no se pudo homologar a un estado de inventario valido.",
 								e.getNumeroRegistro(), e.getBodegaId()));
 			}
 			if (producto == null) {
-				mensajes.addMensaje(SeveridadType.ERROR,
+				mensajes.add(SeveridadType.ERROR,
 						String.format(
 								"La línea con número de registro %d, tiene el código de producto \"%s\", el cual no existe.",
 								e.getNumeroRegistro(), e.getItemId()));
 			} else {
 				if (unidad == null) {
-					mensajes.addMensaje(SeveridadType.ERROR,
+					mensajes.add(SeveridadType.ERROR,
 							String.format(
 									"La línea con número de registro %d, tiene el código de producto \"%s\", el cual no tiene una huella de primer nivel.",
 									e.getNumeroRegistro(), e.getItemId()));
 				}
 				if (dimensiones == null) {
-					mensajes.addMensaje(SeveridadType.ERROR,
+					mensajes.add(SeveridadType.ERROR,
 							String.format(
 									"La línea con número de registro %d, tiene el código de producto \"%s\", el cual no tiene dimensiones.",
 									e.getNumeroRegistro(), e.getItemId()));
@@ -451,7 +452,7 @@ public class PreAlertasService {
 
 	private TipoServicio getServicio() {
 		if (servicio == null) {
-			servicio = tipoServicioRepository.findByCodigoIgnoringCase(CODIGO_SERVICIO);
+			servicio = tipoServicioRepository.findByCodigoIgnoringCase(CODIGO_SERVICIO_COMPRAS);
 		}
 		return servicio;
 	}

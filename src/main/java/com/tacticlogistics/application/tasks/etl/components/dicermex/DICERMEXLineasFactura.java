@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
@@ -39,11 +40,10 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
         return reader;
     }
 
-    public Map<String, List<ETLLineaOrdenDto>> procesarLineas(File file) {
+    public Map<String, List<ETLLineaOrdenDto>> procesarLineas(File file, MensajesDto mensajes) {
         Map<String, List<ETLLineaOrdenDto>> map = new HashMap<>();
 
         setArchivo(file);
-        setMensajes(null);
         log.info("\n");
         log.info("-------------------------------------------------------------------------------------------------");
         log.info("INICIO {}", getArchivo().getName());
@@ -51,27 +51,27 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
         boolean procesar = false;
         try {
-            procesar = preProcesarArchivo();
+            procesar = preProcesarArchivo(mensajes);
         } catch (RuntimeException e) {
-            onPreProcesarArchivoError(e);
+            onPreProcesarArchivoError(mensajes,e);
             return null;
         }
 
         if (procesar) {
             try {
-                map = preCargar(transformar(preTransformar(limpiar(extraer()))));
+                map = preCargar(transformar(preTransformar(limpiar(extraer()),mensajes),mensajes),mensajes);
             } catch (RuntimeException e) {
-                onProcesarArchivoError(e);
+                onProcesarArchivoError(mensajes,e);
             }
 
             try {
-                postProcesarArchivo();
+                postProcesarArchivo(mensajes);
             } catch (RuntimeException e) {
-                onPostProcesarArchivoError(e);
+                onPostProcesarArchivoError(mensajes,e);
             }
 
             try {
-                backUp();
+                backUp(mensajes);
             } catch (RuntimeException e) {
                 log.error("Durante backUp()", e);
             }
@@ -83,7 +83,6 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
         log.info("-------------------------------------------------------------------------------------------------");
         log.info("\n");
 
-        setMensajes(null);
         setArchivo(null);
 
         return map;
@@ -127,7 +126,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     @Override
     protected void adicionar(String key, Map<String, List<ETLLineaOrdenDto>> map, String[] campos,
-            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName,MensajesDto mensajes) {
 
         if (!map.containsKey(key)) {
             List<ETLLineaOrdenDto> list = new ArrayList<>();
@@ -137,7 +136,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     @Override
     protected void modificar(String key, Map<String, List<ETLLineaOrdenDto>> map, String[] campos,
-            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName,MensajesDto mensajes) {
         if (map.containsKey(key)) {
             String value;
             Integer integerValue;
@@ -152,7 +151,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
             try {
                 integerValue = Basic.toEntero(value, null, getFormatoEntero());
             } catch (ParseException e) {
-                logParseException(key, LINEA_CANTIDAD_SOLICITADA, value, getFormatoEntero().toPattern());
+                logParseException(mensajes,key, LINEA_CANTIDAD_SOLICITADA, value, getFormatoEntero().toPattern(),"");
             }
             dto.setCantidadSolicitada(integerValue);
 
@@ -172,7 +171,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
     @Override
-    protected void cargar(Map<String, List<ETLLineaOrdenDto>> map) {
+    protected void cargar(Map<String, List<ETLLineaOrdenDto>> map,MensajesDto mensajes) {
 
     }
 }

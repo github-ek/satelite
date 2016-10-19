@@ -78,9 +78,9 @@ public class DestinatariosRemitentesController {
 		try {
 			Destinatario model = this.destinatariosService.save(dto);
 			respuesta.put("destinatario", this.destinatariosService.destinatarioToDto(model));
-			mensajes.addMensaje(SeveridadType.INFO, "");
+			mensajes.add(SeveridadType.INFO, "");
 		} catch (Exception e) {
-			mensajes.addMensaje(e);
+			mensajes.add(e);
 		}
 
 		respuesta.put("mensajes", mensajes);

@@ -29,11 +29,6 @@
 			<artifactId>sqljdbc42</artifactId>
 			<version>6.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<!-- Incluidas directamente. No por Spring Boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -133,6 +128,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.j256.ormlite</groupId>
+			<artifactId>ormlite-core</artifactId>
+			<version>5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.j256.ormlite</groupId>
+			<artifactId>ormlite-jdbc</artifactId>
+			<version>5.0</version>
 		</dependency>
 	</dependencies>
 

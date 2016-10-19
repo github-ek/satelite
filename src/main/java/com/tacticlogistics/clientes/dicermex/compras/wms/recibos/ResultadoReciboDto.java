@@ -1,7 +1,7 @@
 package com.tacticlogistics.clientes.dicermex.compras.wms.recibos;
 
 import java.math.BigInteger;
-import java.util.Set;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,5 +18,5 @@ public class ResultadoReciboDto {
 	private String numeroOrdenWms;
 	private String clienteCodigoWms;
 	private String bodegaCodigo;
-	private Set<LineaResultadoReciboDto> lineas;
+	private List<LineaResultadoReciboDto> lineas;
 }

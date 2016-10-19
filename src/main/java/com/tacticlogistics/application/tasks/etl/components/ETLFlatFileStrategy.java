@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.tasks.etl.readers.FlatFileReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.infrastructure.services.Basic;
@@ -40,8 +41,8 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
-	protected String preTransformar(String texto) {
-		texto = super.preTransformar(texto);
+	protected String preTransformar(String texto, MensajesDto mensajes) {
+		texto = super.preTransformar(texto, mensajes);
 
 		if (generarEncabezadoConLosNombresDeLosCamposEsperados()) {
 			StringBuffer sb = new StringBuffer();
@@ -51,7 +52,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 				esperados.forEach(a -> {
 					sb.append(a).append(getSeparadorCampos());
 				});
-				sb.setLength(sb.length()-1);
+				sb.setLength(sb.length() - 1);
 				sb.append(getSeparadorRegistros());
 			}
 
@@ -63,7 +64,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	}
 
 	@Override
-	protected Map<String, E> transformar(String texto) {
+	protected Map<String, E> transformar(String texto, MensajesDto mensajes) {
 		boolean seHaEncontradoElPrimerRegistro = false;
 
 		Map<String, E> map = new HashMap<>();
@@ -87,7 +88,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 					seHaEncontradoElPrimerRegistro = true;
 					configurarMapping(campos, mapNameToIndex, mapIndexToName);
 				} else {
-					if (!checkNumeroCamposEsperados(i, campos, mapIndexToName)) {
+					if (!checkNumeroCamposEsperados(i, campos, mapIndexToName, mensajes)) {
 						System.out.println("IGNORADO:" + registros[i]);
 						System.out.println("IGNORADO:(" + campos.length + "," + mapIndexToName.size() + ")");
 						continue;
@@ -103,9 +104,9 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 					String key = generarIdentificadorRegistro(campos, mapNameToIndex);
 
 					if (!map.containsKey(key)) {
-						adicionar(key, map, campos, mapNameToIndex, mapIndexToName);
+						adicionar(key, map, campos, mapNameToIndex, mapIndexToName, mensajes);
 					}
-					modificar(key, map, campos, mapNameToIndex, mapIndexToName);
+					modificar(key, map, campos, mapNameToIndex, mapIndexToName, mensajes);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -120,10 +121,10 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	protected abstract String generarIdentificadorRegistro(String[] campos, Map<String, Integer> mapNameToIndex);
 
 	protected abstract void adicionar(String key, Map<String, E> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName);
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes);
 
 	protected abstract void modificar(String key, Map<String, E> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName);
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes);
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	protected String getSeparadorRegistros() {
@@ -190,11 +191,12 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 		}
 	}
 
-	protected boolean checkNumeroCamposEsperados(int index, String[] campos, Map<Integer, String> mapIndexToName) {
+	protected boolean checkNumeroCamposEsperados(int index, String[] campos, Map<Integer, String> mapIndexToName,
+			MensajesDto mensajes) {
 		if (campos.length != mapIndexToName.size()) {
 			String texto = MessageFormat.format("Error en el numero de columnas.Esperado:{0}, Identificadas{1}",
 					mapIndexToName.size(), campos.length);
-			logError(getArchivo().getName(), "Fila:" + index, texto);
+			logError(mensajes, "Fila:" + index + ":" + texto, getArchivo().getName(),"",null);
 			return false;
 		}
 		return true;
@@ -232,65 +234,72 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	protected LocalDate getValorCampoFecha(String key, Enum<?> campo, String value, DateTimeFormatter sdfmt) {
-		return getValorCampoFecha(key, campo.toString(), value, sdfmt);
+	protected LocalDate getValorCampoFecha(MensajesDto mensajes, String key, Enum<?> campo, String value,
+			DateTimeFormatter sdfmt) {
+		return getValorCampoFecha(mensajes, key, campo.toString(), value, sdfmt);
 	}
 
-	protected LocalDate getValorCampoFecha(String key, String campo, String value, DateTimeFormatter sdfmt) {
+	protected LocalDate getValorCampoFecha(MensajesDto mensajes, String key, String campo, String value,
+			DateTimeFormatter sdfmt) {
 		LocalDate dateValue = null;
 
 		try {
 			dateValue = Basic.toFecha(value, null, sdfmt);
 		} catch (ParseException e) {
-			logParseException(key, campo, value, "");
+			logParseException(mensajes, key, campo, value, "", "");
 		}
 		return dateValue;
 	}
 
-	protected LocalDateTime getValorCampoFechaHora(String key, Enum<?> campo, String value, DateTimeFormatter sdfmt) {
-		return getValorCampoFechaHora(key, campo.toString(), value, sdfmt);
+	protected LocalDateTime getValorCampoFechaHora(MensajesDto mensajes, String key, Enum<?> campo,
+			String value, DateTimeFormatter sdfmt) {
+		return getValorCampoFechaHora(mensajes, key, campo.toString(), value, sdfmt);
 	}
 
-	protected LocalDateTime getValorCampoFechaHora(String key, String campo, String value, DateTimeFormatter sdfmt) {
+	protected LocalDateTime getValorCampoFechaHora(MensajesDto mensajes, String key, String campo, String value,
+			DateTimeFormatter sdfmt) {
 		LocalDateTime dateValue = null;
 
 		try {
 			dateValue = Basic.toFechaHora(value, null, sdfmt);
 		} catch (ParseException e) {
-			logParseException(key, campo, value, "");
+			logParseException(mensajes, key, campo, value, "", "");
 		}
 		return dateValue;
 	}
 
-	
-	protected LocalTime getValorCampoHora(String key, Enum<?> campo, String value, DateTimeFormatter sdfmt) {
-		return getValorCampoHora(key, campo.toString(), value, sdfmt);
+	protected LocalTime getValorCampoHora(MensajesDto mensajes, String key, Enum<?> campo, String value,
+			DateTimeFormatter sdfmt) {
+		return getValorCampoHora(mensajes, key, campo.toString(), value, sdfmt);
 	}
 
-	protected LocalTime getValorCampoHora(String key, String campo, String value, DateTimeFormatter sdfmt) {
+	protected LocalTime getValorCampoHora(MensajesDto mensajes, String key, String campo, String value,
+			DateTimeFormatter sdfmt) {
 		LocalTime timeValue = null;
 
 		try {
 			timeValue = Basic.toHora(value, null, sdfmt);
 		} catch (ParseException e) {
-			logParseException(key, campo, value, "");
+			logParseException(mensajes, key, campo, value, "", "");
 		}
 		return timeValue;
 	}
 
-	protected Integer getValorCampoDecimal(String key, String campo, String value, DecimalFormat fmt) {
+	protected Integer getValorCampoDecimal(MensajesDto mensajes, String key, String campo, String value,
+			DecimalFormat fmt) {
 		Integer integerValue = null;
 
 		try {
 			integerValue = Basic.toEntero(value, null, fmt);
 		} catch (ParseException e) {
-			logParseException(key, campo, value, fmt.toPattern());
+			logParseException(mensajes, key, campo, value, fmt.toPattern(), "");
 		}
 		return integerValue;
 	}
 
-	protected Integer getValorCampoMoneda(String key, String campo, String value, DecimalFormat fmt) {
+	protected Integer getValorCampoMoneda(MensajesDto mensajes, String key, String campo, String value,
+			DecimalFormat fmt) {
 		value = value.replaceAll("[$\\s]+", "");
-		return getValorCampoDecimal(key, campo, value, fmt);
+		return getValorCampoDecimal(mensajes, key, campo, value, fmt);
 	}
 }

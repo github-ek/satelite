@@ -56,17 +56,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
 import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
 import com.tacticlogistics.application.tasks.etl.components.ETLOrdenesExcelFileStrategy;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 
-
 @Component("TACTIC.OMS.EXCEL.SALIDAS")
 public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy {
 	private static final Logger log = (Logger) LoggerFactory.getLogger(OrdenesDeSalidaCargadasPorExcel.class);
-	
+
 	protected static final String CODIGO_SERVICIO_DESPACHOS_SECUNDARIA = "VENTAS";
 	protected static final String CODIGO_CANAL_PREDETERMINADO = "OTROS";
 
@@ -112,7 +112,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 		list.add(LINEA_DESCRIPCION.toString());
 		list.add(LINEA_PRODUCTO_CODIGO.toString());
 		list.add(LINEA_CANTIDAD_SOLICITADA.toString());
-		
+
 		list.add(LINEA_BODEGA_ORIGEN_CODIGO.toString());
 		list.add(LINEA_ESTADO_ORIGEN.toString());
 
@@ -125,7 +125,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 		list.add(LINEA_COSECHA.toString());
 		list.add(LINEA_BL.toString());
 		list.add(LINEA_FONDOCUENTA.toString());
-		
+
 		list.add(LINEA_DISTRIBUIDO.toString());
 		list.add(LINEA_ESTAMPILLADO.toString());
 		list.add(LINEA_IMPORTE.toString());
@@ -152,7 +152,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	protected void adicionar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -164,7 +164,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 			dto.setTipoServicioCodigo(getTipoServicioCodigo());
 			dto.setTipoServicioCodigoAlterno("");
-			
+
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(CLIENTE_CODIGO, campos, mapNameToIndex);
 			dto.setClienteCodigo(value);
@@ -176,12 +176,11 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 			dto.setNumeroOrden(value);
 
 			value = getValorCampo(FECHA_ORDEN, campos, mapNameToIndex);
-			dateValue = getValorCampoFecha(key, FECHA_ORDEN, value, getFormatoFechaCorta());
+			dateValue = getValorCampoFecha(mensajes, key, FECHA_ORDEN, value, getFormatoFechaCorta());
 			dto.setFechaOrden(dateValue);
 
 			value = getValorCampo(CLIENTE_RECOGE, campos, mapNameToIndex);
 			dto.setRequiereServicioDistribucion(!(SI.equalsIgnoreCase(value)));
-
 
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(DESTINATARIO_CANAL_CODIGO, campos, mapNameToIndex);
@@ -196,7 +195,6 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 			value = getValorCampo(DESTINATARIO_NOMBRE, campos, mapNameToIndex);
 			dto.setDestinatarioNombre(value);
 
-			
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(DESTINO_CIUDAD_NOMBRE_ALTERNO, campos, mapNameToIndex);
 			dto.setDestinoCiudadNombreAlterno(value);
@@ -216,54 +214,50 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 			value = getValorCampo(DESTINO_CONTACTO_TELEFONOS, campos, mapNameToIndex);
 			dto.setDestinoContactoTelefonos(value);
 
-
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(CONFIRMAR_CITA, campos, mapNameToIndex);
 			dto.setRequiereConfirmacionCitaEntrega((SI.equalsIgnoreCase(value)));
 
 			value = getValorCampo(FECHA_MAXIMA, campos, mapNameToIndex);
-			dateValue = getValorCampoFecha(key, FECHA_MAXIMA, value, getFormatoFechaCorta());
+			dateValue = getValorCampoFecha(mensajes, key, FECHA_MAXIMA, value, getFormatoFechaCorta());
 			dto.setFechaEntregaSugeridaMaxima(dateValue);
 
 			value = getValorCampo(FECHA_MINIMA, campos, mapNameToIndex);
 			if (!value.isEmpty()) {
-				dateValue = getValorCampoFecha(key, FECHA_MINIMA, value, getFormatoFechaCorta());
+				dateValue = getValorCampoFecha(mensajes, key, FECHA_MINIMA, value, getFormatoFechaCorta());
 			} else {
 				dateValue = dto.getFechaEntregaSugeridaMaxima();
 			}
 			dto.setFechaEntregaSugeridaMinima(dateValue);
 
 			value = getValorCampo(HORA_MINIMA, campos, mapNameToIndex);
-			timeValue = getValorCampoHora(key, HORA_MINIMA, value, getFormatoHoraHH());
+			timeValue = getValorCampoHora(mensajes, key, HORA_MINIMA, value, getFormatoHoraHH());
 			dto.setHoraEntregaSugeridaMinima(timeValue);
 
 			value = getValorCampo(HORA_MAXIMA, campos, mapNameToIndex);
-			timeValue = getValorCampoHora(key, HORA_MAXIMA, value, getFormatoHoraHH());
+			timeValue = getValorCampoHora(mensajes, key, HORA_MAXIMA, value, getFormatoHoraHH());
 			dto.setHoraEntregaSugeridaMaxima(timeValue);
-
 
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(VALOR_RECAUDO, campos, mapNameToIndex);
-			integerValue = getValorCampoMoneda(key, VALOR_RECAUDO.toString(), value, getFormatoModeda());
+			integerValue = getValorCampoMoneda(mensajes, key, VALOR_RECAUDO.toString(), value, getFormatoModeda());
 			dto.setValorRecaudo(integerValue);
 
 			value = getValorCampo(NOTAS, campos, mapNameToIndex);
 			dto.setNotasConfirmacion(value);
 
-
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampoUsuarioConfirmacion(campos, mapNameToIndex);
 			dto.setUsuarioConfirmacion(value);
 
-
-            // ---------------------------------------------------------------------------------------------------------
+			// ---------------------------------------------------------------------------------------------------------
 			map.put(key, dto);
 		}
 	}
 
 	@Override
 	protected void modificar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
 		if (map.containsKey(key)) {
 			String value;
 			Integer integerValue;
@@ -278,7 +272,8 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 			dto.setProductoCodigo(value);
 
 			value = getValorCampo(LINEA_CANTIDAD_SOLICITADA.toString(), campos, mapNameToIndex);
-			integerValue = getValorCampoDecimal(key, LINEA_CANTIDAD_SOLICITADA.toString(), value, getFormatoEntero());
+			integerValue = getValorCampoDecimal(mensajes, key, LINEA_CANTIDAD_SOLICITADA.toString(), value,
+					getFormatoEntero());
 			dto.setCantidadSolicitada(integerValue);
 
 			value = getValorCampo(LINEA_BODEGA_ORIGEN_CODIGO, campos, mapNameToIndex);
@@ -287,10 +282,9 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 			value = getValorCampo(LINEA_ESTADO_ORIGEN, campos, mapNameToIndex);
 			dto.setEstadoInventarioOrigen(value);
 
-
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(LINEA_VALOR_DECLARADO_POR_UNIDAD, campos, mapNameToIndex);
-			integerValue = getValorCampoMoneda(key, LINEA_VALOR_DECLARADO_POR_UNIDAD.toString(), value,
+			integerValue = getValorCampoMoneda(mensajes, key, LINEA_VALOR_DECLARADO_POR_UNIDAD.toString(), value,
 					getFormatoModeda());
 			dto.setValorDeclaradoPorUnidad(integerValue);
 
@@ -299,7 +293,6 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 			value = getValorCampo(LINEA_PREDISTRIBUCION_ROTULO, campos, mapNameToIndex);
 			dto.setPredistribucionRotulo(value);
-
 
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(LINEA_LOTE, campos, mapNameToIndex);
@@ -319,7 +312,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 			value = getValorCampo(LINEA_DISTRIBUIDO, campos, mapNameToIndex);
 			dto.setRequerimientoDistribuido(value);
-			
+
 			value = getValorCampo(LINEA_ESTAMPILLADO, campos, mapNameToIndex);
 			dto.setRequerimientoEstampillado(value);
 
@@ -344,19 +337,20 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLOrdenDto> map) {
+	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
 		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
 			ETLOrdenDto dto = entry.getValue();
 			try {
 				Orden orden = ordenesService.saveOrdenDespachosSecundaria(dto);
 				if (orden != null) {
-					logInfo(dto.getNumeroOrden(), "", "OK");
+					logInfo(mensajes, "OK", "", "", dto.getNumeroOrden());
 				} else {
-					logWarning(dto.getNumeroOrden(), "",
-							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.");
+					logWarning(mensajes,
+							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.", "",
+							"", dto.getNumeroOrden());
 				}
 			} catch (Exception e) {
-				logError(dto.getNumeroOrden(), "", e.getMessage());
+				logError(mensajes, e.getMessage(), "", "", dto.getNumeroOrden());
 			}
 		}
 	}

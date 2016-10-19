@@ -10,6 +10,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 @SpringBootApplication
 @EnableScheduling
 public class SateliteApplication {
@@ -51,4 +56,14 @@ public class SateliteApplication {
 
 		return mailSender;
 	}
+	
+	@Bean 
+    public ObjectMapper objectMapper() { 
+        ObjectMapper objectMapper = new ObjectMapper(); 
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT); 
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); 
+        objectMapper.registerModule(new JavaTimeModule()); 
+        return objectMapper; 
+    } 
+	
 }

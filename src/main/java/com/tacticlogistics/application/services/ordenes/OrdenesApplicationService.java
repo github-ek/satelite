@@ -362,14 +362,17 @@ public class OrdenesApplicationService {
 		model.setRequiereConfirmacionCitaRecogida(dto.isRequiereConfirmacionCitaRecogida());
 		model.setDatosCitaRecogidaSugerida(dto.getFechaRecogidaSugeridaMinima(), dto.getFechaRecogidaSugeridaMaxima(),
 				dto.getHoraRecogidaSugeridaMinima(), dto.getHoraRecogidaSugeridaMaxima());
-//		if (!dto.isRequiereConfirmacionCitaRecogida()) {
-//			if (dto.getFechaRecogidaSugeridaMaxima() != null) {
-//				if (dto.getFechaRecogidaSugeridaMaxima().equals(dto.getFechaRecogidaSugeridaMinima())) {
-//					model.setDatosCitaRecogida(dto.getFechaRecogidaSugeridaMaxima(),
-//							dto.getHoraRecogidaSugeridaMinima(), dto.getHoraRecogidaSugeridaMaxima());
-//				}
-//			}
-//		}
+		// if (!dto.isRequiereConfirmacionCitaRecogida()) {
+		// if (dto.getFechaRecogidaSugeridaMaxima() != null) {
+		// if
+		// (dto.getFechaRecogidaSugeridaMaxima().equals(dto.getFechaRecogidaSugeridaMinima()))
+		// {
+		// model.setDatosCitaRecogida(dto.getFechaRecogidaSugeridaMaxima(),
+		// dto.getHoraRecogidaSugeridaMinima(),
+		// dto.getHoraRecogidaSugeridaMaxima());
+		// }
+		// }
+		// }
 
 		// ---------------------------------------------------------------------------------------------------------
 		model.setDatosDestinatario(canal, dto.getCanalCodigoAlterno(), tercero, dto.getDestinatarioContacto());
@@ -616,9 +619,9 @@ public class OrdenesApplicationService {
 		for (Integer id : ids) {
 			Orden orden = ordenRepository.findOne(id);
 			if (orden != null) {
-				msg.AddMensajes(aceptarOrden(orden, fechaUpd, usuarioUpd, notas));
+				msg.addAll(aceptarOrden(orden, fechaUpd, usuarioUpd, notas));
 			} else {
-				msg.addMensaje(SeveridadType.ERROR, id, "No se encontró la orden con id: " + id);
+				msg.add(SeveridadType.ERROR, "No se encontró la orden con id: " + id);
 				// throw new BadRequestException();
 			}
 		}
@@ -634,12 +637,12 @@ public class OrdenesApplicationService {
 			orden.aceptar(fechaUpd, usuarioUpd, notas);
 			try {
 				ordenRepository.save(orden);
-				msg.addMensaje(SeveridadType.INFO, orden.getId(), "OK");
+				msg.add(SeveridadType.INFO, "OK");
 			} catch (RuntimeException re) {
-				msg.addMensaje(re, orden.getId());
+				msg.add(re);
 			}
 		} else {
-			msg.addMensaje(SeveridadType.ERROR, orden.getNumeroOrden(), "El cambio de estado desde "
+			msg.add(SeveridadType.ERROR,"El cambio de estado desde "
 					+ orden.getEstadoOrden().getNombre() + " a " + nuevoEstado.getNombre() + ", no esta permitido");
 		}
 		return msg;
@@ -660,14 +663,14 @@ public class OrdenesApplicationService {
 		MensajesDto msg = new MensajesDto();
 
 		if (causal == null) {
-			msg.addMensaje(SeveridadType.ERROR, null, "El id de la causal no existe: " + causalId);
+			msg.add(SeveridadType.ERROR, "El id de la causal no existe: " + causalId);
 		} else {
 			for (Integer id : ids) {
 				Orden orden = ordenRepository.findOne(id);
 				if (orden != null) {
-					msg.AddMensajes(anularOrden(orden, fechaUpd, usuarioUpd, notas, causal));
+					msg.addAll(anularOrden(orden, fechaUpd, usuarioUpd, notas, causal));
 				} else {
-					msg.addMensaje(SeveridadType.ERROR, id, "No se encontró la orden con id: " + id);
+					msg.add(SeveridadType.ERROR, "No se encontró la orden con id: " + id);
 				}
 			}
 		}
@@ -685,12 +688,12 @@ public class OrdenesApplicationService {
 			orden.anular(fechaUpd, usuarioUpd, notas, causal);
 			try {
 				ordenRepository.save(orden);
-				msg.addMensaje(SeveridadType.INFO, orden.getId(), "OK");
+				msg.add(SeveridadType.INFO, "OK");
 			} catch (RuntimeException re) {
-				msg.addMensaje(re, orden.getId());
+				msg.add(re);
 			}
 		} else {
-			msg.addMensaje(SeveridadType.ERROR, orden.getNumeroOrden(), "El cambio de estado desde "
+			msg.add(SeveridadType.ERROR, "El cambio de estado desde "
 					+ orden.getEstadoOrden().getNombre() + " a " + nuevoEstado.getNombre() + ", no esta permitido");
 		}
 		return msg;

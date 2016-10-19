@@ -82,9 +82,9 @@ public class DestinosOrigenesController {
         try {
             Destino model = this.destinosOrigenesService.save(dto);
             respuesta.put("destinoOrigen", this.destinosOrigenesService.destinoOrigenToDto(model));
-            mensajes.addMensaje(SeveridadType.INFO, "");
+            mensajes.add(SeveridadType.INFO, "");
         } catch (Exception e) {
-            mensajes.addMensaje(e);
+            mensajes.add(e);
         }
 
         respuesta.put("mensajes", mensajes);

@@ -35,7 +35,7 @@ public class OrdenDeCompra implements Serializable {
 	@Id
 	private Integer id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@MapsId
 	@JoinColumn(name = "id_orden")
 	@NotNull
@@ -69,10 +69,6 @@ public class OrdenDeCompra implements Serializable {
 	@NotNull
 	private String terceroCompradorId;
 
-	@Column(name = "NUM_DOCTO_REF", nullable = false, length = 12)
-	@NotNull
-	private String numeroDocumentoReferencia;
-
 	@Column(name = "MONEDA_DOCTO", nullable = false, length = 3)
 	@NotNull
 	private String monedaDocumento;
@@ -96,4 +92,12 @@ public class OrdenDeCompra implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "id_orden", nullable = false)
 	private Set<LineaOrdenDeCompra> lineas;
+
+	@Column(name = "NUM_DOCTO_REF", nullable = false, length = 12)
+	@NotNull
+	
+	private String getNumeroDocumentoReferencia() {
+		return (this.getOrden() == null) ? "" : this.getOrden().getId().toString();
+	}
+
 }
