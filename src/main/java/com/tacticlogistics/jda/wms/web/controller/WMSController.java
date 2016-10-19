@@ -69,6 +69,29 @@ public class WMSController {
 					
 					dtoLines.add(dtoLine);
 				}
+			List<ResultadoReciboDto> resultados = new ArrayList<>();
+			for (PurchaseOrder po : purchaseOrder.getPurchaseOrders()) {
+				ResultadoReciboDto dto = ResultadoReciboDto
+						.builder()
+						.bodegaCodigo(po.getWh_id())
+						.clienteCodigoWms(po.getClient_id())
+						.numeroOrdenWms(po.getPo_num())
+						.build();
+				
+				Set<LineaResultadoReciboDto> dtoLines = new HashSet<>();
+				for (PurchaseOrderLine line : po.getLines()) {
+					
+					LineaResultadoReciboDto dtoLine = LineaResultadoReciboDto
+							.builder()
+							.numeroItem(line.getInvlin())
+							.productoCodigo(line.getPrtnum())
+							.cantidadPlanificada(line.getExpqty())
+							.cantidadReal(line.getRcvqty())
+							.estadoInventarioId(line.getRcvsts())
+							.build();
+					
+					dtoLines.add(dtoLine);
+				}
 				
 				dto.setLineas(dtoLines);
 				resultados.add(dto);
