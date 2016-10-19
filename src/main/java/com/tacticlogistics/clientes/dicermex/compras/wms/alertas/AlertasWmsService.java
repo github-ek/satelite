@@ -12,12 +12,14 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tacticlogistics.domain.model.clientes.dicermex.OrdenDeCompra;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.TipoServicio;
 import com.tacticlogistics.domain.model.oms.EstadoAlmacenamientoType;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.LineaOrden;
 import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.infrastructure.persistence.clientes.dicermex.OrdenDeCompraRepository;
 import com.tacticlogistics.infrastructure.persistence.crm.TipoServicioRepository;
 import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
 
@@ -40,6 +42,9 @@ public class AlertasWmsService {
 	@Autowired
 	private OrdenRepository ordenRepository;
 
+	@Autowired
+	private OrdenDeCompraRepository ordenDeCompraRepository;
+	
 	private static TipoServicio servicio;
 
 	public List<Orden> getOrdenesPendientesPorAlertarAlWms() {
@@ -83,15 +88,16 @@ public class AlertasWmsService {
 	@Transactional(readOnly = false)
 	public void alertarOrdenesDeCompraAlWms(List<Integer> ordenesId) {
 		for (Integer id : ordenesId) {
-			Orden compra = ordenRepository.findOne(id);
+			OrdenDeCompra compra = ordenDeCompraRepository.findOne(id);
 			if (compra != null) {
-				compra.setEstadoOrden(EstadoOrdenType.EJECUCION);
-				compra.setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_NO_CONFIRMADA);
-				compra.setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
-				for (val e : compra.getLineas()) {
-					e.setNumeroOrdenWmsDestino("TC-" + compra.getId() + '-' + compra.getNumeroOrden());
+				String numeroDocumentoReferencia = "TC-" + compra.getId() + '-' + compra.getOrden().getNumeroOrden(); 
+				compra.getOrden().setEstadoOrden(EstadoOrdenType.EJECUCION);
+				compra.getOrden().setEstadoAlmacenamiento(EstadoAlmacenamientoType.ALERTADA_NO_CONFIRMADA);
+				compra.getOrden().setDatosActualizacion(LocalDateTime.now(), "INTEGRACION TC-WMS");
+				for (val e : compra.getOrden().getLineas()) {
+					e.setNumeroOrdenWmsDestino(numeroDocumentoReferencia);
 				}
-				ordenRepository.save(compra);
+				ordenDeCompraRepository.save(compra);
 			}
 		}
 	}

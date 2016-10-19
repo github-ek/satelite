@@ -9,16 +9,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tacticlogistics.application.dto.common.ItemGenerico;
 import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.application.dto.oms.OmsOrdenDto;
 import com.tacticlogistics.application.services.crm.ClientesApplicationService;
 import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
 import com.tacticlogistics.application.services.crm.DestinosApplicationService;
@@ -55,21 +52,6 @@ public class OmsController {
 
 	@Autowired
 	private OrdenesApplicationService ordenesService;
-
-	// ----------------------------------------------------------------------------------------------------------------
-	// -- Consultas
-	// ----------------------------------------------------------------------------------------------------------------
-	@RequestMapping(path = "/{id}", method = { RequestMethod.GET })
-	public OmsOrdenDto getOrdenPorId(@PathVariable Integer id) {
-		OmsOrdenDto dto = null;
-
-		try {
-			dto = omsService.findOneOrdenPorId(id);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return dto;
-	}
 
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Vistas Resumen tms-s
@@ -288,18 +270,18 @@ public class OmsController {
 		}
 		return map;
 	}
-
-	@RequestMapping("/causales/anulacion/orden")
-	public List<ItemGenerico<Integer>> getCausalesAnulacionOrden() {
-		List<ItemGenerico<Integer>> list = new ArrayList<>();
-
-		try {
-			list = omsService.findCausalesAnulacion();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
+//
+//	@RequestMapping("/causales/anulacion/orden")
+//	public List<ItemGenerico<Integer>> getCausalesAnulacionOrden() {
+//		List<ItemGenerico<Integer>> list = new ArrayList<>();
+//
+//		try {
+//			//list = omsService.findCausalesAnulacion();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return list;
+//	}
 
 	// ----------------------------------------------------------------------------------------------------------------
 	// -- Modificaciones
@@ -313,7 +295,7 @@ public class OmsController {
 			return ordenesService.aceptarOrdenes(dto.getIds(), dto.getNotas(), dto.getUsuarioId());
 		} catch (Exception e) {
 			MensajesDto mensajes = new MensajesDto();
-			mensajes.addMensaje(e, dto);
+			mensajes.add(e);
 			throw new BadRequestException(mensajes);
 		}
 	}
@@ -324,7 +306,7 @@ public class OmsController {
 			return null;//omsService.anularOrdenes(dto.getUsuarioId(), dto.getIds(), dto.getCausalId(), dto.getNotas());
 		} catch (Exception e) {
 			MensajesDto mensajes = new MensajesDto();
-			mensajes.addMensaje(e, dto);
+			mensajes.add(e);
 			return mensajes;
 		}
 	}

@@ -10,19 +10,16 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.ItemGenerico;
-import com.tacticlogistics.application.dto.common.MensajeDto;
+import com.tacticlogistics.application.dto.common.MensajeDTO;
 import com.tacticlogistics.application.dto.common.MensajesDto;
 import com.tacticlogistics.application.dto.oms.OmsOrdenDto;
 import com.tacticlogistics.domain.model.common.SeveridadType;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
-import com.tacticlogistics.domain.model.oms.CausalAnulacion;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 import com.tacticlogistics.domain.model.ordenes.Orden;
 import com.tacticlogistics.domain.model.seguridad.Usuario;
@@ -529,13 +526,14 @@ public class OmsApplicationService {
 
 				try {
 					ordenRepository.save(e);
-					msg.addMensaje(SeveridadType.INFO, e.getId(), "OK");
+					msg.add(SeveridadType.INFO, "OK", "Orden", "id", e.getId());
 				} catch (RuntimeException re) {
-					msg.addMensaje(re, e.getId());
+					msg.add(re, "Orden", "id", e.getId());
 				}
 			} else {
-				msg.AddMensaje(new MensajeDto(SeveridadType.ERROR, id, "El cambio de estado desde " + e.getEstadoOrden()
-						+ " a " + nuevoEstado + ", no esta permitido"));
+				msg.add(new MensajeDTO(SeveridadType.ERROR,
+						"El cambio de estado desde " + e.getEstadoOrden() + " a " + nuevoEstado + ", no esta permitido",
+						"Orden", "id", id));
 			}
 		}
 		return msg;
@@ -580,15 +578,17 @@ public class OmsApplicationService {
 		return list;
 	}
 
-	public List<ItemGenerico<Integer>> findCausalesAnulacion() throws DataAccessException {
-		List<CausalAnulacion> entityList = causalAnulacionOrdenRepository.findAll(new Sort("ordinal"));
-
-		List<ItemGenerico<Integer>> list = new ArrayList<>();
-		entityList.forEach(a -> {
-			list.add(new ItemGenerico<Integer>(a.getId(), "", a.getNombre()));
-		});
-		return list;
-	}
+	// public List<ItemGenerico<Integer>> findCausalesAnulacion() throws
+	// DataAccessException {
+	// List<CausalAnulacion> entityList =
+	// causalAnulacionOrdenRepository.findAll(new Sort("ordinal"));
+	//
+	// List<ItemGenerico<Integer>> list = new ArrayList<>();
+	// entityList.forEach(a -> {
+	// list.add(new ItemGenerico<Integer>(a.getId(), "", a.getNombre()));
+	// });
+	// return list;
+	// }
 
 	protected OmsOrdenDto map(Orden orden) {
 

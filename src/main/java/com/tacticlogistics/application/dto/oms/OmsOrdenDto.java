@@ -5,12 +5,10 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tacticlogistics.application.dto.common.ItemGenerico;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 
 public class OmsOrdenDto {
@@ -125,10 +123,10 @@ public class OmsOrdenDto {
     private Time horaPlaneadaEntregaMaximaAdicional;
 
     // ---------------------------------------------------------------------------------------------------------
-    private Set<ItemGenerico<Integer>> requerimientosDistribucion;
+    //private Set<ItemGenerico<Integer>> requerimientosDistribucion;
     private String notasRequerimientosDistribucion;
 
-    private Set<ItemGenerico<Integer>> requerimientosAlistamiento;
+    //private Set<ItemGenerico<Integer>> requerimientosAlistamiento;
     private String notasRequerimientosAlistamiento;
 
     // ---------------------------------------------------------------------------------------------------------
@@ -447,17 +445,17 @@ public class OmsOrdenDto {
         return horaPlaneadaEntregaMaximaAdicional;
     }
 
-    public Set<ItemGenerico<Integer>> getRequerimientosDistribucion() {
-        return requerimientosDistribucion;
-    }
+//    public Set<ItemGenerico<Integer>> getRequerimientosDistribucion() {
+//        return requerimientosDistribucion;
+//    }
 
     public String getNotasRequerimientosDistribucion() {
         return notasRequerimientosDistribucion;
     }
 
-    public Set<ItemGenerico<Integer>> getRequerimientosAlistamiento() {
-        return requerimientosAlistamiento;
-    }
+//    public Set<ItemGenerico<Integer>> getRequerimientosAlistamiento() {
+//        return requerimientosAlistamiento;
+//    }
 
     public String getNotasRequerimientosAlistamiento() {
         return notasRequerimientosAlistamiento;
@@ -839,17 +837,17 @@ public class OmsOrdenDto {
         this.horaPlaneadaEntregaMaximaAdicional = value;
     }
 
-    public void setRequerimientosDistribucion(Set<ItemGenerico<Integer>> value) {
-        this.requerimientosDistribucion = value;
-    }
+//    public void setRequerimientosDistribucion(Set<ItemGenerico<Integer>> value) {
+//        this.requerimientosDistribucion = value;
+//    }
 
     public void setNotasRequerimientosDistribucion(String value) {
         this.notasRequerimientosDistribucion = coalesce(value, "");
     }
 
-    public void setRequerimientosAlistamiento(Set<ItemGenerico<Integer>> value) {
-        this.requerimientosAlistamiento = value;
-    }
+//    public void setRequerimientosAlistamiento(Set<ItemGenerico<Integer>> value) {
+//        this.requerimientosAlistamiento = value;
+//    }
 
     public void setNotasRequerimientosAlistamiento(String value) {
         this.notasRequerimientosAlistamiento = coalesce(value, "");
@@ -1033,10 +1031,10 @@ public class OmsOrdenDto {
 
         this.setRequiereServicioDistribucion(true);
 
-        this.setRequerimientosDistribucion(new HashSet<>());
+//        this.setRequerimientosDistribucion(new HashSet<>());
         this.setNotasRequerimientosDistribucion("");
 
-        this.setRequerimientosAlistamiento(new HashSet<>());
+//        this.setRequerimientosAlistamiento(new HashSet<>());
         this.setNotasRequerimientosAlistamiento("");
 
         this.setUsuarioConfirmacion("");
@@ -1094,159 +1092,67 @@ public class OmsOrdenDto {
 
     @Override
 	public String toString() {
-		return "OmsOrdenDto [" + (id != null ? "id=" + id + ", " : "")
-				+ (tipoServicioId != null ? "tipoServicioId=" + tipoServicioId + ", " : "")
-				+ (tipoServicioNombre != null ? "tipoServicioNombre=" + tipoServicioNombre + ", " : "")
-				+ (clienteId != null ? "clienteId=" + clienteId + ", " : "")
-				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
-				+ (clienteNombre != null ? "clienteNombre=" + clienteNombre + ", " : "")
-				+ (estadoOrden != null ? "estadoOrden=" + estadoOrden + ", " : "")
-				+ (numeroOrden != null ? "numeroOrden=" + numeroOrden + ", " : "")
-				+ (consolidadoId != null ? "consolidadoId=" + consolidadoId + ", " : "")
-				+ (numeroConsolidado != null ? "numeroConsolidado=" + numeroConsolidado + ", " : "")
-				+ (canalId != null ? "canalId=" + canalId + ", " : "")
-				+ (canalCodigo != null ? "canalCodigo=" + canalCodigo + ", " : "")
-				+ (canalNombre != null ? "canalNombre=" + canalNombre + ", " : "")
-				+ (canalCodigoAlterno != null ? "canalCodigoAlterno=" + canalCodigoAlterno + ", " : "")
-				+ (destinatarioId != null ? "destinatarioId=" + destinatarioId + ", " : "")
-				+ (destinatarioCodigo != null ? "destinatarioCodigo=" + destinatarioCodigo + ", " : "")
-				+ (destinatarioNombre != null ? "destinatarioNombre=" + destinatarioNombre + ", " : "")
-				+ (destinatarioNumeroIdentificacion != null
-						? "destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion + ", " : "")
-				+ (destinatarioCodigoAlterno != null ? "destinatarioCodigoAlterno=" + destinatarioCodigoAlterno + ", "
-						: "")
-				+ (destinatarioNombreAlterno != null ? "destinatarioNombreAlterno=" + destinatarioNombreAlterno + ", "
-						: "")
-				+ (destinatarioNumeroIdentificacionAlterno != null
-						? "destinatarioNumeroIdentificacionAlterno=" + destinatarioNumeroIdentificacionAlterno + ", "
-						: "")
-				+ (destinatarioDigitoVerificacionAlterno != null
-						? "destinatarioDigitoVerificacionAlterno=" + destinatarioDigitoVerificacionAlterno + ", " : "")
-				+ (destinatarioCiudadId != null ? "destinatarioCiudadId=" + destinatarioCiudadId + ", " : "")
-				+ (destinatarioCiudadNombre != null ? "destinatarioCiudadNombre=" + destinatarioCiudadNombre + ", "
-						: "")
-				+ (destinatarioDireccion != null ? "destinatarioDireccion=" + destinatarioDireccion + ", " : "")
-				+ (destinatarioIndicacionesDireccion != null
-						? "destinatarioIndicacionesDireccion=" + destinatarioIndicacionesDireccion + ", " : "")
-				+ (destinatarioContactoNombres != null
-						? "destinatarioContactoNombres=" + destinatarioContactoNombres + ", " : "")
-				+ (destinatarioContactoTelefonos != null
-						? "destinatarioContactoTelefonos=" + destinatarioContactoTelefonos + ", " : "")
-				+ (destinatarioContactoEmail != null ? "destinatarioContactoEmail=" + destinatarioContactoEmail + ", "
-						: "")
-				+ (destinatarioCiudadNombreAlterno != null
-						? "destinatarioCiudadNombreAlterno=" + destinatarioCiudadNombreAlterno + ", " : "")
-				+ (destinoId != null ? "destinoId=" + destinoId + ", " : "")
-				+ (destinoCodigo != null ? "destinoCodigo=" + destinoCodigo + ", " : "")
-				+ (destinoNombre != null ? "destinoNombre=" + destinoNombre + ", " : "")
-				+ (destinoCodigoAlterno != null ? "destinoCodigoAlterno=" + destinoCodigoAlterno + ", " : "")
-				+ (destinoNombreAlterno != null ? "destinoNombreAlterno=" + destinoNombreAlterno + ", " : "")
-				+ (bodegaDestinoId != null ? "bodegaDestinoId=" + bodegaDestinoId + ", " : "")
-				+ (bodegaDestinoCodigo != null ? "bodegaDestinoCodigo=" + bodegaDestinoCodigo + ", " : "")
-				+ (bodegaDestinoNombre != null ? "bodegaDestinoNombre=" + bodegaDestinoNombre + ", " : "")
-				+ (bodegaDestinoCodigoAlterno != null
-						? "bodegaDestinoCodigoAlterno=" + bodegaDestinoCodigoAlterno + ", " : "")
-				+ (bodegaDestinoNombreAlterno != null
-						? "bodegaDestinoNombreAlterno=" + bodegaDestinoNombreAlterno + ", " : "")
-				+ (destinoCiudadId != null ? "destinoCiudadId=" + destinoCiudadId + ", " : "")
-				+ (destinoCiudadNombre != null ? "destinoCiudadNombre=" + destinoCiudadNombre + ", " : "")
-				+ (destinoDireccion != null ? "destinoDireccion=" + destinoDireccion + ", " : "")
-				+ (destinoIndicacionesDireccion != null
-						? "destinoIndicacionesDireccion=" + destinoIndicacionesDireccion + ", " : "")
-				+ (destinoContactoNombres != null ? "destinoContactoNombres=" + destinoContactoNombres + ", " : "")
-				+ (destinoContactoTelefonos != null ? "destinoContactoTelefonos=" + destinoContactoTelefonos + ", "
-						: "")
-				+ (destinoContactoEmail != null ? "destinoContactoEmail=" + destinoContactoEmail + ", " : "")
-				+ (destinoCiudadNombreAlterno != null
-						? "destinoCiudadNombreAlterno=" + destinoCiudadNombreAlterno + ", " : "")
-				+ "requiereServicioDistribucion=" + requiereServicioDistribucion + ", "
-				+ (fechaSugeridaEntregaMinima != null
-						? "fechaSugeridaEntregaMinima=" + fechaSugeridaEntregaMinima + ", " : "")
-				+ (fechaSugeridaEntregaMaxima != null
-						? "fechaSugeridaEntregaMaxima=" + fechaSugeridaEntregaMaxima + ", " : "")
-				+ (horaSugeridaEntregaMinima != null ? "horaSugeridaEntregaMinima=" + horaSugeridaEntregaMinima + ", "
-						: "")
-				+ (horaSugeridaEntregaMaxima != null ? "horaSugeridaEntregaMaxima=" + horaSugeridaEntregaMaxima + ", "
-						: "")
-				+ (horaSugeridaEntregaMinimaAdicional != null
-						? "horaSugeridaEntregaMinimaAdicional=" + horaSugeridaEntregaMinimaAdicional + ", " : "")
-				+ (horaSugeridaEntregaMaximaAdicional != null
-						? "horaSugeridaEntregaMaximaAdicional=" + horaSugeridaEntregaMaximaAdicional + ", " : "")
-				+ (fechaPlaneadaAlistamiento != null ? "fechaPlaneadaAlistamiento=" + fechaPlaneadaAlistamiento + ", "
-						: "")
-				+ (fechaPlaneadaEntregaMinima != null
-						? "fechaPlaneadaEntregaMinima=" + fechaPlaneadaEntregaMinima + ", " : "")
-				+ (fechaPlaneadaEntregaMaxima != null
-						? "fechaPlaneadaEntregaMaxima=" + fechaPlaneadaEntregaMaxima + ", " : "")
-				+ (horaPlaneadaEntregaMinima != null ? "horaPlaneadaEntregaMinima=" + horaPlaneadaEntregaMinima + ", "
-						: "")
-				+ (horaPlaneadaEntregaMaxima != null ? "horaPlaneadaEntregaMaxima=" + horaPlaneadaEntregaMaxima + ", "
-						: "")
-				+ (horaPlaneadaEntregaMinimaAdicional != null
-						? "horaPlaneadaEntregaMinimaAdicional=" + horaPlaneadaEntregaMinimaAdicional + ", " : "")
-				+ (horaPlaneadaEntregaMaximaAdicional != null
-						? "horaPlaneadaEntregaMaximaAdicional=" + horaPlaneadaEntregaMaximaAdicional + ", " : "")
-				+ (requerimientosDistribucion != null
-						? "requerimientosDistribucion=" + requerimientosDistribucion + ", " : "")
-				+ (notasRequerimientosDistribucion != null
-						? "notasRequerimientosDistribucion=" + notasRequerimientosDistribucion + ", " : "")
-				+ (requerimientosAlistamiento != null
-						? "requerimientosAlistamiento=" + requerimientosAlistamiento + ", " : "")
-				+ (notasRequerimientosAlistamiento != null
-						? "notasRequerimientosAlistamiento=" + notasRequerimientosAlistamiento + ", " : "")
-				+ (fechaConfirmacion != null ? "fechaConfirmacion=" + fechaConfirmacion + ", " : "")
-				+ (usuarioConfirmacion != null ? "usuarioConfirmacion=" + usuarioConfirmacion + ", " : "")
-				+ (notasConfirmacion != null ? "notasConfirmacion=" + notasConfirmacion + ", " : "")
-				+ (fechaAprobacionCliente != null ? "fechaAprobacionCliente=" + fechaAprobacionCliente + ", " : "")
-				+ (usuarioAprobacionCliente != null ? "usuarioAprobacionCliente=" + usuarioAprobacionCliente + ", "
-						: "")
-				+ (notasAprobacionCliente != null ? "notasAprobacionCliente=" + notasAprobacionCliente + ", " : "")
-				+ (fechaSolicitudRevisionCliente != null
-						? "fechaSolicitudRevisionCliente=" + fechaSolicitudRevisionCliente + ", " : "")
-				+ (usuarioSolicitudRevisionCliente != null
-						? "usuarioSolicitudRevisionCliente=" + usuarioSolicitudRevisionCliente + ", " : "")
-				+ (notasSolicitudRevisionCliente != null
-						? "notasSolicitudRevisionCliente=" + notasSolicitudRevisionCliente + ", " : "")
-				+ (causalSolicitudRevisionClienteId != null
-						? "causalSolicitudRevisionClienteId=" + causalSolicitudRevisionClienteId + ", " : "")
-				+ (causalSolicitudRevisionClienteNombre != null
-						? "causalSolicitudRevisionClienteNombre=" + causalSolicitudRevisionClienteNombre + ", " : "")
-				+ (fechaInicioPlaneacionLogistica != null
-						? "fechaInicioPlaneacionLogistica=" + fechaInicioPlaneacionLogistica + ", " : "")
-				+ (usuarioInicioPlaneacionLogistica != null
-						? "usuarioInicioPlaneacionLogistica=" + usuarioInicioPlaneacionLogistica + ", " : "")
-				+ (fechaFinPlaneacionLogistica != null
-						? "fechaFinPlaneacionLogistica=" + fechaFinPlaneacionLogistica + ", " : "")
-				+ (usuarioFinPlaneacionLogistica != null
-						? "usuarioFinPlaneacionLogistica=" + usuarioFinPlaneacionLogistica + ", " : "")
-				+ (notasPlaneacionLogistica != null ? "notasPlaneacionLogistica=" + notasPlaneacionLogistica + ", "
-						: "")
-				+ (fechaSolicitudRevisionPlaneacionLogistica != null ? "fechaSolicitudRevisionPlaneacionLogistica="
-						+ fechaSolicitudRevisionPlaneacionLogistica + ", " : "")
-				+ (usuarioSolicitudRevisionPlaneacionLogistica != null ? "usuarioSolicitudRevisionPlaneacionLogistica="
-						+ usuarioSolicitudRevisionPlaneacionLogistica + ", " : "")
-				+ (notasSolicitudRevisionPlaneacionLogistica != null ? "notasSolicitudRevisionPlaneacionLogistica="
-						+ notasSolicitudRevisionPlaneacionLogistica + ", " : "")
-				+ (causalSolicitudRevisionPlaneacionLogisticaId != null
-						? "causalSolicitudRevisionPlaneacionLogisticaId=" + causalSolicitudRevisionPlaneacionLogisticaId
-								+ ", "
-						: "")
-				+ (causalSolicitudRevisionPlaneacionLogisticaNombre != null
-						? "causalSolicitudRevisionPlaneacionLogisticaNombre="
-								+ causalSolicitudRevisionPlaneacionLogisticaNombre + ", "
-						: "")
-				+ (fechaInicioEjecucionLogistica != null
-						? "fechaInicioEjecucionLogistica=" + fechaInicioEjecucionLogistica + ", " : "")
-				+ (fechaFinEjecucionLogistica != null
-						? "fechaFinEjecucionLogistica=" + fechaFinEjecucionLogistica + ", " : "")
-				+ (fechaCreacion != null ? "fechaCreacion=" + fechaCreacion + ", " : "")
-				+ (usuarioCreacion != null ? "usuarioCreacion=" + usuarioCreacion + ", " : "")
-				+ (fechaActualizacion != null ? "fechaActualizacion=" + fechaActualizacion + ", " : "")
-				+ (usuarioActualizacion != null ? "usuarioActualizacion=" + usuarioActualizacion + ", " : "")
-				+ (fechaAnulacion != null ? "fechaAnulacion=" + fechaAnulacion + ", " : "")
-				+ (usuarioAnulacion != null ? "usuarioAnulacion=" + usuarioAnulacion + ", " : "")
-				+ (notasAnulacion != null ? "notasAnulacion=" + notasAnulacion + ", " : "")
-				+ (causalAnulacionId != null ? "causalAnulacionId=" + causalAnulacionId + ", " : "")
-				+ (causalAnulacionNombre != null ? "causalAnulacionNombre=" + causalAnulacionNombre : "") + "]";
+		return "OmsOrdenDto [id=" + id + ", tipoServicioId=" + tipoServicioId + ", tipoServicioNombre="
+				+ tipoServicioNombre + ", clienteId=" + clienteId + ", clienteCodigo=" + clienteCodigo
+				+ ", clienteNombre=" + clienteNombre + ", estadoOrden=" + estadoOrden + ", numeroOrden=" + numeroOrden
+				+ ", consolidadoId=" + consolidadoId + ", numeroConsolidado=" + numeroConsolidado + ", canalId="
+				+ canalId + ", canalCodigo=" + canalCodigo + ", canalNombre=" + canalNombre + ", canalCodigoAlterno="
+				+ canalCodigoAlterno + ", destinatarioId=" + destinatarioId + ", destinatarioCodigo="
+				+ destinatarioCodigo + ", destinatarioNombre=" + destinatarioNombre
+				+ ", destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion
+				+ ", destinatarioCodigoAlterno=" + destinatarioCodigoAlterno + ", destinatarioNombreAlterno="
+				+ destinatarioNombreAlterno + ", destinatarioNumeroIdentificacionAlterno="
+				+ destinatarioNumeroIdentificacionAlterno + ", destinatarioDigitoVerificacionAlterno="
+				+ destinatarioDigitoVerificacionAlterno + ", destinatarioCiudadId=" + destinatarioCiudadId
+				+ ", destinatarioCiudadNombre=" + destinatarioCiudadNombre + ", destinatarioDireccion="
+				+ destinatarioDireccion + ", destinatarioIndicacionesDireccion=" + destinatarioIndicacionesDireccion
+				+ ", destinatarioContactoNombres=" + destinatarioContactoNombres + ", destinatarioContactoTelefonos="
+				+ destinatarioContactoTelefonos + ", destinatarioContactoEmail=" + destinatarioContactoEmail
+				+ ", destinatarioCiudadNombreAlterno=" + destinatarioCiudadNombreAlterno + ", destinoId=" + destinoId
+				+ ", destinoCodigo=" + destinoCodigo + ", destinoNombre=" + destinoNombre + ", destinoCodigoAlterno="
+				+ destinoCodigoAlterno + ", destinoNombreAlterno=" + destinoNombreAlterno + ", bodegaDestinoId="
+				+ bodegaDestinoId + ", bodegaDestinoCodigo=" + bodegaDestinoCodigo + ", bodegaDestinoNombre="
+				+ bodegaDestinoNombre + ", bodegaDestinoCodigoAlterno=" + bodegaDestinoCodigoAlterno
+				+ ", bodegaDestinoNombreAlterno=" + bodegaDestinoNombreAlterno + ", destinoCiudadId=" + destinoCiudadId
+				+ ", destinoCiudadNombre=" + destinoCiudadNombre + ", destinoDireccion=" + destinoDireccion
+				+ ", destinoIndicacionesDireccion=" + destinoIndicacionesDireccion + ", destinoContactoNombres="
+				+ destinoContactoNombres + ", destinoContactoTelefonos=" + destinoContactoTelefonos
+				+ ", destinoContactoEmail=" + destinoContactoEmail + ", destinoCiudadNombreAlterno="
+				+ destinoCiudadNombreAlterno + ", requiereServicioDistribucion=" + requiereServicioDistribucion
+				+ ", fechaSugeridaEntregaMinima=" + fechaSugeridaEntregaMinima + ", fechaSugeridaEntregaMaxima="
+				+ fechaSugeridaEntregaMaxima + ", horaSugeridaEntregaMinima=" + horaSugeridaEntregaMinima
+				+ ", horaSugeridaEntregaMaxima=" + horaSugeridaEntregaMaxima + ", horaSugeridaEntregaMinimaAdicional="
+				+ horaSugeridaEntregaMinimaAdicional + ", horaSugeridaEntregaMaximaAdicional="
+				+ horaSugeridaEntregaMaximaAdicional + ", fechaPlaneadaAlistamiento=" + fechaPlaneadaAlistamiento
+				+ ", fechaPlaneadaEntregaMinima=" + fechaPlaneadaEntregaMinima + ", fechaPlaneadaEntregaMaxima="
+				+ fechaPlaneadaEntregaMaxima + ", horaPlaneadaEntregaMinima=" + horaPlaneadaEntregaMinima
+				+ ", horaPlaneadaEntregaMaxima=" + horaPlaneadaEntregaMaxima + ", horaPlaneadaEntregaMinimaAdicional="
+				+ horaPlaneadaEntregaMinimaAdicional + ", horaPlaneadaEntregaMaximaAdicional="
+				+ horaPlaneadaEntregaMaximaAdicional + ", notasRequerimientosDistribucion="
+				+ notasRequerimientosDistribucion + ", notasRequerimientosAlistamiento="
+				+ notasRequerimientosAlistamiento + ", fechaConfirmacion=" + fechaConfirmacion
+				+ ", usuarioConfirmacion=" + usuarioConfirmacion + ", notasConfirmacion=" + notasConfirmacion
+				+ ", fechaAprobacionCliente=" + fechaAprobacionCliente + ", usuarioAprobacionCliente="
+				+ usuarioAprobacionCliente + ", notasAprobacionCliente=" + notasAprobacionCliente
+				+ ", fechaSolicitudRevisionCliente=" + fechaSolicitudRevisionCliente
+				+ ", usuarioSolicitudRevisionCliente=" + usuarioSolicitudRevisionCliente
+				+ ", notasSolicitudRevisionCliente=" + notasSolicitudRevisionCliente
+				+ ", causalSolicitudRevisionClienteId=" + causalSolicitudRevisionClienteId
+				+ ", causalSolicitudRevisionClienteNombre=" + causalSolicitudRevisionClienteNombre
+				+ ", fechaInicioPlaneacionLogistica=" + fechaInicioPlaneacionLogistica
+				+ ", usuarioInicioPlaneacionLogistica=" + usuarioInicioPlaneacionLogistica
+				+ ", fechaFinPlaneacionLogistica=" + fechaFinPlaneacionLogistica + ", usuarioFinPlaneacionLogistica="
+				+ usuarioFinPlaneacionLogistica + ", notasPlaneacionLogistica=" + notasPlaneacionLogistica
+				+ ", fechaSolicitudRevisionPlaneacionLogistica=" + fechaSolicitudRevisionPlaneacionLogistica
+				+ ", usuarioSolicitudRevisionPlaneacionLogistica=" + usuarioSolicitudRevisionPlaneacionLogistica
+				+ ", notasSolicitudRevisionPlaneacionLogistica=" + notasSolicitudRevisionPlaneacionLogistica
+				+ ", causalSolicitudRevisionPlaneacionLogisticaId=" + causalSolicitudRevisionPlaneacionLogisticaId
+				+ ", causalSolicitudRevisionPlaneacionLogisticaNombre="
+				+ causalSolicitudRevisionPlaneacionLogisticaNombre + ", fechaInicioEjecucionLogistica="
+				+ fechaInicioEjecucionLogistica + ", fechaFinEjecucionLogistica=" + fechaFinEjecucionLogistica
+				+ ", fechaCreacion=" + fechaCreacion + ", usuarioCreacion=" + usuarioCreacion + ", fechaActualizacion="
+				+ fechaActualizacion + ", usuarioActualizacion=" + usuarioActualizacion + ", fechaAnulacion="
+				+ fechaAnulacion + ", usuarioAnulacion=" + usuarioAnulacion + ", notasAnulacion=" + notasAnulacion
+				+ ", causalAnulacionId=" + causalAnulacionId + ", causalAnulacionNombre=" + causalAnulacionNombre + "]";
 	}
 }
