@@ -1,4 +1,4 @@
-package com.tacticlogistics.jda.wms.db.entities;
+package com.tacticlogistics.jda.wms.db.entities.receiving;
 
 import java.math.BigInteger;
 import java.sql.Date;
