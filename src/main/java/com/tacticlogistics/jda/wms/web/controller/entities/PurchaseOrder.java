@@ -5,6 +5,7 @@ import java.util.List;
 
 public class PurchaseOrder {
 
+	String po_num;
 	String trknum;
 	String supnum;
 	String wh_id;
@@ -29,6 +30,14 @@ public class PurchaseOrder {
 
 	public void setLines(List<PurchaseOrderLine> lines) {
 		this.lines = lines;
+	}
+
+	public String getPo_num() {
+		return po_num;
+	}
+
+	public void setPo_num(String po_num) {
+		this.po_num = po_num;
 	}
 
 	public String getTrknum() {
