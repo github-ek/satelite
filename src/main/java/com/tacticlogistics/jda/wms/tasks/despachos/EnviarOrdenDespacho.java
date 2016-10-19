@@ -85,14 +85,6 @@ public class EnviarOrdenDespacho {
 		+ "  set id_estado_almacenamiento = 'ALERTADA'"
 		+ "  where id_orden = " + oc.getIdOrden());
 		}
-	private void actualizarOrdenes(List<OrdenDespacho> ordenes) {
-
-		for (OrdenDespacho oc : ordenes) {
-			jdbcTemplate.execute("" 
-		+ "  update ordenes.ordenes " 
-		+ "  set id_estado_almacenamiento = 'ALERTADA'"
-		+ "  where id_orden = " + oc.getIdOrden());
-		}
 	}
 
 	private void writeFiles(OrdenDespacho oc) throws IOException, UnsupportedEncodingException {
