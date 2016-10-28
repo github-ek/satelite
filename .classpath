@@ -28,8 +28,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/ormlite-core-5.0.jar"/>
-	<classpathentry kind="lib" path="libs/ormlite-jdbc-5.0.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
