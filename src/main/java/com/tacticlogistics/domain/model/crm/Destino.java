@@ -17,7 +17,7 @@ import javax.persistence.TemporalType;
 
 import com.tacticlogistics.domain.model.common.UsoUbicacionType;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
-import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
+import com.tacticlogistics.domain.model.common.valueobjects.Direccion;
 
 @Entity
 @Table(name = "destinos", catalog = "crm")
@@ -46,7 +46,7 @@ public class Destino implements Serializable {
     private Contacto contacto;
 
     @Embedded
-    private OmsDireccion direccion;
+    private Direccion direccion;
 
     private boolean activo;
 
@@ -82,16 +82,16 @@ public class Destino implements Serializable {
         return usoUbicacionType;
     }
 
-    public OmsDireccion getDireccion() {
+    public Direccion getDireccion() {
         if(direccion == null){
-            direccion = new OmsDireccion();
+            setDireccion(null);
         }
         return direccion;
     }
 
     public Contacto getContacto() {
         if(contacto == null){
-            contacto = new Contacto();
+            setContacto(null);
         }
         return contacto;
     }
@@ -129,12 +129,25 @@ public class Destino implements Serializable {
         this.usoUbicacionType = usoUbicacionType;
     }
 
-    public void setDireccion(OmsDireccion direccion) {
-        this.direccion = direccion;
+    public void setDireccion(Direccion value) {
+    	if(value == null){
+    		// @formatter:off
+    		value = Direccion
+    				.builder()
+    				.ciudad(null)
+    				.direccion("")
+    				.indicacionesDireccion("")
+    				.build();
+    		// @formatter:on
+    	}
+        this.direccion = value;
     }
 
-    public void setContacto(Contacto contacto) {
-        this.contacto = contacto;
+    public void setContacto(Contacto value) {
+    	if(value == null){
+    		value = new Contacto("","","");
+    	}
+        this.contacto = value;
     }
 
     protected void setActivo(boolean activo) {

@@ -7,9 +7,9 @@ import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
 public class DestinatarioDto {
     // private Integer idOrden;
     // ---------------------------------------------------------------------------------------------------------
-    private Integer tipoServicio;
-    private String codigoTipoServicio;
-    private String nombreTipoServicio;
+    private Integer servicio;
+    private String codigoServicio;
+    private String nombreServicio;
 
     // ---------------------------------------------------------------------------------------------------------
     private Integer cliente;
@@ -53,8 +53,8 @@ public class DestinatarioDto {
     // ---------------------------------------------------------------------------------------------------------
     public DestinatarioDto() {
         super();
-        this.setCodigoTipoServicio("");
-        this.setNombreTipoServicio("");
+        this.setCodigoServicio("");
+        this.setNombreServicio("");
         this.setCodigoCliente("");
         this.setNombreCliente("");
         this.setNumeroOrden("");
@@ -77,16 +77,16 @@ public class DestinatarioDto {
     }
 
     // ---------------------------------------------------------------------------------------------------------
-    public Integer getTipoServicio() {
-        return tipoServicio;
+    public Integer getServicio() {
+        return servicio;
     }
 
-    public String getCodigoTipoServicio() {
-        return codigoTipoServicio;
+    public String getCodigoServicio() {
+        return codigoServicio;
     }
 
-    public String getNombreTipoServicio() {
-        return nombreTipoServicio;
+    public String getNombreServicio() {
+        return nombreServicio;
     }
 
     public Integer getCliente() {
@@ -190,14 +190,14 @@ public class DestinatarioDto {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("DestinatarioDto [");
-        if (tipoServicio != null) {
-            builder.append("tipoServicio=").append(tipoServicio).append(", ");
+        if (servicio != null) {
+            builder.append("servicio=").append(servicio).append(", ");
         }
-        if (codigoTipoServicio != null) {
-            builder.append("codigoTipoServicio=").append(codigoTipoServicio).append(", ");
+        if (codigoServicio != null) {
+            builder.append("codigoServicio=").append(codigoServicio).append(", ");
         }
-        if (nombreTipoServicio != null) {
-            builder.append("nombreTipoServicio=").append(nombreTipoServicio).append(", ");
+        if (nombreServicio != null) {
+            builder.append("nombreServicio=").append(nombreServicio).append(", ");
         }
         if (cliente != null) {
             builder.append("cliente=").append(cliente).append(", ");
@@ -276,16 +276,16 @@ public class DestinatarioDto {
         return builder.toString();
     }
 
-    public void setTipoServicio(Integer value) {
-        this.tipoServicio = value;
+    public void setServicio(Integer value) {
+        this.servicio = value;
     }
 
-    public void setCodigoTipoServicio(String value) {
-        this.codigoTipoServicio = coalesce(value, "");
+    public void setCodigoServicio(String value) {
+        this.codigoServicio = coalesce(value, "");
     }
 
-    public void setNombreTipoServicio(String value) {
-        this.nombreTipoServicio = coalesce(value, "");
+    public void setNombreServicio(String value) {
+        this.nombreServicio = coalesce(value, "");
     }
 
     public void setCliente(Integer value) {

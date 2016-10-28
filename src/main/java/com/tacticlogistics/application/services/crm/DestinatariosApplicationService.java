@@ -18,7 +18,7 @@ import com.tacticlogistics.application.dto.crm.DestinatarioDto;
 import com.tacticlogistics.application.dto.etl.ETLDestinatarioDto;
 import com.tacticlogistics.domain.model.common.IdentificacionType;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
-import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
+import com.tacticlogistics.domain.model.common.valueobjects.Direccion;
 import com.tacticlogistics.domain.model.crm.Canal;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.Destinatario;
@@ -43,8 +43,8 @@ public class DestinatariosApplicationService {
     // ---------------------------------------------------------------------------------------------------------
 
     // ---------------------------------------------------------------------------------------------------------
-    public List<Object> findAllDestinatarioPorClientePorCanalPorTipoServicio(Integer clienteId,
-            Integer canalId, Integer tipoServicioId) throws DataAccessException {
+    public List<Object> findAllDestinatarioPorClientePorCanalPorServicio(Integer clienteId,
+            Integer canalId, Integer servicioId) throws DataAccessException {
         List<Destinatario> entityList = destinatarioRepository
                 .findAllByClienteIdAndCanalIdOrderByNombre(clienteId, canalId);
 
@@ -55,8 +55,8 @@ public class DestinatariosApplicationService {
         return list;
     }
 
-    public List<Map<String, Object>> findDestinatariosRemitentesPorClientePorTipoServicioPorCanalPorFiltro(
-            Integer clienteId, Integer tipoServicioId, Integer canalId, String filtro) throws DataAccessException {
+    public List<Map<String, Object>> findDestinatariosRemitentesPorClientePorServicioPorCanalPorFiltro(
+            Integer clienteId, Integer servicioId, Integer canalId, String filtro) throws DataAccessException {
 
         filtro = coalesce(filtro, "");
         filtro = "%" + filtro + "%";
@@ -137,7 +137,6 @@ public class DestinatariosApplicationService {
 
         // TODO Intentar buscar a la ciudad por codigo alterno
         ciudad = ciudadRepository.findByNombreAlternoIgnoringCase(dto.getCiudadNombreAlterno());
-        Integer ciudadId = (ciudad != null) ? ciudad.getId() : null;
 
         model.setCanalId(canal.getId());
         model.setCodigo(dto.getCodigo());
@@ -145,7 +144,8 @@ public class DestinatariosApplicationService {
         model.setDigitoVerificacion(dto.getDigitoVerificacion());
         model.setNombre(dto.getNombre());
         model.setNombreComercial(dto.getNombreComercial());
-        model.setDireccion(new OmsDireccion(ciudadId, dto.getDireccion(), dto.getDireccionIndicaciones()));
+        
+        model.setDireccion(new Direccion(ciudad, dto.getDireccion(), dto.getDireccionIndicaciones()));
         model.setContacto(new Contacto(dto.getContactoNombres(), dto.getContactoEmail(), dto.getContactoTelefonos()));
         model.setActivo(dto.isActivo());
         model.setFechaActualizacion(new Date());

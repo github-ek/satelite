@@ -24,60 +24,20 @@ public class UsuarioApplicationService{
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public List<Object> findAllTipoServicioPorUsuario(Integer usuarioId) throws DataAccessException {
+    public List<Object> findAllServicioPorUsuario(Integer usuarioId) throws DataAccessException {
         List<Object> list = new ArrayList<>();
-
-//        list<tiposervicio> tiposerviciolist = tiposerviciorepository.findbyusuarioid(usuarioid);
-//        tiposerviciolist.foreach(a -> {
-//            map<string, object> o = new hashmap<string, object>();
-//
-//            o.put("id", a.getid());
-//            o.put("codigo", a.getcodigo());
-//            o.put("nombre", a.getnombre());
-//
-//            o.put("admiteproductosporlinea", a.isadmiteproductosporlinea());
-//            o.put("admitepaquetesporlinea", a.isadmitepaquetesporlinea());
-//
-//            rolubicaciontype rolubicacionorden = a.isregistrardestinoenlaorden() ? rolubicaciontype.destino
-//                    : rolubicaciontype.origen;
-//            rolubicaciontype rolubicacionlineaorden = (rolubicacionorden == rolubicaciontype.destino)
-//                    ? rolubicaciontype.origen : rolubicaciontype.destino;
-//            ubicaciontype tipoubicacionorden;
-//            ubicaciontype tipoubicacionlineaorden;
-//
-//            if (rolubicacionorden == rolubicaciontype.destino) {
-//                tipoubicacionorden = a.isadmitebodegascomodestino() ? ubicaciontype.bodega : ubicaciontype.direccion;
-//            } else {
-//                tipoubicacionorden = a.isadmitebodegascomoorigen() ? ubicaciontype.bodega : ubicaciontype.direccion;
-//            }
-//
-//            if (rolubicacionlineaorden == rolubicaciontype.destino) {
-//                tipoubicacionlineaorden = a.isadmitebodegascomodestino() ? ubicaciontype.bodega
-//                        : ubicaciontype.direccion;
-//            } else {
-//                tipoubicacionlineaorden = a.isadmitebodegascomoorigen() ? ubicaciontype.bodega
-//                        : ubicaciontype.direccion;
-//            }
-//
-//            o.put("rolubicacionorden", rolubicacionorden);
-//            o.put("rolubicacionlineaorden", rolubicacionlineaorden);
-//            o.put("tipoubicacionorden", tipoubicacionorden);
-//            o.put("tipoubicacionlineaorden", tipoubicacionlineaorden);
-//
-//            list.add(o);
-//        });
 
         return list;
     }
     // TODO Implementar consulta en repositorio
-    public List<Object> findClientesPorUsuarioIdPorTipoServicioId(Integer usuarioId, Integer tipoServicioId)
+    public List<Object> findClientesPorUsuarioIdPorServicioId(Integer usuarioId, Integer servicioId)
             throws DataAccessException {
         List<Object> list = new ArrayList<>();
 
         Usuario usuario = usuarioRepository.findOne(usuarioId);
 
         if (usuario != null) {
-            List<Cliente> clientes = clienteRepository.findByUsuarioIdAndTipoServicioId(usuarioId, tipoServicioId);
+            List<Cliente> clientes = clienteRepository.findByUsuarioIdAndServicioId(usuarioId, servicioId);
 
             clientes.forEach(a -> {
                 Map<String, Object> o = new HashMap<String, Object>();

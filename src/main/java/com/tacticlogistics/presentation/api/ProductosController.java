@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.wms.ProductoDto;
 import com.tacticlogistics.application.services.wms.ProductosApplicationService;
 import com.tacticlogistics.domain.model.common.SeveridadType;
@@ -108,7 +108,7 @@ public class ProductosController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public Map<String, Object> save(@RequestBody ProductoDto dto) {
 		Map<String, Object> respuesta = new HashMap<>();
-		MensajesDto mensajes = new MensajesDto();
+		MensajesDTO<?> mensajes = new MensajesDTO<>();
 		try {
 			Producto model = this.productosService.save(dto);
 			respuesta.put("producto", this.productosService.productoToDto(model));

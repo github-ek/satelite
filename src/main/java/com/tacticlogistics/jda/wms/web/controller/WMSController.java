@@ -1,9 +1,7 @@
 package com.tacticlogistics.jda.wms.web.controller;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
-import com.tacticlogistics.clientes.dicermex.compras.wms.alertas.AlertasWmsService;
-import com.tacticlogistics.clientes.dicermex.compras.wms.recibos.AcuseReciboDto;
-import com.tacticlogistics.clientes.dicermex.compras.wms.recibos.LineaResultadoReciboDto;
-import com.tacticlogistics.clientes.dicermex.compras.wms.recibos.RecibosService;
-import com.tacticlogistics.clientes.dicermex.compras.wms.recibos.ResultadoReciboDto;
+import com.dicermex.services.compras.wms.recibos.AcuseReciboDto;
+import com.dicermex.services.compras.wms.recibos.LineaResultadoReciboDto;
+import com.dicermex.services.compras.wms.recibos.RecibosService;
+import com.dicermex.services.compras.wms.recibos.ResultadoReciboDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.domain.model.common.SeveridadType;
 import com.tacticlogistics.jda.wms.web.controller.entities.PurchaseOrder;
 import com.tacticlogistics.jda.wms.web.controller.entities.PurchaseOrderContainer;
@@ -40,8 +37,8 @@ public class WMSController {
 	private RecibosService reciboService;
 
 	@RequestMapping(value = "/purchaseOrder", method = RequestMethod.POST)
-	public MensajesDto confirmPurchaseOrder(@RequestBody PurchaseOrderContainer purchaseOrder) {
-		MensajesDto mensaje = new MensajesDto();
+	public MensajesDTO<?> confirmPurchaseOrder(@RequestBody PurchaseOrderContainer purchaseOrder) {
+		MensajesDTO<?> mensaje = new MensajesDTO<>();
 		try {
 			// @formatter:off
 

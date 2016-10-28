@@ -17,7 +17,7 @@ import com.tacticlogistics.application.dto.crm.DestinoDto;
 import com.tacticlogistics.application.dto.etl.ETLDestinoOrigenDto;
 import com.tacticlogistics.application.services.geo.CiudadesApplicationService;
 import com.tacticlogistics.domain.model.common.valueobjects.Contacto;
-import com.tacticlogistics.domain.model.common.valueobjects.OmsDireccion;
+import com.tacticlogistics.domain.model.common.valueobjects.Direccion;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.Destinatario;
 import com.tacticlogistics.domain.model.crm.Destino;
@@ -30,189 +30,187 @@ import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
 @Service
 @Transactional(readOnly = true)
 public class DestinosApplicationService {
-    @Autowired
-    private CiudadesApplicationService ciudadesService;
-    @Autowired
-    private ClienteRepository clienteRepository;
-    @Autowired
-    private CiudadRepository ciudadRepository;
-    @Autowired
-    private DestinatarioRepository destinatarioRepository;
-    @Autowired
-    private DestinoRepository destinoRepository;
+	@Autowired
+	private CiudadesApplicationService ciudadesService;
+	@Autowired
+	private ClienteRepository clienteRepository;
+	@Autowired
+	private CiudadRepository ciudadRepository;
+	@Autowired
+	private DestinatarioRepository destinatarioRepository;
+	@Autowired
+	private DestinoRepository destinoRepository;
 
-    public List<Map<String, Object>> findDestinosPorDestinatarioPorTipoServicioPorCiudad(
-            Integer destinatarioId, Integer ciudadId, Integer tipoServicioId) throws DataAccessException {
-        List<Destino> entityList = destinoRepository
-                .findAllByDestinatarioIdAndDireccionCiudadIdOrderByCodigoAscNombreAsc(destinatarioId,
-                        ciudadId);
+	public List<Map<String, Object>> findDestinosPorDestinatarioPorServicioPorCiudad(Integer destinatarioId,
+			Integer ciudadId, Integer servicioId) throws DataAccessException {
+		List<Destino> entityList = destinoRepository
+				.findAllByDestinatarioIdAndDireccionCiudadIdOrderByCodigoAscNombreAsc(destinatarioId, ciudadId);
 
-        List<Map<String, Object>> list = new ArrayList<>();
-        entityList.forEach(a -> {
-            list.add(destinoOrigenToDto(a));
-        });
-        return list;
-    }
+		List<Map<String, Object>> list = new ArrayList<>();
+		entityList.forEach(a -> {
+			list.add(destinoOrigenToDto(a));
+		});
+		return list;
+	}
 
-    public List<Map<String, Object>> findDestinosPorDestinatarioPorTipoServicioPorCiudad(
-            Integer destinatarioId, Integer ciudadId) throws DataAccessException {
-        List<Destino> entityList = destinoRepository
-                .findAllByDestinatarioIdAndDireccionCiudadIdOrderByCodigoAscNombreAsc(destinatarioId,ciudadId);
+	public List<Map<String, Object>> findDestinosPorDestinatarioPorServicioPorCiudad(Integer destinatarioId,
+			Integer ciudadId) throws DataAccessException {
+		List<Destino> entityList = destinoRepository
+				.findAllByDestinatarioIdAndDireccionCiudadIdOrderByCodigoAscNombreAsc(destinatarioId, ciudadId);
 
-        List<Map<String, Object>> list = new ArrayList<>();
-        entityList.forEach(a -> {
-            list.add(destinoOrigenToDto2(a));
-        });
-        return list;
-    }
+		List<Map<String, Object>> list = new ArrayList<>();
+		entityList.forEach(a -> {
+			list.add(destinoOrigenToDto2(a));
+		});
+		return list;
+	}
 
-    // ----------------------------------------------------------------------------------------------------------------
-    // -- Save
-    // ----------------------------------------------------------------------------------------------------------------
-    @Transactional(readOnly = false)
-    public Destino save(DestinoDto dto) throws DataAccessException {
+	// ----------------------------------------------------------------------------------------------------------------
+	// -- Save
+	// ----------------------------------------------------------------------------------------------------------------
+	@Transactional(readOnly = false)
+	public Destino save(DestinoDto dto) throws DataAccessException {
 
-        Destino model = null;
+		Destino model = null;
 
-        if (dto.getId() == null) {
-            model = new Destino();
-        } else {
-            model = destinoRepository.findOne(dto.getId());
-        }
+		if (dto.getId() == null) {
+			model = new Destino();
+		} else {
+			model = destinoRepository.findOne(dto.getId());
+		}
 
-        if (dto.getDestinatarioId() != null) {
-            model.setDestinatarioId(dto.getDestinatarioId());
-        }
+		if (dto.getDestinatarioId() != null) {
+			model.setDestinatarioId(dto.getDestinatarioId());
+		}
 
-        if (dto.getCiudadId() != null) {
-            model.setDireccion(
-                    new OmsDireccion(dto.getCiudadId(), (dto.getDireccion() == null ? "" : dto.getDireccion()),
-                            (dto.getIndicacionesDireccion() == null ? "" : dto.getIndicacionesDireccion())));
-        }
+		if (dto.getCiudadId() != null) {
+			Ciudad ciudad = ciudadRepository.findOne(dto.getCiudadId());
+			model.setDireccion(new Direccion(ciudad, (dto.getDireccion() == null ? "" : dto.getDireccion()),
+					(dto.getIndicacionesDireccion() == null ? "" : dto.getIndicacionesDireccion())));
+		}
 
-        model.setCodigo(dto.getCodigo() == null ? "" : dto.getCodigo());
-        model.setNombre(dto.getNombre() == null ? "" : dto.getNombre());
+		model.setCodigo(dto.getCodigo() == null ? "" : dto.getCodigo());
+		model.setNombre(dto.getNombre() == null ? "" : dto.getNombre());
 
-        model.setContacto(new Contacto(dto.getContactoNombres(), dto.getContactoEmail(), dto.getContactoTelefonos()));
+		model.setContacto(new Contacto(dto.getContactoNombres(), dto.getContactoEmail(), dto.getContactoTelefonos()));
 
-        model.setFechaActualizacion(new Date());
-        model.setUsuarioActualizacion(dto.getUsuarioActualizacion());
+		model.setFechaActualizacion(new Date());
+		model.setUsuarioActualizacion(dto.getUsuarioActualizacion());
 
-        destinoRepository.save(model);
+		destinoRepository.save(model);
 
-        return model;
-    }
-    
-    @Transactional(readOnly = false)
-    public Destino save(ETLDestinoOrigenDto dto) throws DataAccessException {
-        // StringBuffer errores = new StringBuffer();
+		return model;
+	}
 
-        Cliente cliente = null;
-        Ciudad ciudad = null;
-        Destinatario destinatario = null;
+	@Transactional(readOnly = false)
+	public Destino save(ETLDestinoOrigenDto dto) throws DataAccessException {
+		// StringBuffer errores = new StringBuffer();
 
-        cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
-        if (cliente == null) {
-            throw new RuntimeException("(cliente == null)");
-        }
+		Cliente cliente = null;
+		Ciudad ciudad = null;
+		Destinatario destinatario = null;
 
-        destinatario = destinatarioRepository.findByClienteIdAndNumeroIdentificacion(cliente.getId(),
-                dto.getNumeroIdentificacion());
-        if (destinatario == null) {
-            throw new RuntimeException("(destinatario == null)");
-        }
+		cliente = clienteRepository.findByCodigoIgnoringCase(dto.getClienteCodigo());
+		if (cliente == null) {
+			throw new RuntimeException("(cliente == null)");
+		}
 
-        ciudad = ciudadRepository.findByNombreAlternoIgnoringCase(dto.getCiudadNombreAlterno());
-        if (ciudad == null) {
-            throw new RuntimeException("(ciudad == null)");
-        }
+		destinatario = destinatarioRepository.findByClienteIdAndNumeroIdentificacion(cliente.getId(),
+				dto.getNumeroIdentificacion());
+		if (destinatario == null) {
+			throw new RuntimeException("(destinatario == null)");
+		}
 
-        List<Destino> list = destinoRepository
-                .findAllByDestinatarioIdAndDireccionDireccionOrderByCodigoAscNombreAsc(destinatario.getId(),
-                        dto.getDireccion());
+		ciudad = ciudadRepository.findByNombreAlternoIgnoringCase(dto.getCiudadNombreAlterno());
+		if (ciudad == null) {
+			throw new RuntimeException("(ciudad == null)");
+		}
 
-        Destino model = null;
+		List<Destino> list = destinoRepository.findAllByDestinatarioIdAndDireccionDireccionOrderByCodigoAscNombreAsc(
+				destinatario.getId(), dto.getDireccion());
 
-        if (list.size() <= 1) {
-            if (list.isEmpty()) {
-                model = new Destino();
-                model.setDestinatarioId(destinatario.getId());
-            } else {
-                if (list.size() == 1) {
-                    model = list.get(0);
-                    return model;
-                }
-            }
+		Destino model = null;
 
-            model.setCodigo(dto.getCodigo());
-            model.setNombre(dto.getNombre());
-            model.setDireccion(new OmsDireccion(ciudad.getId(), dto.getDireccion(), dto.getDireccionIndicaciones()));
-            model.setContacto(
-                    new Contacto(dto.getContactoNombres(), dto.getContactoEmail(), dto.getContactoTelefonos()));
+		if (list.size() <= 1) {
+			if (list.isEmpty()) {
+				model = new Destino();
+				model.setDestinatarioId(destinatario.getId());
+			} else {
+				if (list.size() == 1) {
+					model = list.get(0);
+					return model;
+				}
+			}
 
-            model.setFechaActualizacion(new Date());
-            model.setUsuarioActualizacion(dto.getClienteCodigo());
+			model.setCodigo(dto.getCodigo());
+			model.setNombre(dto.getNombre());
+			model.setDireccion(new Direccion(ciudad, dto.getDireccion(), dto.getDireccionIndicaciones()));
+			model.setContacto(
+					new Contacto(dto.getContactoNombres(), dto.getContactoEmail(), dto.getContactoTelefonos()));
 
-            destinoRepository.save(model);
-        }
+			model.setFechaActualizacion(new Date());
+			model.setUsuarioActualizacion(dto.getClienteCodigo());
 
-        return model;
-    }
+			destinoRepository.save(model);
+		}
 
-    public Map<String, Object> destinoOrigenToDto(Destino model) {
-        Map<String, Object> o = new HashMap<String, Object>();
+		return model;
+	}
 
-        String nombreAuxiliar = model.getNombre();
-        if (nombreAuxiliar == null || "".equals(nombreAuxiliar)) {
-            nombreAuxiliar = model.getDireccion().getDireccion();
-        }
+	public Map<String, Object> destinoOrigenToDto(Destino model) {
+		Map<String, Object> o = new HashMap<String, Object>();
 
-        o.put("id", model.getId());
-        o.put("codigo", model.getCodigo());
-        o.put("nombre", model.getNombre());
-        o.put("nombreAuxiliar", nombreAuxiliar);
-        o.put("direccion", ciudadesService.direccionToViewModel(model.getDireccion()));
-        o.put("contacto", model.getContacto());
+		String nombreAuxiliar = model.getNombre();
+		if (nombreAuxiliar == null || "".equals(nombreAuxiliar)) {
+			nombreAuxiliar = model.getDireccion().getDireccion();
+		}
 
-        return o;
-    }
+		o.put("id", model.getId());
+		o.put("codigo", model.getCodigo());
+		o.put("nombre", model.getNombre());
+		o.put("nombreAuxiliar", nombreAuxiliar);
+		o.put("direccion", ciudadesService.direccionToViewModel(model.getDireccion()));
+		o.put("contacto", model.getContacto());
 
-    public Map<String, Object> destinoOrigenToDto2(Destino model) {
-        Map<String, Object> o = new HashMap<String, Object>();
+		return o;
+	}
 
-        StringBuffer sb = new StringBuffer();
+	public Map<String, Object> destinoOrigenToDto2(Destino model) {
+		Map<String, Object> o = new HashMap<String, Object>();
 
-        sb.append(coalesce(model.getNombre(), ""));
-        if (!sb.toString().trim().isEmpty()) {
-            sb.append(" - ");
-        }
-        sb.append(model.getDireccion().getDireccion());
+		StringBuffer sb = new StringBuffer();
 
-        o.put("id", model.getId());
-        o.put("nombreAuxiliar", sb.toString());
-        o.put("codigo", model.getCodigo());
-        o.put("nombre", model.getNombre());
-        o.put("direccion", ciudadesService.direccionToDto(model.getDireccion()));
-        o.put("contacto", model.getContacto());
+		sb.append(coalesce(model.getNombre(), ""));
+		if (!sb.toString().trim().isEmpty()) {
+			sb.append(" - ");
+		}
+		sb.append(model.getDireccion().getDireccion());
 
-        return o;
-    }
+		o.put("id", model.getId());
+		o.put("nombreAuxiliar", sb.toString());
+		o.put("codigo", model.getCodigo());
+		o.put("nombre", model.getNombre());
+		o.put("direccion", ciudadesService.direccionToDto(model.getDireccion()));
+		o.put("contacto", model.getContacto());
 
-    public Destino dtoToNewDestinoOrigen(DestinoDto dto) {
-        // DestinoOrigen model = new DestinoOrigen(
-        // dto.getCodigo(),
-        // dto.getNombre(),
-        // new
-        // DireccionEmbeddable(null,,dto.getDireccion(),dto.getIndicacionesDireccion())
-        // //model.setId()
-        // model.setCodigo("");
-        // model.setNombre("");
-        // model.setDireccion(new DireccionEmbeddable());
-        // model.setContacto(new ContactoEmbeddable(this.getContactoNombres(),
-        // this.getContactoEmail(), this.getContactoEmail()));
-        // model.setActivo(true);
-        // model.setFechaActualizacion(new Date());
-        // model.setUsuarioActualizacion(model.getUsuarioActualizacion());
-        return null;
-    }
+		return o;
+	}
+
+	public Destino dtoToNewDestinoOrigen(DestinoDto dto) {
+		// DestinoOrigen model = new DestinoOrigen(
+		// dto.getCodigo(),
+		// dto.getNombre(),
+		// new
+		// DireccionEmbeddable(null,,dto.getDireccion(),dto.getIndicacionesDireccion())
+		// //model.setId()
+		// model.setCodigo("");
+		// model.setNombre("");
+		// model.setDireccion(new DireccionEmbeddable());
+		// model.setContacto(new ContactoEmbeddable(this.getContactoNombres(),
+		// this.getContactoEmail(), this.getContactoEmail()));
+		// model.setActivo(true);
+		// model.setFechaActualizacion(new Date());
+		// model.setUsuarioActualizacion(model.getUsuarioActualizacion());
+		return null;
+	}
 }

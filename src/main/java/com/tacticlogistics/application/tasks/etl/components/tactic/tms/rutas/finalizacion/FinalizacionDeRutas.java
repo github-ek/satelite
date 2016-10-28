@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.ExcelWorkSheetReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
@@ -138,7 +138,7 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 
 	@Override
 	protected void adicionar(String key, Map<String, EntregaDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 		if (!map.containsKey(key)) {
 			String value;
 			LocalDate dateValue;
@@ -191,13 +191,13 @@ public class FinalizacionDeRutas extends ETLFlatFileStrategy<EntregaDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, EntregaDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, EntregaDto> map, MensajesDto mensajes) {
+	protected void cargar(Map<String, EntregaDto> map, MensajesDTO<?> mensajes) {
 		log.info("Begin cargar");
 
 		for (EntregaDto dto : map.values()) {

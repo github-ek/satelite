@@ -15,17 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tacticlogistics.application.dto.common.MensajeDTO;
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.oms.OmsOrdenDto;
 import com.tacticlogistics.domain.model.common.SeveridadType;
-import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
+import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlmacenamientoAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
-import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.domain.model.oms.Orden;
 import com.tacticlogistics.domain.model.seguridad.Usuario;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
-import com.tacticlogistics.infrastructure.persistence.oms.CausalAnulacionRepository;
-import com.tacticlogistics.infrastructure.persistence.ordenes.OrdenRepository;
+import com.tacticlogistics.infrastructure.persistence.oms.OrdenRepository;
 import com.tacticlogistics.infrastructure.persistence.seguridad.UsuarioRepository;
 import com.tacticlogistics.infrastructure.services.Basic;
 
@@ -40,9 +39,6 @@ public class OmsApplicationService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
-
-	@Autowired
-	private CausalAnulacionRepository causalAnulacionOrdenRepository;
 
 	@Autowired
 	private OrdenRepository ordenRepository;
@@ -115,11 +111,11 @@ public class OmsApplicationService {
 	}
 
 	private List<Object> findResumenEstadoOrdenesPorCeDiOrigen(Integer usuarioId, LocalDate fechaDesde,
-			LocalDate fechaHasta, int tipoServicioId, String sql) {
+			LocalDate fechaHasta, int servicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
-		parameters.put("tipoServicioId", tipoServicioId);
+		parameters.put("servicioId", servicioId);
 		parameters.put("fechaDesde", fechaDesde);
 		parameters.put("fechaHasta", fechaHasta);
 
@@ -153,11 +149,11 @@ public class OmsApplicationService {
 	}
 
 	private List<Object> findResumenPorCeDiTraslados(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int tipoServicioId, String sql) {
+			int servicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
-		parameters.put("tipoServicioId", tipoServicioId);
+		parameters.put("servicioId", servicioId);
 		parameters.put("fechaDesde", fechaDesde);
 		parameters.put("fechaHasta", fechaHasta);
 
@@ -186,20 +182,20 @@ public class OmsApplicationService {
 
 	private String getQueryResumenEstadoOrdenesDeDespachoPorCeDiOrigen() {
 		return "" + " SELECT " + "     a.* "
-				+ " FROM oms.ResumenEstadoOrdenesDeDespachoPorCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta) a "
+				+ " FROM oms.ResumenEstadoOrdenesDeDespachoPorCediOrigen (:usuarioId,:servicioId,:fechaDesde,:fechaHasta) a "
 				+ " ORDER BY " + "     a.cliente_ordinal,a.estado_orden_ordinal,a.ciudad_ordinal,a.bodega_ordinal "
 				+ "";
 	}
 
 	private String getQueryResumenPorCediRecibos() {
 		return "" + " SELECT " + "     a.* "
-				+ " FROM [oms].[ResumenPorCediRecibos] (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta) a "
+				+ " FROM [oms].[ResumenPorCediRecibos] (:usuarioId,:servicioId,:fechaDesde,:fechaHasta) a "
 				+ " ORDER BY " + "     a.cliente,a.id_estado_orden,a.bodega " + "";
 	}
 
 	private String getQueryResumenPorCediTraslados() {
 		return "" + " SELECT " + "     a.* "
-				+ " FROM [oms].[ResumenPorCediTraslados] (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta) a "
+				+ " FROM [oms].[ResumenPorCediTraslados] (:usuarioId,:servicioId,:fechaDesde,:fechaHasta) a "
 				+ " ORDER BY "
 				+ "     a.cliente,a.ciudad_origen,a.bodega_origen,a.id_estado_orden,a.ciudad_destino,a.bodega_destino "
 				+ "";
@@ -216,11 +212,11 @@ public class OmsApplicationService {
 	}
 
 	private List<Object> findSolcitudesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int clienteId, String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
+			int clienteId, String estadoOrdenId, int bodegaOrigenId, int servicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
-		parameters.put("tipoServicioId", tipoServicioId);
+		parameters.put("servicioId", servicioId);
 		parameters.put("fechaDesde", fechaDesde);
 		parameters.put("fechaHasta", fechaHasta);
 		parameters.put("clienteId", clienteId);
@@ -266,7 +262,7 @@ public class OmsApplicationService {
 
 	private String getQueryOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen() {
 		return "" + " SELECT " + "     a.* "
-				+ " FROM oms.OrdenesDeDespachoPorClienteEstadoOrdenCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
+				+ " FROM oms.OrdenesDeDespachoPorClienteEstadoOrdenCediOrigen (:usuarioId,:servicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
 				+ " ORDER BY " + "     a.fecha_confirmacion,a.destino_ciudad_nombre" + "";
 	}
 
@@ -341,11 +337,11 @@ public class OmsApplicationService {
 	}
 
 	private List<Object> findExcepcionesDeDespacho(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int clienteId, String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
+			int clienteId, String estadoOrdenId, int bodegaOrigenId, int servicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
-		parameters.put("tipoServicioId", tipoServicioId);
+		parameters.put("servicioId", servicioId);
 		parameters.put("fechaDesde", fechaDesde);
 		parameters.put("fechaHasta", fechaHasta);
 		parameters.put("clienteId", clienteId);
@@ -399,7 +395,7 @@ public class OmsApplicationService {
 
 	private String getQueryExcepcionesDeDespachoPorClienteEstadoOrdenCediOrigen() {
 		return "" + " SELECT " + "     a.* "
-				+ " FROM oms.ExcepcionesDeOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
+				+ " FROM oms.ExcepcionesDeOrdenesDeDespachoPorClienteEstadoOrdenCediOrigen (:usuarioId,:servicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
 				+ " ORDER BY "
 				+ "     a.fecha_confirmacion,a.destino_ciudad_nombre,a.numero_orden,a.numero_item,a.error_nombre" + "";
 	}
@@ -415,11 +411,11 @@ public class OmsApplicationService {
 	}
 
 	private List<Object> findEntregasDeDespachos(Integer usuarioId, LocalDate fechaDesde, LocalDate fechaHasta,
-			int clienteId, String estadoOrdenId, int bodegaOrigenId, int tipoServicioId, String sql) {
+			int clienteId, String estadoOrdenId, int bodegaOrigenId, int servicioId, String sql) {
 		Map<String, Object> parameters = new HashMap<>();
 
 		parameters.put("usuarioId", usuarioId);
-		parameters.put("tipoServicioId", tipoServicioId);
+		parameters.put("servicioId", servicioId);
 		parameters.put("fechaDesde", fechaDesde);
 		parameters.put("fechaHasta", fechaHasta);
 		parameters.put("clienteId", clienteId);
@@ -473,7 +469,7 @@ public class OmsApplicationService {
 
 	private String getQueryEntregasDeDespachosPorClienteEstadoOrdenCediOrigen() {
 		return "" + " SELECT " + "     a.* "
-				+ " FROM oms.EntregasDeDespachosPorClienteEstadoOrdenCediOrigen (:usuarioId,:tipoServicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
+				+ " FROM oms.EntregasDeDespachosPorClienteEstadoOrdenCediOrigen (:usuarioId,:servicioId,:fechaDesde,:fechaHasta,:clienteId,:estadoOrdenId,:bodegaOrigenId) a "
 				+ " ORDER BY " + "     a.fecha_confirmacion,a.destino_ciudad_nombre,a.numero_orden,a.numero_item" + "";
 	}
 
@@ -481,9 +477,9 @@ public class OmsApplicationService {
 	// -- DEPRECATED
 	// ----------------------------------------------------------------------------------------------------------------
 	@Transactional(readOnly = false)
-	public MensajesDto cambiarEstadoOrdenes(Integer usuarioId, List<Integer> ids, EstadoOrdenType nuevoEstado,
+	public MensajesDTO<?> cambiarEstadoOrdenes(Integer usuarioId, List<Integer> ids, EstadoOrdenType nuevoEstado,
 			String notas) throws DataAccessException {
-		MensajesDto msg = new MensajesDto();
+		MensajesDTO<?> msg = new MensajesDTO<>();
 		Usuario usuario = usuarioRepository.findOne(usuarioId);
 
 		String usuarioUpd = usuario.getUsuario();
@@ -546,10 +542,10 @@ public class OmsApplicationService {
 	// ---------------------------------------------------------------------------------------------------------
 
 	// ---------------------------------------------------------------------------------------------------------
-	public List<Map<String, Object>> findRequerimientosDistribucionPorClientePorTipoServicioDestinatario(
-			Integer clienteId, Integer tipoServicioId, Integer destinatarioId) throws DataAccessException {
+	public List<Map<String, Object>> findRequerimientosDistribucionPorClientePorServicioDestinatario(
+			Integer clienteId, Integer servicioId, Integer destinatarioId) throws DataAccessException {
 		List<ClienteRequerimientoDistribucionAssociation> entityList = clienteRepository
-				.findClienteRequerimientoDistribucionAssociationByClienteIdAndTipoServicioId(clienteId, tipoServicioId);
+				.findClienteRequerimientoDistribucionAssociationByClienteIdAndServicioId(clienteId, servicioId);
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		entityList.forEach(a -> {
@@ -562,16 +558,16 @@ public class OmsApplicationService {
 		return list;
 	}
 
-	public List<Map<String, Object>> findRequerimientosAlistamientoPorClientePorTipoServicioDestinatario(
-			Integer clienteId, Integer tipoServicioId, Integer destinatarioId) throws DataAccessException {
-		List<ClienteRequerimientoAlistamientoAssociation> entityList = clienteRepository
-				.findClienteRequerimientoAlistamientoAssociationByClienteIdAndTipoServicioId(clienteId, tipoServicioId);
+	public List<Map<String, Object>> findRequerimientosAlmacenamientoPorClientePorServicioDestinatario(
+			Integer clienteId, Integer servicioId, Integer destinatarioId) throws DataAccessException {
+		List<ClienteRequerimientoAlmacenamientoAssociation> entityList = clienteRepository
+				.findClienteRequerimientoAlmacenamientoAssociationByClienteIdAndServicioId(clienteId, servicioId);
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		entityList.forEach(a -> {
 			Map<String, Object> map = new HashMap<>();
 			map.put("codigoAlterno", a.getCodigoAlterno());
-			map.put("requerimientoAlistamientoId", a.getRequerimientoAlistamientoId());
+			map.put("requerimientoAlmacenamientoId", a.getRequerimientoAlmacenamientoId());
 			map.put("descripcion", a.getDescripcion());
 			list.add(map);
 		});

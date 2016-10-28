@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.tacticlogistics.clientes.dicermex.compras.planificacion.ValidadorOrdenesDeCompraService;
+import com.dicermex.services.compras.planificacion.ValidadorOrdenesDeCompraService;
 
 @Component
 public class ValidadorDeOrdenesDeCompraSchedule {
@@ -14,7 +14,7 @@ public class ValidadorDeOrdenesDeCompraSchedule {
     @Scheduled(fixedDelay = 1000 * 60 * 1)
     public void cron() {
         try{
-        	service.validarOrdenesConfirmadas();
+        	//service.validarOrdenesConfirmadas();
         }catch(RuntimeException e){
             e.printStackTrace();
         }

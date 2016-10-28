@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.crm.DestinatarioDto;
 import com.tacticlogistics.application.dto.oms.OmsDestinatarioDto;
 import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
@@ -74,7 +74,7 @@ public class DestinatariosRemitentesController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public Map<String, Object> save(@RequestBody DestinatarioDto dto) {
 		Map<String, Object> respuesta = new HashMap<>();
-		MensajesDto mensajes = new MensajesDto();
+		MensajesDTO<?> mensajes = new MensajesDTO<>();
 		try {
 			Destinatario model = this.destinatariosService.save(dto);
 			respuesta.put("destinatario", this.destinatariosService.destinatarioToDto(model));

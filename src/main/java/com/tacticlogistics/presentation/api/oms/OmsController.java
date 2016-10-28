@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,17 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.services.crm.ClientesApplicationService;
 import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
 import com.tacticlogistics.application.services.crm.DestinosApplicationService;
 import com.tacticlogistics.application.services.oms.OmsApplicationService;
-import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
+import com.tacticlogistics.application.services.oms.OrdenesApplicationService;
 import com.tacticlogistics.application.services.seguridad.UsuarioApplicationService;
 import com.tacticlogistics.application.services.wms.ProductosApplicationService;
 import com.tacticlogistics.domain.model.oms.EstadoOrdenType;
-import com.tacticlogistics.domain.model.ordenes.Orden;
-import com.tacticlogistics.presentation.util.BadRequestException;
+import com.tacticlogistics.domain.model.oms.Orden;
 
 @CrossOrigin
 @RestController
@@ -287,25 +288,27 @@ public class OmsController {
 	// -- Modificaciones
 	// ----------------------------------------------------------------------------------------------------------------
 	@RequestMapping(value = "/aceptar", method = RequestMethod.POST)
-	public MensajesDto aceptarOrdenes(@RequestBody AceptarOrdenDto dto) {
-		//		MensajesDto mensajes = new MensajesDto();
+	public ResponseEntity<MensajesDTO<?>> aceptarOrdenes(@RequestBody AceptarOrdenDto dto) {
+		//		MensajesDTO<?> mensajes = new MensajesDTO<>();
 		//		mensajes.addMensaje(SeveridadType.FATAL, "Dummy");
 		//		throw new BadRequestException(mensajes);
 		try {
-			return ordenesService.aceptarOrdenes(dto.getIds(), dto.getNotas(), dto.getUsuarioId());
+			MensajesDTO<?> mensajes;
+			mensajes = ordenesService.aceptarOrdenes(dto.getIds(), dto.getNotas(), dto.getUsuarioId());
+			return new ResponseEntity<>(mensajes, HttpStatus.OK);
 		} catch (Exception e) {
-			MensajesDto mensajes = new MensajesDto();
+			MensajesDTO<?> mensajes = new MensajesDTO<>();
 			mensajes.add(e);
-			throw new BadRequestException(mensajes);
+			return new ResponseEntity<>(mensajes, HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	@RequestMapping(value = "/anular", method = RequestMethod.POST)
-	public MensajesDto anaularOrdenes(@RequestBody AnularOrdenDto dto) {
+	public MensajesDTO<?> anaularOrdenes(@RequestBody AnularOrdenDto dto) {
 		try {
 			return null;//omsService.anularOrdenes(dto.getUsuarioId(), dto.getIds(), dto.getCausalId(), dto.getNotas());
 		} catch (Exception e) {
-			MensajesDto mensajes = new MensajesDto();
+			MensajesDTO<?> mensajes = new MensajesDTO<>();
 			mensajes.add(e);
 			return mensajes;
 		}
@@ -315,13 +318,13 @@ public class OmsController {
 	// -- Bill To
 	// ----------------------------------------------------------------------------------------------------------------
 	// Clientes habilitados para el usuario actual y un tipo de servicio
-	@RequestMapping(value = "/clientes-x-usuario-x-tipo_servicio", method = RequestMethod.GET)
-	public List<Object> getClientesPorUsuarioPorTipoServicio(@RequestParam(required = true) Integer usuarioId,
-			@RequestParam(required = true) Integer tipoServicioId) {
+	@RequestMapping(value = "/clientes-x-usuario-x-servicio", method = RequestMethod.GET)
+	public List<Object> getClientesPorUsuarioServicio(@RequestParam(required = true) Integer usuarioId,
+			@RequestParam(required = true) Integer servicioId) {
 		List<Object> list = new ArrayList<>();
 
 		try {
-			list = usuariosService.findClientesPorUsuarioIdPorTipoServicioId(usuarioId, tipoServicioId);
+			list = usuariosService.findClientesPorUsuarioIdPorServicioId(usuarioId, servicioId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -330,9 +333,9 @@ public class OmsController {
 	}
 
 	// Canales habilitados para un cliente y tipo de servicio
-	@RequestMapping(value = "/canales-x-cliente-x-tipo_servicio", method = RequestMethod.GET)
-	public List<Map<String, Object>> getCanalesPorClientePorTipoServicio(
-			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId) {
+	@RequestMapping(value = "/canales-x-cliente-x-servicio", method = RequestMethod.GET)
+	public List<Map<String, Object>> getCanalesPorClientePorServicio(
+			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer servicioId) {
 		List<Map<String, Object>> list = new ArrayList<>();
 
 		try {
@@ -345,16 +348,16 @@ public class OmsController {
 	}
 
 	// Destinatarios/Remitentes para un cliente, tipo de servicio y filtro
-	@RequestMapping(value = "/destinatarios_remitentes-x-cliente-x-tipo_servicio-x-canal-x-filtro", method = RequestMethod.GET)
-	public List<Map<String, Object>> getDestinatariosRemitentesPorClientePorTipoServicioPorCanalPorFiltro(
-			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
+	@RequestMapping(value = "/destinatarios_remitentes-x-cliente-x-servicio-x-canal-x-filtro", method = RequestMethod.GET)
+	public List<Map<String, Object>> getDestinatariosRemitentesPorClientePorServicioPorCanalPorFiltro(
+			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer servicioId,
 			@RequestParam(required = false) Integer canalId,
 			@RequestParam(required = false, defaultValue = "") String filtro) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = destinatariosRemitentesService.findDestinatariosRemitentesPorClientePorTipoServicioPorCanalPorFiltro(
-					clienteId, tipoServicioId, canalId, filtro);
+			list = destinatariosRemitentesService.findDestinatariosRemitentesPorClientePorServicioPorCanalPorFiltro(
+					clienteId, servicioId, canalId, filtro);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -367,14 +370,14 @@ public class OmsController {
 	// ----------------------------------------------------------------------------------------------------------------
 
 	// Destinos habilitados para un destinatario, ciudad y tipo de servicio
-	@RequestMapping("/destinos_origenes-x-destinatario_remitente-x-tipo_servicio-x-ciudad")
-	public List<Map<String, Object>> getDestinosPorDestinatarioPorTipoServicioPorCiudad(
+	@RequestMapping("/destinos_origenes-x-destinatario_remitente-x-servicio-x-ciudad")
+	public List<Map<String, Object>> getDestinosPorDestinatarioPorServicioPorCiudad(
 			@RequestParam(required = true) Integer destinatarioId,
-			@RequestParam(required = true) Integer tipoServicioId, @RequestParam(required = true) Integer ciudadId) {
+			@RequestParam(required = true) Integer servicioId, @RequestParam(required = true) Integer ciudadId) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = destinosService.findDestinosPorDestinatarioPorTipoServicioPorCiudad(
+			list = destinosService.findDestinosPorDestinatarioPorServicioPorCiudad(
 					destinatarioId, ciudadId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
@@ -382,61 +385,15 @@ public class OmsController {
 		}
 		return list;
 	}
-
-	// TODO Malla horaria x cliente, canal, destinatario, ciudad, destino
-
-	// ----------------------------------------------------------------------------------------------------------------
-	// -- Ship To (Bodega Destino)
-	// ----------------------------------------------------------------------------------------------------------------
-	// TODO Ciudades con bodegas habilitadas para un cliente y tipo de servicio
-	// @RequestMapping("/ciudades-con-bodega-x-cliente")
-	// public List<Object> getAllCiudadPorClientePorTipoServicio(
-	// @RequestParam(value = "id_cliente", required = true) Integer clienteId,
-	// @RequestParam(value = "id_tipo_servicio", required = true) Integer
-	// tipoServicioId) {
-	// List<Object> list = new ArrayList<>();
-	//
-	// try {
-	// list = ciudadesService.findAllCiudadPorClientePorTipoServicio(clienteId,
-	// tipoServicioId);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// return list;
-	// }
-
-	// TODO Bodegas habilitados para un cliente, ciudad y tipo de servicio
-	// @RequestMapping("/bodegas-x-ciudad-x-cliente")
-	// public List<Object> getAllBodegaPorCliente(@RequestParam(value =
-	// "id_cliente", required = true) Integer clienteId,
-	// @RequestParam(value = "id_ciudad", required = true) Integer ciudadId,
-	// @RequestParam(value = "id_tipo_servicio", required = true) Integer
-	// tipoServicioId) {
-	// List<Object> list = new ArrayList<>();
-	//
-	// try {
-	// list = ordenesService.findAllBodegaPorCliente(clienteId, ciudadId,
-	// tipoServicioId);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// return list;
-	// }
-
-	// ----------------------------------------------------------------------------------------------------------------
-	// -- Requerimientos
-	// ----------------------------------------------------------------------------------------------------------------
-	// Requerimientos de Distribución x cliente x tipo de servicio x
-	// destinatario remitente
-	@RequestMapping("/requerimientos_distribucion-x-cliente-x-tipo_servicio-x-destinatario_remitente")
-	public List<Map<String, Object>> getRequerimientosDistribucionPorClientePorTipoServicioDestinatario(
-			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
+	@RequestMapping("/requerimientos_distribucion-x-cliente-x-servicio-x-destinatario_remitente")
+	public List<Map<String, Object>> getRequerimientosDistribucionPorClientePorServicioDestinatario(
+			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer servicioId,
 			@RequestParam(required = true) Integer destinatarioId) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = omsService.findRequerimientosDistribucionPorClientePorTipoServicioDestinatario(clienteId,
-					tipoServicioId, destinatarioId);
+			list = omsService.findRequerimientosDistribucionPorClientePorServicioDestinatario(clienteId,
+					servicioId, destinatarioId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -444,18 +401,18 @@ public class OmsController {
 		return list;
 	}
 
-	// Requerimientos de Alistamiento x cliente x tipo de servicio x
+	// Requerimientos de Almacenamiento x cliente x tipo de servicio x
 	// destinatario
 	// remitente
-	@RequestMapping("/requerimientos_alistamiento-x-cliente-x-tipo_servicio-x-destinatario_remitente")
-	public List<Map<String, Object>> getRequerimientosAlistamientoPorClientePorTipoServicioDestinatario(
-			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer tipoServicioId,
+	@RequestMapping("/requerimientos_almacenamiento-x-cliente-x-servicio-x-destinatario_remitente")
+	public List<Map<String, Object>> getRequerimientosAlmacenamientoPorClientePorServicioDestinatario(
+			@RequestParam(required = true) Integer clienteId, @RequestParam(required = true) Integer servicioId,
 			@RequestParam(required = true) Integer destinatarioId) {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 		try {
-			list = omsService.findRequerimientosAlistamientoPorClientePorTipoServicioDestinatario(clienteId,
-					tipoServicioId, destinatarioId);
+			list = omsService.findRequerimientosAlmacenamientoPorClientePorServicioDestinatario(clienteId,
+					servicioId, destinatarioId);
 		} catch (Exception e) {
 			// TODO e.printStackTrace()
 			e.printStackTrace();
@@ -467,9 +424,9 @@ public class OmsController {
 	// -- Lineas de Productos
 	// ----------------------------------------------------------------------------------------------------------------
 	// Productos x cliente y tipo de servicio
-	@RequestMapping("/productos-x-cliente-x-tipo_servicio")
-	public List<Object> getProductosPorClientePorTipoServicio(@RequestParam(required = true) Integer clienteId,
-			@RequestParam(required = true) Integer tipoServicioId) {
+	@RequestMapping("/productos-x-cliente-x-servicio")
+	public List<Object> getProductosPorClientePorServicio(@RequestParam(required = true) Integer clienteId,
+			@RequestParam(required = true) Integer servicioId) {
 		List<Object> list = new ArrayList<>();
 
 		try {

@@ -142,7 +142,7 @@ public class SincronizacionRutasSchedule {
 			email= rs.getString("origen_contacto_email");
 			if(!email.isEmpty()){
 				dto.getCorreos().getFinalizaRuta().add(email);
-			}			
+			}
 
 			return dto;
 		});

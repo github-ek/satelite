@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.domain.model.common.SeveridadType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class RestErrorHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
-	public MensajesDto processValidationError(MethodArgumentNotValidException ex) {
+	public MensajesDTO<?> processValidationError(MethodArgumentNotValidException ex) {
 		log.debug("Handling form validation error");
 
 		BindingResult result = ex.getBindingResult();
@@ -38,8 +38,8 @@ public class RestErrorHandler {
 		return processFieldErrors(fieldErrors);
 	}
 
-	private MensajesDto processFieldErrors(List<FieldError> fieldErrors) {
-		MensajesDto dto = new MensajesDto();
+	private MensajesDTO<?> processFieldErrors(List<FieldError> fieldErrors) {
+		MensajesDTO<?> dto = new MensajesDTO<>();
 
 		for (FieldError fieldError : fieldErrors) {
 			String localizedErrorMessage = resolveLocalizedErrorMessage(fieldError);

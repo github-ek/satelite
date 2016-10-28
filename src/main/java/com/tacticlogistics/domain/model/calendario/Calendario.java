@@ -13,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Calendario", catalog = "core")
+@Table(name = "Calendario", catalog = "app")
 public class Calendario implements Comparable<Calendario> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

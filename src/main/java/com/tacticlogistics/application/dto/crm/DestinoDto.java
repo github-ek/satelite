@@ -3,7 +3,6 @@ package com.tacticlogistics.application.dto.crm;
 import java.math.BigDecimal;
 import java.util.Date;
 
-
 import com.tacticlogistics.domain.model.crm.Destino;
 
 public class DestinoDto  {

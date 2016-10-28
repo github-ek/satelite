@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.tasks.etl.readers.FlatFileReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.infrastructure.services.Basic;
@@ -41,7 +41,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
-	protected String preTransformar(String texto, MensajesDto mensajes) {
+	protected String preTransformar(String texto, MensajesDTO<?> mensajes) {
 		texto = super.preTransformar(texto, mensajes);
 
 		if (generarEncabezadoConLosNombresDeLosCamposEsperados()) {
@@ -64,7 +64,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	}
 
 	@Override
-	protected Map<String, E> transformar(String texto, MensajesDto mensajes) {
+	protected Map<String, E> transformar(String texto, MensajesDTO<?> mensajes) {
 		boolean seHaEncontradoElPrimerRegistro = false;
 
 		Map<String, E> map = new HashMap<>();
@@ -121,10 +121,10 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	protected abstract String generarIdentificadorRegistro(String[] campos, Map<String, Integer> mapNameToIndex);
 
 	protected abstract void adicionar(String key, Map<String, E> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes);
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes);
 
 	protected abstract void modificar(String key, Map<String, E> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes);
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes);
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	protected String getSeparadorRegistros() {
@@ -192,7 +192,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	}
 
 	protected boolean checkNumeroCamposEsperados(int index, String[] campos, Map<Integer, String> mapIndexToName,
-			MensajesDto mensajes) {
+			MensajesDTO<?> mensajes) {
 		if (campos.length != mapIndexToName.size()) {
 			String texto = MessageFormat.format("Error en el numero de columnas.Esperado:{0}, Identificadas{1}",
 					mapIndexToName.size(), campos.length);
@@ -234,12 +234,12 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	protected LocalDate getValorCampoFecha(MensajesDto mensajes, String key, Enum<?> campo, String value,
+	protected LocalDate getValorCampoFecha(MensajesDTO<?> mensajes, String key, Enum<?> campo, String value,
 			DateTimeFormatter sdfmt) {
 		return getValorCampoFecha(mensajes, key, campo.toString(), value, sdfmt);
 	}
 
-	protected LocalDate getValorCampoFecha(MensajesDto mensajes, String key, String campo, String value,
+	protected LocalDate getValorCampoFecha(MensajesDTO<?> mensajes, String key, String campo, String value,
 			DateTimeFormatter sdfmt) {
 		LocalDate dateValue = null;
 
@@ -251,12 +251,12 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 		return dateValue;
 	}
 
-	protected LocalDateTime getValorCampoFechaHora(MensajesDto mensajes, String key, Enum<?> campo,
+	protected LocalDateTime getValorCampoFechaHora(MensajesDTO<?> mensajes, String key, Enum<?> campo,
 			String value, DateTimeFormatter sdfmt) {
 		return getValorCampoFechaHora(mensajes, key, campo.toString(), value, sdfmt);
 	}
 
-	protected LocalDateTime getValorCampoFechaHora(MensajesDto mensajes, String key, String campo, String value,
+	protected LocalDateTime getValorCampoFechaHora(MensajesDTO<?> mensajes, String key, String campo, String value,
 			DateTimeFormatter sdfmt) {
 		LocalDateTime dateValue = null;
 
@@ -268,12 +268,12 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 		return dateValue;
 	}
 
-	protected LocalTime getValorCampoHora(MensajesDto mensajes, String key, Enum<?> campo, String value,
+	protected LocalTime getValorCampoHora(MensajesDTO<?> mensajes, String key, Enum<?> campo, String value,
 			DateTimeFormatter sdfmt) {
 		return getValorCampoHora(mensajes, key, campo.toString(), value, sdfmt);
 	}
 
-	protected LocalTime getValorCampoHora(MensajesDto mensajes, String key, String campo, String value,
+	protected LocalTime getValorCampoHora(MensajesDTO<?> mensajes, String key, String campo, String value,
 			DateTimeFormatter sdfmt) {
 		LocalTime timeValue = null;
 
@@ -285,7 +285,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 		return timeValue;
 	}
 
-	protected Integer getValorCampoDecimal(MensajesDto mensajes, String key, String campo, String value,
+	protected Integer getValorCampoDecimal(MensajesDTO<?> mensajes, String key, String campo, String value,
 			DecimalFormat fmt) {
 		Integer integerValue = null;
 
@@ -297,7 +297,7 @@ public abstract class ETLFlatFileStrategy<E> extends ETLFileStrategy<E> {
 		return integerValue;
 	}
 
-	protected Integer getValorCampoMoneda(MensajesDto mensajes, String key, String campo, String value,
+	protected Integer getValorCampoMoneda(MensajesDTO<?> mensajes, String key, String campo, String value,
 			DecimalFormat fmt) {
 		value = value.replaceAll("[$\\s]+", "");
 		return getValorCampoDecimal(mensajes, key, campo, value, fmt);

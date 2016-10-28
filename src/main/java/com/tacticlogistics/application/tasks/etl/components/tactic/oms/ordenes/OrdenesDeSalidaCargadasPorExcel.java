@@ -50,23 +50,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
-import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
+import com.tacticlogistics.application.services.oms.OrdenesApplicationService;
 import com.tacticlogistics.application.tasks.etl.components.ETLOrdenesExcelFileStrategy;
-import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.domain.model.oms.Orden;
 
 @Component("TACTIC.OMS.EXCEL.SALIDAS")
 public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy {
-	private static final Logger log = (Logger) LoggerFactory.getLogger(OrdenesDeSalidaCargadasPorExcel.class);
-
 	protected static final String CODIGO_SERVICIO_DESPACHOS_SECUNDARIA = "VENTAS";
 	protected static final String CODIGO_CANAL_PREDETERMINADO = "OTROS";
 
@@ -74,7 +70,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 	private OrdenesApplicationService ordenesService;
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	protected String getTipoServicioCodigo() {
+	protected String getServicioCodigo() {
 		return CODIGO_SERVICIO_DESPACHOS_SECUNDARIA;
 	}
 
@@ -152,7 +148,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	protected void adicionar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -162,8 +158,8 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 			ETLOrdenDto dto = new ETLOrdenDto();
 
-			dto.setTipoServicioCodigo(getTipoServicioCodigo());
-			dto.setTipoServicioCodigoAlterno("");
+			dto.setServicioCodigo(getServicioCodigo());
+			dto.setServicioCodigoAlterno("");
 
 			// ---------------------------------------------------------------------------------------------------------
 			value = getValorCampo(CLIENTE_CODIGO, campos, mapNameToIndex);
@@ -257,7 +253,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 	@Override
 	protected void modificar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 		if (map.containsKey(key)) {
 			String value;
 			Integer integerValue;
@@ -337,7 +333,7 @@ public class OrdenesDeSalidaCargadasPorExcel extends ETLOrdenesExcelFileStrategy
 
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
+	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDTO<?> mensajes) {
 		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
 			ETLOrdenDto dto = entry.getValue();
 			try {

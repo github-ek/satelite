@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.crm.DestinoDto;
 import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
 import com.tacticlogistics.application.services.crm.DestinosApplicationService;
@@ -53,7 +53,7 @@ public class DestinosOrigenesController {
 
         try {
             list = destinatarioService
-                    .findAllDestinatarioPorClientePorCanalPorTipoServicio(clienteId, canalId, null);
+                    .findAllDestinatarioPorClientePorCanalPorServicio(clienteId, canalId, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class DestinosOrigenesController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public Map<String, Object> save(@RequestBody DestinoDto dto) {
         Map<String, Object> respuesta = new HashMap<>();
-        MensajesDto mensajes = new MensajesDto();
+        MensajesDTO<?> mensajes = new MensajesDTO<>();
         try {
             Destino model = this.destinosOrigenesService.save(dto);
             respuesta.put("destinoOrigen", this.destinosOrigenesService.destinoOrigenToDto(model));

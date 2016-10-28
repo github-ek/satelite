@@ -24,14 +24,12 @@ import com.tacticlogistics.application.dto.wms.EstadoInventarioDto;
 import com.tacticlogistics.application.dto.wms.ProductoDto;
 import com.tacticlogistics.application.dto.wms.UoMDto;
 import com.tacticlogistics.domain.model.crm.Cliente;
-import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteCiudadAssociation;
 import com.tacticlogistics.domain.model.geo.Ciudad;
 import com.tacticlogistics.domain.model.seguridad.Usuario;
 import com.tacticlogistics.domain.model.seguridad.UsuarioBodegaAssociation;
 import com.tacticlogistics.domain.model.tms.TipoVehiculo;
 import com.tacticlogistics.domain.model.tms.Transportadora;
-import com.tacticlogistics.domain.model.wms.Bodega;
 import com.tacticlogistics.domain.model.wms.Producto;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
 import com.tacticlogistics.infrastructure.persistence.geo.CiudadRepository;
@@ -84,7 +82,7 @@ public class LoginController {
                         u.getEmail(), u.isActivo());
 
                 for (UsuarioBodegaAssociation uba : u.getUsuarioBodegaAssociation()) {
-                    Ciudad ciudad = ciudadRepository.getOne(uba.getBodega().getDireccion().getCiudadId());
+                    Ciudad ciudad = uba.getBodega().getDireccion().getCiudad();
 
                     bodegas.add(new BodegaDto(uba.getBodega().getId(), uba.getBodega().getCodigo(),
                             uba.getBodega().getNombre(),
@@ -110,24 +108,6 @@ public class LoginController {
 
         List<ClienteDto> list = new ArrayList<ClienteDto>(0);
 
-        Bodega bodega = bodegaRepository.findByCodigoIgnoringCase(codigo);
-        if (bodega != null) {
-
-            Comparator<ClienteBodegaAssociation> by = (a, b) -> Integer.compare(a.getClienteId(), b.getClienteId());
-
-            bodega.getBodegaClienteAssociation().stream().sorted(by)
-                    .forEachOrdered((c) ->{
-                        Cliente cliente  = clienteRepository.findOne(c.getClienteId());
-                        list.add(new ClienteDto(
-                                cliente.getId(), 
-                                cliente.getCodigo(),
-                                cliente.getNumeroIdentificacion(), 
-                                cliente.getDigitoVerificacion(),
-                                cliente.getNombre(), 
-                                cliente.isActivo()));    
-                    } 
-                    );
-        }
         return list;
     }
 
@@ -185,26 +165,6 @@ public class LoginController {
             @RequestParam(value = "bodega", defaultValue = "") String bodega) {
 
         List<ProductoDto> list = new ArrayList<>();
-        Cliente c = clienteRepository.findByCodigoIgnoringCase(cliente);
-        if (c != null) {
-            List<Producto> productos = productoRepository.findAllByClienteIdAndActivoOrderByNombreLargo(c.getId(),
-                    true);
-
-            Comparator<Producto> by = (a, b) -> a.getNombreLargo().compareTo(b.getNombreLargo());
-
-            productos.stream().sorted(by).forEachOrdered((p) -> {
-                p.getProductoBodegaAssociation().forEach((q) -> {
-                    if (q.getBodega().getCodigo().equals(bodega)) {
-                        // list.add(new ProductoViewModel(p.getId(), cliente,
-                        // bodega, p.getCodigo(),p.getCodigo() + ", " +
-                        // p.getNombreLargo(), p.getNombreLargo()));
-                        list.add(new ProductoDto(p.getId(), cliente, p.getCodigo(),
-                                p.getCodigo() + ", " + p.getNombreLargo(), p.getCodigo(), p.getNombreLargo()));
-
-                    }
-                });
-            });
-        }
 
         return list;
     }

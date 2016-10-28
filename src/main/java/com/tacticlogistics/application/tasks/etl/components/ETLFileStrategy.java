@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.domain.model.common.SeveridadType;
 import com.tacticlogistics.infrastructure.services.FileSystemService;
@@ -124,7 +124,7 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 		// Numero de paginas (ignoradas, error, OK)
 		// Numero de entidades OK, Warning, Errores, No Cargadas
 
-		MensajesDto mensajes = new MensajesDto();
+		MensajesDTO<?> mensajes = new MensajesDTO<>();
 		setArchivo(file);
 
 		log.info("\n");
@@ -175,11 +175,11 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 	}
 
 	// ----------------------------------------------------------------------------------------------------------------
-	protected boolean preProcesarArchivo(MensajesDto mensajes) {
+	protected boolean preProcesarArchivo(MensajesDTO<?> mensajes) {
 		return true;
 	}
 
-	protected void procesarArchivo(MensajesDto mensajes) {
+	protected void procesarArchivo(MensajesDTO<?> mensajes) {
 		String etapa = "INICIO";
 
 		String texto;
@@ -209,21 +209,21 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 		}
 	}
 
-	protected void postProcesarArchivo(MensajesDto mensajes) {
+	protected void postProcesarArchivo(MensajesDTO<?> mensajes) {
 
 	}
 
-	protected void onPreProcesarArchivoError(MensajesDto mensajes, Exception e) {
+	protected void onPreProcesarArchivoError(MensajesDTO<?> mensajes, Exception e) {
 		log.error("onPreProcesarArchivoError", e);
 		logFatal(mensajes, e.getMessage(), getArchivo().getName(), "", null);
 	}
 
-	protected void onProcesarArchivoError(MensajesDto mensajes, Exception e) {
+	protected void onProcesarArchivoError(MensajesDTO<?> mensajes, Exception e) {
 		log.error("onProcesarArchivoError", e);
 		logFatal(mensajes, e.getMessage(), getArchivo().getName(), "", null);
 	}
 
-	protected void onPostProcesarArchivoError(MensajesDto mensajes, Exception e) {
+	protected void onPostProcesarArchivoError(MensajesDTO<?> mensajes, Exception e) {
 		logFatal(mensajes, e.getMessage(), getArchivo().getName(), "", null);
 	}
 
@@ -240,19 +240,19 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 		return texto.toUpperCase();
 	}
 
-	protected String preTransformar(String texto, MensajesDto mensajes) {
+	protected String preTransformar(String texto, MensajesDTO<?> mensajes) {
 		return texto;
 	}
 
-	protected abstract Map<String, E> transformar(String texto, MensajesDto mensajes);
+	protected abstract Map<String, E> transformar(String texto, MensajesDTO<?> mensajes);
 
-	protected Map<String, E> preCargar(Map<String, E> map, MensajesDto mensajes) {
+	protected Map<String, E> preCargar(Map<String, E> map, MensajesDTO<?> mensajes) {
 		return map;
 	}
 
-	protected abstract void cargar(Map<String, E> map, MensajesDto mensajes);
+	protected abstract void cargar(Map<String, E> map, MensajesDTO<?> mensajes);
 
-	protected void backUp(MensajesDto mensajes) {
+	protected void backUp(MensajesDTO<?> mensajes) {
 		boolean error = mensajes.getSeveridadMaxima().equals(SeveridadType.FATAL);
 		Path path = (error ? getDirectorioErrores() : getDirectorioProcesados()).toPath();
 
@@ -268,25 +268,25 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 		}
 	}
 
-	private void notificar(MensajesDto mensajes) {
+	private void notificar(MensajesDTO<?> mensajes) {
 		// TODO Auto-generated method stub
 
 	}
 
 	// --------------------------------------------------------------------------------------------
-	public void logInfo(MensajesDto mensajes, String text, String objeto, String atributo, String data) {
+	public void logInfo(MensajesDTO<?> mensajes, String text, String objeto, String atributo, String data) {
 		mensajes.add(SeveridadType.INFO, text, objeto, atributo, data);
 	}
 
-	public void logWarning(MensajesDto mensajes, String text, String objeto, String atributo, String data) {
+	public void logWarning(MensajesDTO<?> mensajes, String text, String objeto, String atributo, String data) {
 		mensajes.add(SeveridadType.WARN, text, objeto, atributo, data);
 	}
 
-	public void logError(MensajesDto mensajes, String text, String objeto, String atributo, String data) {
+	public void logError(MensajesDTO<?> mensajes, String text, String objeto, String atributo, String data) {
 		mensajes.add(SeveridadType.ERROR, text, objeto, atributo, data);
 	}
 
-	public void logFatal(MensajesDto mensajes, String text, String objeto, String atributo, String data) {
+	public void logFatal(MensajesDTO<?> mensajes, String text, String objeto, String atributo, String data) {
 		mensajes.add(SeveridadType.FATAL, text, objeto, atributo, data);
 	}
 
@@ -421,14 +421,12 @@ public abstract class ETLFileStrategy<E> implements ETLStrategy<E> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	@Deprecated
-	protected void logParseException(MensajesDto mensajes, String key, Enum<?> property, String value, String format,
+	protected void logParseException(MensajesDTO<?> mensajes, String key, Enum<?> property, String value, String format,
 			String data) {
 		logParseException(mensajes, key, property.toString(), value, format, data);
 	}
 
-	@Deprecated
-	protected void logParseException(MensajesDto mensajes, String key, String property, String value, String format,
+	protected void logParseException(MensajesDTO<?> mensajes, String key, String property, String value, String format,
 			String data) {
 		String texto = MessageFormat.format(VALOR_NO_CONCUERDA_CON_EL_FORMATO_ESPERADO, key, property.toString(),
 				format);

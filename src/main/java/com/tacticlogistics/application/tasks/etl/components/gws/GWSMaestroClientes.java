@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.etl.ETLDestinatarioDto;
 import com.tacticlogistics.application.dto.etl.ETLDestinoOrigenDto;
 import com.tacticlogistics.application.services.crm.DestinatariosApplicationService;
@@ -54,7 +54,7 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioDto> 
 
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLDestinatarioDto> map, MensajesDto mensajes) {
+	protected void cargar(Map<String, ETLDestinatarioDto> map, MensajesDTO<?> mensajes) {
 		for (ETLDestinatarioDto dto : map.values()) {
 			try {
 				destinatariosRemitentesServices.save(dto);
@@ -111,7 +111,7 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioDto> 
 
 	@Override
 	protected void adicionar(String key, Map<String, ETLDestinatarioDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -147,7 +147,7 @@ public class GWSMaestroClientes extends ETLFlatFileStrategy<ETLDestinatarioDto> 
 
 	@Override
 	protected void modificar(String key, Map<String, ETLDestinatarioDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 		if (map.containsKey(key)) {
 			String value;
 

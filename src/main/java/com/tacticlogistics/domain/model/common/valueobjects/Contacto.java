@@ -12,7 +12,6 @@ import com.tacticlogistics.common.ddd.AssertionConcern;
 
 @Embeddable
 public class Contacto extends AssertionConcern implements Serializable{
-    @SuppressWarnings("unused")
     private static final long serialVersionUID = 1L;
 
     @Column(name = "contacto_nombres", nullable = false, length = 100)

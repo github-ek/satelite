@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
@@ -40,7 +40,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
         return reader;
     }
 
-    public Map<String, List<ETLLineaOrdenDto>> procesarLineas(File file, MensajesDto mensajes) {
+    public Map<String, List<ETLLineaOrdenDto>> procesarLineas(File file, MensajesDTO<?> mensajes) {
         Map<String, List<ETLLineaOrdenDto>> map = new HashMap<>();
 
         setArchivo(file);
@@ -126,7 +126,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     @Override
     protected void adicionar(String key, Map<String, List<ETLLineaOrdenDto>> map, String[] campos,
-            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName,MensajesDto mensajes) {
+            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName,MensajesDTO<?> mensajes) {
 
         if (!map.containsKey(key)) {
             List<ETLLineaOrdenDto> list = new ArrayList<>();
@@ -136,7 +136,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     @Override
     protected void modificar(String key, Map<String, List<ETLLineaOrdenDto>> map, String[] campos,
-            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName,MensajesDto mensajes) {
+            Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName,MensajesDTO<?> mensajes) {
         if (map.containsKey(key)) {
             String value;
             Integer integerValue;
@@ -171,7 +171,7 @@ public class DICERMEXLineasFactura extends ETLFlatFileStrategy<List<ETLLineaOrde
 
     // ---------------------------------------------------------------------------------------------------------------------------------------
     @Override
-    protected void cargar(Map<String, List<ETLLineaOrdenDto>> map,MensajesDto mensajes) {
+    protected void cargar(Map<String, List<ETLLineaOrdenDto>> map,MensajesDTO<?> mensajes) {
 
     }
 }

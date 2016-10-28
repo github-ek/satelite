@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.ExcelWorkSheetReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
@@ -116,7 +116,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 
 	@Override
 	protected void adicionar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
-			Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 		if (!map.containsKey(key)) {
 			LocalTime timeValue;
 			String value;
@@ -132,7 +132,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, RutaDto> map, String[] campos, Map<String, Integer> mapNameToIndex,
-			Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 
 		if (map.containsKey(key)) {
 			String value;
@@ -170,7 +170,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	// FINALIZADO
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, RutaDto> map, MensajesDto mensajes) {
+	protected void cargar(Map<String, RutaDto> map, MensajesDTO<?> mensajes) {
 		log.info("Begin cargar");
 
 		Integer corteRutaId = null;
@@ -224,11 +224,13 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	// TODO CAMBIAR TABLA DE BD TACTIC A TMS.VEHICULOS
 	private Integer crearRuta(Integer corteRutaId, String placa, LocalTime localTime, Date fechaAsignacionRuta) {
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
-				.withSchemaName("tms").withProcedureName("PlanificacionRutasCrearRuta");
+				.withSchemaName("tms")
+				.withProcedureName("PlanificacionRutasCrearRuta");
+		
 		Map<String, Object> inParamMap = new HashMap<String, Object>();
 		inParamMap.put("corteRutaId", corteRutaId);
 		inParamMap.put("placa", placa);
-		inParamMap.put("horaCitaCargue", localTime);
+		inParamMap.put("horaPlanificada", localTime);
 		inParamMap.put("fechaAsignacionRuta", fechaAsignacionRuta);
 		inParamMap.put("rutaId", null);
 
@@ -268,7 +270,7 @@ public class PlanificacionDeRutas extends ETLFlatFileStrategy<RutaDto> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	private LocalTime getValorCampoHoraTourSolver(MensajesDto mensajes, String key, String campo,
+	private LocalTime getValorCampoHoraTourSolver(MensajesDTO<?> mensajes, String key, String campo,
 			String value) {
 		LocalTime time = null;
 		value = value.replace(",", ".");

@@ -1,7 +1,7 @@
 package com.tacticlogistics.application.services.wms;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class ProductosApplicationService{
     }
 
     public List<Object> findAllProductoPorCliente(Integer clienteId) throws DataAccessException {
-        List<Producto> entityList = productoRepository.findAllByClienteIdAndActivoOrderByNombreLargo(clienteId, true);
+        List<Producto> entityList = productoRepository.findAllByClienteIdAndActivoOrderByNombre(clienteId, true);
 
         List<Object> list = new ArrayList<>();
         entityList.forEach(a -> {
@@ -69,9 +69,7 @@ public class ProductosApplicationService{
         Producto model = null;
 
         if (dto.getId() == null) {
-            model = new Producto();
-            model.setExisteEnWms(false);
-            model.setActivo(true);
+            model = Producto.builder().existeEnWms(false).activo(true).build();
         } else {
             model = productoRepository.findOne(dto.getId());
         }
@@ -83,9 +81,7 @@ public class ProductosApplicationService{
                 }
             }
             model.setCodigo(dto.getCodigoAlterno() == null ? "" : dto.getCodigoAlterno());
-            model.setCodigoAlterno(dto.getCodigoAlterno()== null ? "": dto.getCodigoAlterno());
-            model.setNombre("");
-            model.setNombreLargo(dto.getNombreAlterno()== null ? "": dto.getNombreAlterno());
+            model.setNombre(dto.getNombreAlterno()== null ? "": dto.getNombreAlterno());
             /*
             int i = 1;
             for (ProductoUnidadDto pu : dto.getUnidades()) {
@@ -113,7 +109,7 @@ public class ProductosApplicationService{
             }
             */
 
-            model.setFechaActualizacion(new Date());
+            model.setFechaActualizacion(LocalDateTime.now());
             model.setUsuarioActualizacion(dto.getUsuarioActualizacion());
 
             productoRepository.save(model);
@@ -130,13 +126,12 @@ public class ProductosApplicationService{
 
         StringBuffer sb = new StringBuffer();
         sb.append((model.getCodigo() == null) ? "" : model.getCodigo()).append(" - ")
-                .append((model.getNombreLargo() == null) ? "" : model.getNombreLargo());
+                .append((model.getNombre() == null) ? "" : model.getNombre());
 
         o.put("id", model.getId());
         o.put("codigo", model.getCodigo());
-        o.put("codigoAlterno", model.getCodigoAlterno());
         o.put("nombre", sb.toString());
-        o.put("nombreLargo", model.getNombreLargo());
+        o.put("nombreLargo", model.getNombre());
         o.put("existeEnWms", model.isExisteEnWms());
 
         return o;
@@ -168,10 +163,10 @@ public class ProductosApplicationService{
         o.put("ancho", model.getAncho());
         o.put("alto", model.getAlto());
         o.put("pesoBruto", model.getPesoBruto());
-        o.put("habilitadaEnOrdenesDeIngreso", model.isHabilitadaEnOrdenesDeIngreso());
-        o.put("predeterminadaEnOrdenesDeIngreso", model.isPredeterminadaEnOrdenesDeIngreso());
-        o.put("habilitadaEnOrdenesDeSalida", model.isHabilitadaEnOrdenesDeSalida());
-        o.put("predeterminadaEnOrdenesDeSalida", model.isPredeterminadaEnOrdenesDeSalida());
+        o.put("habilitadaEnOrdenesDeIngreso", true);
+        o.put("predeterminadaEnOrdenesDeIngreso", true);
+        o.put("habilitadaEnOrdenesDeSalida", true);
+        o.put("predeterminadaEnOrdenesDeSalida", true);
         o.put("valorAproximado", model.getValorAproximado());
 
         return o;

@@ -3,7 +3,7 @@ package com.tacticlogistics.presentation.util;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class BadRequestException extends RuntimeException {
@@ -16,7 +16,7 @@ public class BadRequestException extends RuntimeException {
 		super(msg);
 	}
 	
-	public BadRequestException(MensajesDto msg) {
+	public BadRequestException(MensajesDTO<?> msg) {
 		super(msg.toString());
 	}
 }

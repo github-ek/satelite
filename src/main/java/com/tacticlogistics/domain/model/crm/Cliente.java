@@ -71,10 +71,10 @@ public class Cliente implements Serializable {
 	private Set<ClienteRequerimientoDistribucionAssociation> clienteRequerimientoDistribucionAssociation = new HashSet<>();
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "clienteId")
-	private Set<ClienteRequerimientoAlistamientoAssociation> clienteRequerimientoAlistamientoAssociation = new HashSet<>();
+	private Set<ClienteRequerimientoAlmacenamientoAssociation> clienteRequerimientoAlmacenamientoAssociation = new HashSet<>();
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "clienteId")
-	private Set<ClienteTipoServicioAssociation> clienteTipoServicioAssociation = new HashSet<>();
+	private Set<ClienteServicioAssociation> clienteServicioAssociation = new HashSet<>();
 
 	// ---------------------------------------------------------------------------------------------------------
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente")
@@ -121,8 +121,8 @@ public class Cliente implements Serializable {
 		return usuarioActualizacion;
 	}
 
-	public Set<ClienteTipoServicioAssociation> getClienteTipoServicioAssociation() {
-		return clienteTipoServicioAssociation;
+	public Set<ClienteServicioAssociation> getClienteServicioAssociation() {
+		return clienteServicioAssociation;
 	}
 
 	public Set<ClienteCanalAssociation> getClienteCanalAssociation() {
@@ -141,8 +141,8 @@ public class Cliente implements Serializable {
 		return clienteRequerimientoDistribucionAssociation;
 	}
 
-	public Set<ClienteRequerimientoAlistamientoAssociation> getClienteRequerimientoAlistamientoAssociation() {
-		return clienteRequerimientoAlistamientoAssociation;
+	public Set<ClienteRequerimientoAlmacenamientoAssociation> getClienteRequerimientoAlmacenamientoAssociation() {
+		return clienteRequerimientoAlmacenamientoAssociation;
 	}
 
 	public Set<Suscriptor> getSuscriptores() {
@@ -167,8 +167,8 @@ public class Cliente implements Serializable {
 		this.setClienteCanalAssociation(new HashSet<>());
 		this.setClienteCiudadAssociation(new HashSet<>());
 		this.setClienteRequerimientoDistribucionAssociation(new HashSet<>());
-		this.setClienteRequerimientoAlistamientoAssociation(new HashSet<>());
-		this.setClienteTipoServicioAssociation(new HashSet<>());
+		this.setClienteRequerimientoAlmacenamientoAssociation(new HashSet<>());
+		this.setClienteServicioAssociation(new HashSet<>());
 		this.setSuscriptores(new HashSet<>());
 	}
 
@@ -213,11 +213,11 @@ public class Cliente implements Serializable {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------
-	protected void setClienteTipoServicioAssociation(Set<ClienteTipoServicioAssociation> set) {
+	protected void setClienteServicioAssociation(Set<ClienteServicioAssociation> set) {
 		if (set == null) {
 			set = new HashSet<>();
 		}
-		this.clienteTipoServicioAssociation = set;
+		this.clienteServicioAssociation = set;
 	}
 
 	protected void setClienteCanalAssociation(Set<ClienteCanalAssociation> set) {
@@ -249,12 +249,12 @@ public class Cliente implements Serializable {
 		this.clienteRequerimientoDistribucionAssociation = set;
 	}
 
-	protected void setClienteRequerimientoAlistamientoAssociation(
-			Set<ClienteRequerimientoAlistamientoAssociation> set) {
+	protected void setClienteRequerimientoAlmacenamientoAssociation(
+			Set<ClienteRequerimientoAlmacenamientoAssociation> set) {
 		if (set == null) {
 			set = new HashSet<>();
 		}
-		this.clienteRequerimientoAlistamientoAssociation = set;
+		this.clienteRequerimientoAlmacenamientoAssociation = set;
 	}
 
 	protected void setSuscriptores(Set<Suscriptor> set) {

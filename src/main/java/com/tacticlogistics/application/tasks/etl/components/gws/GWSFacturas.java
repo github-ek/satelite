@@ -22,7 +22,7 @@ import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.NUMERO
 import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.NUMERO_ORDEN_COMPRA;
 import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.PREFIJO_NUMERO_ORDEN;
 import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.REQUIERE_RECAUDO;
-import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.TIPO_SERVICIO_CODIGO_ALTERNO;
+import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.SERVICIO_CODIGO_ALTERNO;
 import static com.tacticlogistics.application.tasks.etl.OrdenDtoAtributos.VALOR_RECAUDO;
 import static com.tacticlogistics.infrastructure.services.Basic.substringSafe;
 
@@ -37,27 +37,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
-import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
+import com.tacticlogistics.application.services.oms.OrdenesApplicationService;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
-import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.domain.model.oms.Orden;
 import com.tacticlogistics.infrastructure.services.Basic;
-
-import ch.qos.logback.classic.Logger;
 
 @Component("GWS.ORDENES")
 public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
-	private static final Logger log = (Logger) LoggerFactory.getLogger(GWSFacturas.class);
-
 	protected static final String CODIGO_SERVICIO_DESPACHOS_SECUNDARIA = "VENTAS";
 	protected static final String CODIGO_CANAL_PREDETERMINADO = "OTROS";
 
@@ -68,7 +63,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	private CharsetDetectorFileReader reader;
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	protected String getTipoServicioCodigo() {
+	protected String getServicioCodigo() {
 		return CODIGO_SERVICIO_DESPACHOS_SECUNDARIA;
 	}
 
@@ -92,7 +87,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	protected List<String> getCamposEsperados() {
 		List<String> list = new ArrayList<>();
 
-		list.add(TIPO_SERVICIO_CODIGO_ALTERNO.toString());
+		list.add(SERVICIO_CODIGO_ALTERNO.toString());
 		list.add(NUMERO_ORDEN_COMPRA.toString());
 		list.add(PREFIJO_NUMERO_ORDEN.toString());
 		list.add(NUMERO_ORDEN.toString());
@@ -152,7 +147,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	protected void adicionar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -164,8 +159,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 			dto.setClienteCodigo(getClienteCodigo());
 
-			dto.setTipoServicioCodigo(getTipoServicioCodigo());
-			dto.setTipoServicioCodigoAlterno(getValorCampo(TIPO_SERVICIO_CODIGO_ALTERNO, campos, mapNameToIndex));
+			dto.setServicioCodigo(getServicioCodigo());
+			dto.setServicioCodigoAlterno(getValorCampo(SERVICIO_CODIGO_ALTERNO, campos, mapNameToIndex));
 
 			value = getValorCampo(NUMERO_ORDEN_COMPRA, campos, mapNameToIndex);
 			dto.setNumeroOrdenCompra(value);
@@ -254,7 +249,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 		if (map.containsKey(key)) {
 			String value;
 			Integer integerValue;
@@ -312,7 +307,7 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	// ---------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
+	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDTO<?> mensajes) {
 		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
 			ETLOrdenDto dto = entry.getValue();
 			try {
@@ -321,8 +316,8 @@ public class GWSFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 					logInfo(mensajes, "OK", "", "", dto.getNumeroOrden());
 				} else {
 					logWarning(mensajes,
-							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.",
-							"", "", dto.getNumeroOrden());
+							"Una  solicitud para el mismo cliente con el mismo numero ya se encuentra registrada.", "",
+							"", dto.getNumeroOrden());
 				}
 			} catch (Exception e) {
 				logError(mensajes, e.getMessage(), "", "", dto.getNumeroOrden());

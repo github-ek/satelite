@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.tacticlogistics.domain.model.crm.Cliente;
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteCanalAssociation;
-import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlistamientoAssociation;
+import com.tacticlogistics.domain.model.crm.ClienteRequerimientoAlmacenamientoAssociation;
 import com.tacticlogistics.domain.model.crm.ClienteRequerimientoDistribucionAssociation;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
@@ -18,14 +18,14 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
    @Query(""
             + " SELECT DISTINCT a.cliente"
             + " FROM UsuarioClienteAssociation a"
-            + " JOIN a.cliente.clienteTipoServicioAssociation b"
+            + " JOIN a.cliente.clienteServicioAssociation b"
             + " WHERE a.usuario.id = :usuarioId"
-            + " AND b.tipoServicioId = :tipoServicioId"
+            + " AND b.servicioId = :servicioId"
             + " ORDER BY a.cliente.codigo"
            )
-	List<Cliente> findByUsuarioIdAndTipoServicioId(
+	List<Cliente> findByUsuarioIdAndServicioId(
             @Param("usuarioId") Integer usuarioId, 
-            @Param("tipoServicioId") Integer tipoServicioId);
+            @Param("servicioId") Integer servicioId);
 
 	@Query(""
 	        + " SELECT c "
@@ -53,21 +53,21 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
            + " SELECT a"
            + " FROM ClienteRequerimientoDistribucionAssociation a"
            + " WHERE a.clienteId = :clienteId"
-           + " AND a.tipoServicioId = :tipoServicioId"
+           + " AND a.servicioId = :servicioId"
            + " ORDER BY a.codigoAlterno"
           )
-   List<ClienteRequerimientoDistribucionAssociation> findClienteRequerimientoDistribucionAssociationByClienteIdAndTipoServicioId(
+   List<ClienteRequerimientoDistribucionAssociation> findClienteRequerimientoDistribucionAssociationByClienteIdAndServicioId(
            @Param("clienteId") Integer clienteId,
-           @Param("tipoServicioId") Integer tipoServicioId);
+           @Param("servicioId") Integer servicioId);
 
    @Query(""
            + " SELECT a"
-           + " FROM ClienteRequerimientoAlistamientoAssociation a"
+           + " FROM ClienteRequerimientoAlmacenamientoAssociation a"
            + " WHERE a.clienteId = :clienteId"
-           + " AND a.tipoServicioId = :tipoServicioId"
+           + " AND a.servicioId = :servicioId"
            + " ORDER BY a.codigoAlterno"
           )
-   List<ClienteRequerimientoAlistamientoAssociation> findClienteRequerimientoAlistamientoAssociationByClienteIdAndTipoServicioId(
+   List<ClienteRequerimientoAlmacenamientoAssociation> findClienteRequerimientoAlmacenamientoAssociationByClienteIdAndServicioId(
            @Param("clienteId") Integer clienteId,
-           @Param("tipoServicioId") Integer tipoServicioId);
+           @Param("servicioId") Integer servicioId);
 }

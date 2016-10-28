@@ -35,17 +35,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tacticlogistics.application.dto.common.MensajesDto;
+import com.tacticlogistics.application.dto.common.MensajesDTO;
 import com.tacticlogistics.application.dto.etl.ETLLineaOrdenDto;
 import com.tacticlogistics.application.dto.etl.ETLOrdenDto;
-import com.tacticlogistics.application.services.ordenes.OrdenesApplicationService;
+import com.tacticlogistics.application.services.oms.OrdenesApplicationService;
 import com.tacticlogistics.application.tasks.etl.components.ETLFlatFileStrategy;
 import com.tacticlogistics.application.tasks.etl.readers.CharsetDetectorFileReader;
 import com.tacticlogistics.application.tasks.etl.readers.Reader;
 import com.tacticlogistics.domain.model.calendario.Calendario;
 import com.tacticlogistics.domain.model.calendario.DiaDeSemanaType;
 import com.tacticlogistics.domain.model.crm.ClienteBodegaAssociation;
-import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.domain.model.oms.Orden;
 import com.tacticlogistics.infrastructure.persistence.calendario.CalendarioRepository;
 import com.tacticlogistics.infrastructure.persistence.crm.ClienteRepository;
 import com.tacticlogistics.infrastructure.services.Basic;
@@ -73,11 +73,11 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		return "DICERMEX";
 	}
 
-	protected String getTipoServicioCodigoTraslado() {
+	protected String getServicioCodigoTraslado() {
 		return "TRASLADO";
 	}
 
-	protected String getTipoServicioCodigoAlternoTraslado() {
+	protected String getServicioCodigoAlternoTraslado() {
 		return "TRS";
 	}
 
@@ -105,7 +105,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	}
 
 	@Override
-	protected boolean preProcesarArchivo(MensajesDto mensajes) {
+	protected boolean preProcesarArchivo(MensajesDTO<?> mensajes) {
 		File archivo = getArchivoLineas();
 		boolean procesar = archivo.exists();
 
@@ -179,7 +179,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	protected void adicionar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 
 		if (!map.containsKey(key)) {
 			String value;
@@ -190,7 +190,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 			value = getValorCampo(NUMERO_ORDEN, campos, mapNameToIndex);
 			value = Basic.substringSafe(value, 0, 3).replaceAll("-", "");
-			dto.setTipoServicioCodigoAlterno(value);
+			dto.setServicioCodigoAlterno(value);
 
 			value = getValorCampo(NOTAS, campos, mapNameToIndex);
 			dto.setNotasConfirmacion(value);
@@ -243,11 +243,11 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	protected void modificar(String key, Map<String, ETLOrdenDto> map, String[] campos,
-			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDto mensajes) {
+			Map<String, Integer> mapNameToIndex, Map<Integer, String> mapIndexToName, MensajesDTO<?> mensajes) {
 	}
 
 	@Override
-	protected Map<String, ETLOrdenDto> preCargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
+	protected Map<String, ETLOrdenDto> preCargar(Map<String, ETLOrdenDto> map, MensajesDTO<?> mensajes) {
 		map = super.preCargar(map, mensajes);
 
 		Map<String, List<ETLLineaOrdenDto>> lineas = null;
@@ -275,7 +275,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 				.findClienteBodegaAssociationByClienteCodigo(this.getClienteCodigo());
 
 		List<ETLOrdenDto> list = map.entrySet().stream()
-				.filter(a -> getTipoServicioCodigoAlternoTraslado().equals(a.getValue().getTipoServicioCodigoAlterno()))
+				.filter(a -> getServicioCodigoAlternoTraslado().equals(a.getValue().getServicioCodigoAlterno()))
 				.map(a -> a.getValue()).collect(Collectors.toCollection(ArrayList::new));
 
 		for (ETLOrdenDto dto : list) {
@@ -291,7 +291,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 			});
 
 			if (traslado) {
-				dto.setTipoServicioCodigo(this.getTipoServicioCodigoTraslado());
+				dto.setServicioCodigo(this.getServicioCodigoTraslado());
 				dto.setDestinoCiudadNombreAlterno("");
 				dto.setDestinoDireccion("");
 				dto.setDestinoNombre("");
@@ -305,7 +305,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 
 	@Override
 	@Transactional(readOnly = false)
-	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDto mensajes) {
+	protected void cargar(Map<String, ETLOrdenDto> map, MensajesDTO<?> mensajes) {
 		for (Entry<String, ETLOrdenDto> entry : map.entrySet()) {
 			ETLOrdenDto dto = entry.getValue();
 			try {
@@ -329,7 +329,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------------------------
-	private void cambiarDatosFechaHoraMinimaMaximaEntrega(MensajesDto mensajes, String key, String value,
+	private void cambiarDatosFechaHoraMinimaMaximaEntrega(MensajesDTO<?> mensajes, String key, String value,
 			ETLOrdenDto dto) {
 		LocalDate dateValue;
 		LocalTime timeValue;
@@ -368,7 +368,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		dto.setHoraEntregaSugeridaMaxima(timeValue);
 	}
 
-	private void cambiarDatosFechaMinimaMaximaEntrega(MensajesDto mensajes, String key, String value,
+	private void cambiarDatosFechaMinimaMaximaEntrega(MensajesDTO<?> mensajes, String key, String value,
 			ETLOrdenDto dto) {
 		LocalDate dateValue;
 
@@ -394,7 +394,7 @@ public class DICERMEXFacturas extends ETLFlatFileStrategy<ETLOrdenDto> {
 		dto.setFechaEntregaSugeridaMinima(dateValue);
 	}
 
-	private void inferirFechaHoraEntrega(MensajesDto mensajes, String key, String value, ETLOrdenDto dto) {
+	private void inferirFechaHoraEntrega(MensajesDTO<?> mensajes, String key, String value, ETLOrdenDto dto) {
 		value = value.replaceAll("\\.", "").replaceAll("ENTREGAR", "").replaceAll(" ", " ").trim();
 
 		if (value.matches("AM|PM")) {

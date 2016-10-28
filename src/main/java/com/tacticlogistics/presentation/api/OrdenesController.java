@@ -36,12 +36,12 @@ public class OrdenesController {
     // -- Gestionar Ordenes
     // ----------------------------------------------------------------------------------------------------------------
     @RequestMapping("/tipos_servicio-x-usuario")
-    public List<Object> getAllTipoServicioPorUsuario(
+    public List<Object> getAllServicioPorUsuario(
             @RequestParam(value = "id_usuario", required = true) Integer usuarioId) {
         List<Object> list = new ArrayList<>();
 
         try {
-            list = usuarioService.findAllTipoServicioPorUsuario(usuarioId);
+            list = usuarioService.findAllServicioPorUsuario(usuarioId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,23 +54,23 @@ public class OrdenesController {
     // -- Bill To
     // ----------------------------------------------------------------------------------------------------------------
     @RequestMapping("/clientes-x-usuario")
-    public List<Object> getAllClienteListPorUsuarioPorTipoServicio(
+    public List<Object> getAllClienteListPorUsuarioPorServicio(
             @RequestParam(value = "id_usuario", required = true) Integer usuarioId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Object> list = new ArrayList<>();
 
         try {
-            list = usuarioService.findClientesPorUsuarioIdPorTipoServicioId(usuarioId, tipoServicioId);
+            list = usuarioService.findClientesPorUsuarioIdPorServicioId(usuarioId, servicioId);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    @RequestMapping("/segmentos-x-cliente-x-tipo_servicio")
-    public List<Object> getAllSegmentoPorClientePorTipoServicio(
+    @RequestMapping("/canales-x-cliente-x-servicio")
+    public List<Object> getAllCanalesPorClientePorServicio(
             @RequestParam(value = "id_cliente", required = true) Integer clienteId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Object> list = new ArrayList<>();
 
         try {
@@ -82,15 +82,15 @@ public class OrdenesController {
     }
 
     @RequestMapping("/destinatarios_remitentes-x-cliente")
-    public List<Object> getAllDestinatarioPorClientePorSegmentoPorTipoServicio(
+    public List<Object> getAllDestinatarioPorClientePorCanalPorServicio(
             @RequestParam(value = "id_cliente", required = true) Integer clienteId,
             @RequestParam(value = "id_segmento", required = true) Integer canalId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Object> list = new ArrayList<>();
 
         try {
-            list = destinatariosRemitentesService.findAllDestinatarioPorClientePorCanalPorTipoServicio(
-                    clienteId, canalId, tipoServicioId);
+            list = destinatariosRemitentesService.findAllDestinatarioPorClientePorCanalPorServicio(
+                    clienteId, canalId, servicioId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,16 +98,16 @@ public class OrdenesController {
     }
 
     @RequestMapping("/destinatarios_remitentes-x-cliente-x-texto")
-    public List<Object> getAllDestinatarioPorClientePorSegmentoPorTipoServicioPorTexto(
+    public List<Object> getAllDestinatarioPorClientePorCanalPorServicioPorTexto(
             @RequestParam(value = "id_cliente", required = true) Integer clienteId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId,
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId,
             @RequestParam(value = "id_segmento", required = false) Integer canalId,
             @RequestParam(value = "texto", required = false) String texto) {
         List<Object> list = new ArrayList<>();
 
         try {
-            list = destinatariosRemitentesService.findAllDestinatarioPorClientePorCanalPorTipoServicio(
-                    clienteId, canalId, tipoServicioId);
+            list = destinatariosRemitentesService.findAllDestinatarioPorClientePorCanalPorServicio(
+                    clienteId, canalId, servicioId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,14 +118,14 @@ public class OrdenesController {
     // -- Ship To (Destino/Origen)
     // ----------------------------------------------------------------------------------------------------------------
     @RequestMapping("/ciudades-x-destinatario_remitente")
-    public List<Map<String,Object>> getAllCiudadPorDestinatarioPorTipoServicio(
+    public List<Map<String,Object>> getAllCiudadPorDestinatarioPorServicio(
             @RequestParam(value = "id_destinatario_remitente", required = true) Integer destinatarioId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Map<String,Object>> list = new ArrayList<>();
 
         try {
-            list = ciudadesService.findCiudadesPorDestinatarioPorTipoServicio(destinatarioId,
-                    tipoServicioId);
+            list = ciudadesService.findCiudadesPorDestinatarioPorServicio(destinatarioId,
+                    servicioId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,15 +133,15 @@ public class OrdenesController {
     }
 
     @RequestMapping("/destinos_origenes-x-destinatario_remitente-x-ciudad")
-    public List<Map<String,Object>> getAllDestinoOrigenListPorDestinatarioPorCiudadPorTipoServicio(
+    public List<Map<String,Object>> getAllDestinoOrigenListPorDestinatarioPorCiudadPorServicio(
             @RequestParam(value = "id_destinatario_remitente", required = true) Integer destinatarioId,
             @RequestParam(value = "id_ciudad", required = true) Integer ciudadId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Map<String,Object>> list = new ArrayList<>();
 
         try {
-            list = destinosService.findDestinosPorDestinatarioPorTipoServicioPorCiudad(
-                    destinatarioId, ciudadId, tipoServicioId);
+            list = destinosService.findDestinosPorDestinatarioPorServicioPorCiudad(
+                    destinatarioId, ciudadId, servicioId);
         } catch (Exception e) {
             ;
             e.printStackTrace();
@@ -153,13 +153,13 @@ public class OrdenesController {
     // -- Ship To (Bodega Destino/Bodega Origen)
     // ----------------------------------------------------------------------------------------------------------------
     @RequestMapping("/ciudades-con-bodega-x-cliente")
-    public List<Object> getAllCiudadPorClientePorTipoServicio(
+    public List<Object> getAllCiudadPorClientePorServicio(
             @RequestParam(value = "id_cliente", required = true) Integer clienteId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Object> list = new ArrayList<>();
 
         try {
-            list = ciudadesService.findAllCiudadPorClientePorTipoServicio(clienteId, tipoServicioId);
+            list = ciudadesService.findAllCiudadPorClientePorServicio(clienteId, servicioId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +172,7 @@ public class OrdenesController {
     // ----------------------------------------------------------------------------------------------------------------
     @RequestMapping("/productos-x-cliente")
     public List<Object> getAllProductoPorCliente(@RequestParam(value = "id_cliente", required = true) Integer clienteId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
+            @RequestParam(value = "id_servicio", required = true) Integer servicioId) {
         List<Object> list = new ArrayList<>();
 
         try {
@@ -217,20 +217,6 @@ public class OrdenesController {
     // ----------------------------------------------------------------------------------------------------------------
     // -- Otros
     // ----------------------------------------------------------------------------------------------------------------
-    @RequestMapping("/tipos_forma_pago-x-cliente-x-tipo_servicio")
-    public List<Object> getAllTipoFormaPagoPorClientePorTipoServicio(
-            @RequestParam(value = "id_cliente", required = true) Integer clienteId,
-            @RequestParam(value = "id_tipo_servicio", required = true) Integer tipoServicioId) {
-        List<Object> list = new ArrayList<>();
-
-//        try {
-//            list = ordenesService.findAllTipoFormaPagoPorClientePorTipoServicio(clienteId, tipoServicioId);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        return list;
-    }
-
     // ----------------------------------------------------------------------------------------------------------------
     // -- Mensajes
     // ----------------------------------------------------------------------------------------------------------------

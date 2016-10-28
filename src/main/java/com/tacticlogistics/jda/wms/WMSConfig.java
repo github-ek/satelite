@@ -3,7 +3,6 @@ package com.tacticlogistics.jda.wms;
 import java.math.BigInteger;
 import java.sql.SQLException;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

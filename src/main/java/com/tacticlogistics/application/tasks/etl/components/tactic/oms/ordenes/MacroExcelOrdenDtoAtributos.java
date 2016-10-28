@@ -2,7 +2,7 @@ package com.tacticlogistics.application.tasks.etl.components.tactic.oms.ordenes;
 
 public enum MacroExcelOrdenDtoAtributos {
     ID_CARGA    ("ID_CARGA"),
-    TIPO_SERVICIO_CODIGO_ALTERNO ("TIPO_SERVICIO_CODIGO_ALTERNO"),
+    SERVICIO_CODIGO_ALTERNO ("SERVICIO_CODIGO_ALTERNO"),
     
     CLIENTE_CODIGO ("CLIENTE"),
     NUMERO_ORDEN_COMPRA ("NUMERO_ORDEN_COMPRA"),

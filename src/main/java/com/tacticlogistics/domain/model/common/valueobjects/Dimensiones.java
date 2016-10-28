@@ -9,7 +9,9 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Dimensiones implements Serializable{
 
-    @Column(nullable = true, precision = 12, scale = 4)
+	private static final long serialVersionUID = 1L;
+
+	@Column(nullable = true, precision = 12, scale = 4)
     private BigDecimal largoPorUnidad;
 
     @Column(nullable = true, precision = 12, scale = 4)

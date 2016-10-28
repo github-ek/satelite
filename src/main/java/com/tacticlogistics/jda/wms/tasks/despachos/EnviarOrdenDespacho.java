@@ -12,8 +12,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,8 +21,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnviarOrdenDespacho {
 
-	private static final Logger log = LoggerFactory.getLogger(EnviarOrdenDespacho.class);
-
 	@Value("${wms.directorio.hostin}")
 	private String directorioHostIn;
 
@@ -33,10 +29,10 @@ public class EnviarOrdenDespacho {
 
 	@Scheduled(fixedRate = 15 * 60 * 1000)
 	public void enviarOrdenesWMS() {
-		try {
-
-			List<OrdenDespacho> ordenes = jdbcTemplate.query(
-					"select * from wms.ordenes_venta WHERE codigo_alterno_wms = 'DICERMEX' AND fecha_confirmacion >= CAST(GETDATE() AS DATE) AND bodega_origen_codigo ='TL-BOG-SIB-01' "
+//		try {
+//
+//			List<OrdenDespacho> ordenes = jdbcTemplate.query(
+//					"select * from wms.ordenes_venta WHERE codigo_alterno_wms = 'DICERMEX' AND fecha_confirmacion >= CAST(GETDATE() AS DATE) AND bodega_origen_codigo ='TL-BOG-SIB-01' "
 //					+ " AND numero_orden IN ("
 //					+ "'100-FV-00872226',"
 //					+ "'100-FV-00872273',"
@@ -58,23 +54,23 @@ public class EnviarOrdenDespacho {
 //					+ "'100-RNF-00019744',"
 //					+ "'100-RNF-00019745'"
 //					+ ")"
-					+ "", new OrdenDespachoRowMapper());
+//					+ "", new OrdenDespachoRowMapper());
 			
-			ordenes = consolidarLineasOrden(ordenes);
-
-			log.info("Ordenes Despacho:" + ordenes.size());
-
-			for (OrdenDespacho oc : ordenes) {
-				writeFiles(oc);
-			}
-
-			actualizarOrdenes(ordenes);
-
-		} catch (UnsupportedEncodingException e) {
-			log.error(e.getMessage());
-		} catch (IOException e) {
-			log.error(e.getMessage());
-		}
+//			ordenes = consolidarLineasOrden(ordenes);
+//
+//			log.info("Ordenes Despacho:" + ordenes.size());
+//
+//			for (OrdenDespacho oc : ordenes) {
+//				writeFiles(oc);
+//			}
+//
+//			actualizarOrdenes(ordenes);
+//
+//		} catch (UnsupportedEncodingException e) {
+//			log.error(e.getMessage());
+//		} catch (IOException e) {
+//			log.error(e.getMessage());
+//		}
 	}
 
 	private void actualizarOrdenes(List<OrdenDespacho> ordenes) {

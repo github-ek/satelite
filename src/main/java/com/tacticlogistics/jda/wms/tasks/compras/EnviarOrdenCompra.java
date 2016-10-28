@@ -2,8 +2,6 @@ package com.tacticlogistics.jda.wms.tasks.compras;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -25,12 +23,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.dicermex.services.compras.wms.alertas.AlertasWmsService;
+import com.dicermex.services.compras.wms.alertas.ResultadoAlertaDto;
+import com.dicermex.services.compras.wms.alertas.ResultadoAlertaType;
 import com.j256.ormlite.dao.Dao;
-import com.tacticlogistics.clientes.dicermex.compras.wms.alertas.AlertasWmsService;
-import com.tacticlogistics.clientes.dicermex.compras.wms.alertas.ResultadoAlertaDto;
-import com.tacticlogistics.clientes.dicermex.compras.wms.alertas.ResultadoAlertaType;
-import com.tacticlogistics.domain.model.ordenes.LineaOrden;
-import com.tacticlogistics.domain.model.ordenes.Orden;
+import com.tacticlogistics.domain.model.oms.LineaOrden;
+import com.tacticlogistics.domain.model.oms.Orden;
 import com.tacticlogistics.jda.wms.db.entities.Control;
 import com.tacticlogistics.jda.wms.db.entities.receiving.PurchaseOrder;
 import com.tacticlogistics.jda.wms.db.entities.receiving.PurchaseOrderLine;

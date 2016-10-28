@@ -14,7 +14,9 @@ public enum EstadoOrdenType {
 	NO_REPROGRAMADA("NO REPROGRAMADA",true,true),
 	NOVEDADES("NOVEDADES",false,false),
 
-	ANULADA("ANULADA",true,true)
+	ANULADA("ANULADA",true,true),
+	
+	FINALIZADA("FINALIZADA",false,false)
 	
 	;
 

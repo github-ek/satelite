@@ -19,8 +19,8 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
     private int clienteId;
 
     @Id
-    @Column(name = "id_tipo_servicio", nullable = false, insertable = true, updatable = false)
-    private int tipoServicioId;
+    @Column(name = "id_servicio", nullable = false, insertable = true, updatable = false)
+    private int servicioId;
 
     @Id
     @Column(nullable = false, length = 50)
@@ -33,11 +33,11 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
     private String descripcion;
 
     // ---------------------------------------------------------------------------------------------------------
-    public ClienteRequerimientoDistribucionAssociation(int clienteId, int tipoServicioId, String codigoAlterno,
+    public ClienteRequerimientoDistribucionAssociation(int clienteId, int servicioId, String codigoAlterno,
             int requerimientoDistribucionId, String descripcion) {
         super();
         this.setClienteId(clienteId);
-        this.setTipoServicioId(tipoServicioId);
+        this.setServicioId(servicioId);
         this.setCodigoAlterno(codigoAlterno);
         this.setRequerimientoDistribucionId(requerimientoDistribucionId);
         this.setDescripcion(descripcion);
@@ -47,8 +47,8 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
         return clienteId;
     }
 
-    public int getTipoServicioId() {
-        return tipoServicioId;
+    public int getServicioId() {
+        return servicioId;
     }
 
     public String getCodigoAlterno() {
@@ -74,8 +74,8 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
         this.clienteId = value;
     }
 
-    protected void setTipoServicioId(int value) {
-        this.tipoServicioId = value;
+    protected void setServicioId(int value) {
+        this.servicioId = value;
     }
 
     protected void setCodigoAlterno(String value) {
@@ -96,7 +96,7 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
         int result = 1;
         result = prime * result + clienteId;
         result = prime * result + ((codigoAlterno == null) ? 0 : codigoAlterno.hashCode());
-        result = prime * result + tipoServicioId;
+        result = prime * result + servicioId;
         return result;
     }
 
@@ -116,7 +116,7 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
                 return false;
         } else if (!codigoAlterno.equals(other.codigoAlterno))
             return false;
-        if (tipoServicioId != other.tipoServicioId)
+        if (servicioId != other.servicioId)
             return false;
         return true;
     }
@@ -125,7 +125,7 @@ public class ClienteRequerimientoDistribucionAssociation implements Serializable
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ClienteRequerimientoDistribucionAssociation [clienteId=").append(clienteId)
-                .append(", tipoServicioId=").append(tipoServicioId).append(", ");
+                .append(", servicioId=").append(servicioId).append(", ");
         if (codigoAlterno != null) {
             builder.append("codigoAlterno=").append(codigoAlterno).append(", ");
         }

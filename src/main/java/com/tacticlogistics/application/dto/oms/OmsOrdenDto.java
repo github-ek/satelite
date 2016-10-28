@@ -4,7 +4,6 @@ import static com.tacticlogistics.infrastructure.services.Basic.coalesce;
 
 import java.sql.Time;
 import java.util.Date;
-import java.util.HashSet;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,8 +18,8 @@ public class OmsOrdenDto {
     private Integer id;
 
     // ---------------------------------------------------------------------------------------------------------
-    private Integer tipoServicioId;
-    private String tipoServicioNombre;
+    private Integer servicioId;
+    private String servicioNombre;
 
     // ---------------------------------------------------------------------------------------------------------
     private Integer clienteId;
@@ -107,7 +106,7 @@ public class OmsOrdenDto {
 
     @DateTimeFormat(pattern = dateFormat)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
-    private Date fechaPlaneadaAlistamiento;
+    private Date fechaPlaneadaAlmacenamiento;
 
     @DateTimeFormat(pattern = dateFormat)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
@@ -126,8 +125,8 @@ public class OmsOrdenDto {
     //private Set<ItemGenerico<Integer>> requerimientosDistribucion;
     private String notasRequerimientosDistribucion;
 
-    //private Set<ItemGenerico<Integer>> requerimientosAlistamiento;
-    private String notasRequerimientosAlistamiento;
+    //private Set<ItemGenerico<Integer>> requerimientosAlmacenamiento;
+    private String notasRequerimientosAlmacenamiento;
 
     // ---------------------------------------------------------------------------------------------------------
     @DateTimeFormat(pattern = dateFormat)
@@ -201,12 +200,12 @@ public class OmsOrdenDto {
         return id;
     }
 
-    public Integer getTipoServicioId() {
-        return tipoServicioId;
+    public Integer getServicioId() {
+        return servicioId;
     }
 
-    public String getTipoServicioNombre() {
-        return tipoServicioNombre;
+    public String getServicioNombre() {
+        return servicioNombre;
     }
 
     public Integer getClienteId() {
@@ -417,8 +416,8 @@ public class OmsOrdenDto {
         return horaSugeridaEntregaMaximaAdicional;
     }
 
-    public Date getFechaPlaneadaAlistamiento() {
-        return fechaPlaneadaAlistamiento;
+    public Date getFechaPlaneadaAlmacenamiento() {
+        return fechaPlaneadaAlmacenamiento;
     }
 
     public Date getFechaPlaneadaEntregaMinima() {
@@ -453,12 +452,12 @@ public class OmsOrdenDto {
         return notasRequerimientosDistribucion;
     }
 
-//    public Set<ItemGenerico<Integer>> getRequerimientosAlistamiento() {
-//        return requerimientosAlistamiento;
+//    public Set<ItemGenerico<Integer>> getRequerimientosAlmacenamiento() {
+//        return requerimientosAlmacenamiento;
 //    }
 
-    public String getNotasRequerimientosAlistamiento() {
-        return notasRequerimientosAlistamiento;
+    public String getNotasRequerimientosAlmacenamiento() {
+        return notasRequerimientosAlmacenamiento;
     }
 
     public Date getFechaConfirmacion() {
@@ -593,12 +592,12 @@ public class OmsOrdenDto {
         this.id = value;
     }
 
-    public void setTipoServicioId(Integer value) {
-        this.tipoServicioId = value;
+    public void setServicioId(Integer value) {
+        this.servicioId = value;
     }
 
-    public void setTipoServicioNombre(String value) {
-        this.tipoServicioNombre = coalesce(value, "");
+    public void setServicioNombre(String value) {
+        this.servicioNombre = coalesce(value, "");
     }
 
     public void setClienteId(Integer value) {
@@ -809,8 +808,8 @@ public class OmsOrdenDto {
         this.horaSugeridaEntregaMaximaAdicional = value;
     }
 
-    public void setFechaPlaneadaAlistamiento(Date value) {
-        this.fechaPlaneadaAlistamiento = value;
+    public void setFechaPlaneadaAlmacenamiento(Date value) {
+        this.fechaPlaneadaAlmacenamiento = value;
     }
 
     public void setFechaPlaneadaEntregaMinima(Date value) {
@@ -845,12 +844,12 @@ public class OmsOrdenDto {
         this.notasRequerimientosDistribucion = coalesce(value, "");
     }
 
-//    public void setRequerimientosAlistamiento(Set<ItemGenerico<Integer>> value) {
-//        this.requerimientosAlistamiento = value;
+//    public void setRequerimientosAlmacenamiento(Set<ItemGenerico<Integer>> value) {
+//        this.requerimientosAlmacenamiento = value;
 //    }
 
-    public void setNotasRequerimientosAlistamiento(String value) {
-        this.notasRequerimientosAlistamiento = coalesce(value, "");
+    public void setNotasRequerimientosAlmacenamiento(String value) {
+        this.notasRequerimientosAlmacenamiento = coalesce(value, "");
     }
 
     public void setFechaConfirmacion(Date value) {
@@ -983,7 +982,7 @@ public class OmsOrdenDto {
 
     public OmsOrdenDto() {
         super();
-        this.setTipoServicioNombre("");
+        this.setServicioNombre("");
 
         this.setClienteCodigo("");
         this.setClienteNombre("");
@@ -1034,8 +1033,8 @@ public class OmsOrdenDto {
 //        this.setRequerimientosDistribucion(new HashSet<>());
         this.setNotasRequerimientosDistribucion("");
 
-//        this.setRequerimientosAlistamiento(new HashSet<>());
-        this.setNotasRequerimientosAlistamiento("");
+//        this.setRequerimientosAlmacenamiento(new HashSet<>());
+        this.setNotasRequerimientosAlmacenamiento("");
 
         this.setUsuarioConfirmacion("");
         this.setNotasConfirmacion("");
@@ -1092,14 +1091,13 @@ public class OmsOrdenDto {
 
     @Override
 	public String toString() {
-		return "OmsOrdenDto [id=" + id + ", tipoServicioId=" + tipoServicioId + ", tipoServicioNombre="
-				+ tipoServicioNombre + ", clienteId=" + clienteId + ", clienteCodigo=" + clienteCodigo
-				+ ", clienteNombre=" + clienteNombre + ", estadoOrden=" + estadoOrden + ", numeroOrden=" + numeroOrden
-				+ ", consolidadoId=" + consolidadoId + ", numeroConsolidado=" + numeroConsolidado + ", canalId="
-				+ canalId + ", canalCodigo=" + canalCodigo + ", canalNombre=" + canalNombre + ", canalCodigoAlterno="
-				+ canalCodigoAlterno + ", destinatarioId=" + destinatarioId + ", destinatarioCodigo="
-				+ destinatarioCodigo + ", destinatarioNombre=" + destinatarioNombre
-				+ ", destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion
+		return "OmsOrdenDto [id=" + id + ", servicioId=" + servicioId + ", servicioNombre=" + servicioNombre
+				+ ", clienteId=" + clienteId + ", clienteCodigo=" + clienteCodigo + ", clienteNombre=" + clienteNombre
+				+ ", estadoOrden=" + estadoOrden + ", numeroOrden=" + numeroOrden + ", consolidadoId=" + consolidadoId
+				+ ", numeroConsolidado=" + numeroConsolidado + ", canalId=" + canalId + ", canalCodigo=" + canalCodigo
+				+ ", canalNombre=" + canalNombre + ", canalCodigoAlterno=" + canalCodigoAlterno + ", destinatarioId="
+				+ destinatarioId + ", destinatarioCodigo=" + destinatarioCodigo + ", destinatarioNombre="
+				+ destinatarioNombre + ", destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion
 				+ ", destinatarioCodigoAlterno=" + destinatarioCodigoAlterno + ", destinatarioNombreAlterno="
 				+ destinatarioNombreAlterno + ", destinatarioNumeroIdentificacionAlterno="
 				+ destinatarioNumeroIdentificacionAlterno + ", destinatarioDigitoVerificacionAlterno="
@@ -1123,14 +1121,14 @@ public class OmsOrdenDto {
 				+ fechaSugeridaEntregaMaxima + ", horaSugeridaEntregaMinima=" + horaSugeridaEntregaMinima
 				+ ", horaSugeridaEntregaMaxima=" + horaSugeridaEntregaMaxima + ", horaSugeridaEntregaMinimaAdicional="
 				+ horaSugeridaEntregaMinimaAdicional + ", horaSugeridaEntregaMaximaAdicional="
-				+ horaSugeridaEntregaMaximaAdicional + ", fechaPlaneadaAlistamiento=" + fechaPlaneadaAlistamiento
+				+ horaSugeridaEntregaMaximaAdicional + ", fechaPlaneadaAlmacenamiento=" + fechaPlaneadaAlmacenamiento
 				+ ", fechaPlaneadaEntregaMinima=" + fechaPlaneadaEntregaMinima + ", fechaPlaneadaEntregaMaxima="
 				+ fechaPlaneadaEntregaMaxima + ", horaPlaneadaEntregaMinima=" + horaPlaneadaEntregaMinima
 				+ ", horaPlaneadaEntregaMaxima=" + horaPlaneadaEntregaMaxima + ", horaPlaneadaEntregaMinimaAdicional="
 				+ horaPlaneadaEntregaMinimaAdicional + ", horaPlaneadaEntregaMaximaAdicional="
 				+ horaPlaneadaEntregaMaximaAdicional + ", notasRequerimientosDistribucion="
-				+ notasRequerimientosDistribucion + ", notasRequerimientosAlistamiento="
-				+ notasRequerimientosAlistamiento + ", fechaConfirmacion=" + fechaConfirmacion
+				+ notasRequerimientosDistribucion + ", notasRequerimientosAlmacenamiento="
+				+ notasRequerimientosAlmacenamiento + ", fechaConfirmacion=" + fechaConfirmacion
 				+ ", usuarioConfirmacion=" + usuarioConfirmacion + ", notasConfirmacion=" + notasConfirmacion
 				+ ", fechaAprobacionCliente=" + fechaAprobacionCliente + ", usuarioAprobacionCliente="
 				+ usuarioAprobacionCliente + ", notasAprobacionCliente=" + notasAprobacionCliente

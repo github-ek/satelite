@@ -17,8 +17,8 @@ public class ETLOrdenDto {
 	private String numeroOrdenCompra;
 
 	private String clienteCodigo;
-	private String tipoServicioCodigo;
-	private String tipoServicioCodigoAlterno;
+	private String servicioCodigo;
+	private String servicioCodigoAlterno;
 
 	private boolean requiereServicioDistribucion;
 
@@ -65,8 +65,8 @@ public class ETLOrdenDto {
 	private Set<String> requerimientosDistribucion;
 	private String notasRequerimientosDistribucion;
 
-	private Set<String> requerimientosAlistamiento;
-	private String notasRequerimientosAlistamiento;
+	private Set<String> requerimientosAlmacenamiento;
+	private String notasRequerimientosAlmacenamiento;
 
 	private Integer valorRecaudo;
 
@@ -85,8 +85,8 @@ public class ETLOrdenDto {
 
 		setClienteCodigo("");
 
-		setTipoServicioCodigo("");
-		setTipoServicioCodigoAlterno("");
+		setServicioCodigo("");
+		setServicioCodigoAlterno("");
 
 		setRequiereServicioDistribucion(true);
 
@@ -134,9 +134,9 @@ public class ETLOrdenDto {
 		setCodigosAlternosRequerimientosDistribucion("");
 		setNotasRequerimientosDistribucion("");
 
-		setRequerimientosAlistamiento(new HashSet<>());
-		setCodigosAlternosRequerimientosAlistamiento("");
-		setNotasRequerimientosAlistamiento("");
+		setRequerimientosAlmacenamiento(new HashSet<>());
+		setCodigosAlternosRequerimientosAlmacenamiento("");
+		setNotasRequerimientosAlmacenamiento("");
 
 		setValorRecaudo(null);
 
@@ -163,12 +163,12 @@ public class ETLOrdenDto {
 		return clienteCodigo;
 	}
 
-	public String getTipoServicioCodigo() {
-		return tipoServicioCodigo;
+	public String getServicioCodigo() {
+		return servicioCodigo;
 	}
 
-	public String getTipoServicioCodigoAlterno() {
-		return tipoServicioCodigoAlterno;
+	public String getServicioCodigoAlterno() {
+		return servicioCodigoAlterno;
 	}
 
 	public boolean isRequiereServicioDistribucion() {
@@ -324,12 +324,12 @@ public class ETLOrdenDto {
 		return requerimientosDistribucion;
 	}
 
-	public String getNotasRequerimientosAlistamiento() {
-		return notasRequerimientosAlistamiento;
+	public String getNotasRequerimientosAlmacenamiento() {
+		return notasRequerimientosAlmacenamiento;
 	}
 
-	public Set<String> getRequerimientosAlistamiento() {
-		return requerimientosAlistamiento;
+	public Set<String> getRequerimientosAlmacenamiento() {
+		return requerimientosAlmacenamiento;
 	}
 
 	public Integer getValorRecaudo() {
@@ -368,12 +368,12 @@ public class ETLOrdenDto {
 		this.clienteCodigo = substringSafe(coalesce(value, "").trim(), 0, 20);
 	}
 
-	public void setTipoServicioCodigo(String value) {
-		this.tipoServicioCodigo = substringSafe(coalesce(value, "").trim(), 0, 20);
+	public void setServicioCodigo(String value) {
+		this.servicioCodigo = substringSafe(coalesce(value, "").trim(), 0, 20);
 	}
 
-	public void setTipoServicioCodigoAlterno(String value) {
-		this.tipoServicioCodigoAlterno = substringSafe(coalesce(value, ""), 0, 50);
+	public void setServicioCodigoAlterno(String value) {
+		this.servicioCodigoAlterno = substringSafe(coalesce(value, ""), 0, 50);
 	}
 
 	public void setRequiereServicioDistribucion(boolean requiereServicioDistribucion) {
@@ -533,10 +533,10 @@ public class ETLOrdenDto {
 		}
 	}
 
-	public void setCodigosAlternosRequerimientosAlistamiento(String codigos) {
-		this.requerimientosAlistamiento.clear();
+	public void setCodigosAlternosRequerimientosAlmacenamiento(String codigos) {
+		this.requerimientosAlmacenamiento.clear();
 		for (String codigo : coalesce(codigos, "").split(",")) {
-			this.requerimientosAlistamiento.add(codigo);
+			this.requerimientosAlmacenamiento.add(codigo);
 		}
 	}
 
@@ -548,12 +548,12 @@ public class ETLOrdenDto {
 		this.notasRequerimientosDistribucion = notasRequerimientosDistribucion;
 	}
 
-	public void setRequerimientosAlistamiento(Set<String> requerimientosAlistamiento) {
-		this.requerimientosAlistamiento = requerimientosAlistamiento;
+	public void setRequerimientosAlmacenamiento(Set<String> requerimientoslmacenamiento) {
+		this.requerimientosAlmacenamiento = requerimientoslmacenamiento;
 	}
 
-	public void setNotasRequerimientosAlistamiento(String notasRequerimientosAlistamiento) {
-		this.notasRequerimientosAlistamiento = notasRequerimientosAlistamiento;
+	public void setNotasRequerimientosAlmacenamiento(String notasRequerimientoslmacenamiento) {
+		this.notasRequerimientosAlmacenamiento = notasRequerimientoslmacenamiento;
 	}
 
 	public void setValorRecaudo(Integer value) {
@@ -583,70 +583,34 @@ public class ETLOrdenDto {
 
 	@Override
 	public String toString() {
-		return "ETLOrdenDto [" + (numeroOrden != null ? "numeroOrden=" + numeroOrden + ", " : "")
-				+ (numeroOrdenCompra != null ? "numeroOrdenCompra=" + numeroOrdenCompra + ", " : "")
-				+ (clienteCodigo != null ? "clienteCodigo=" + clienteCodigo + ", " : "")
-				+ (tipoServicioCodigo != null ? "tipoServicioCodigo=" + tipoServicioCodigo + ", " : "")
-				+ (tipoServicioCodigoAlterno != null ? "tipoServicioCodigoAlterno=" + tipoServicioCodigoAlterno + ", "
-						: "")
-				+ "requiereServicioDistribucion=" + requiereServicioDistribucion + ", "
-				+ (destinoCiudadNombreAlterno != null
-						? "destinoCiudadNombreAlterno=" + destinoCiudadNombreAlterno + ", " : "")
-				+ (destinoDireccion != null ? "destinoDireccion=" + destinoDireccion + ", " : "")
-				+ (destinoIndicaciones != null ? "destinoIndicaciones=" + destinoIndicaciones + ", " : "")
-				+ (origenCiudadNombreAlterno != null ? "origenCiudadNombreAlterno=" + origenCiudadNombreAlterno + ", "
-						: "")
-				+ (origenDireccion != null ? "origenDireccion=" + origenDireccion + ", " : "")
-				+ (origenIndicaciones != null ? "origenIndicaciones=" + origenIndicaciones + ", " : "")
-				+ "requiereConfirmacionCitaEntrega=" + requiereConfirmacionCitaEntrega + ", "
-				+ (fechaEntregaSugeridaMinima != null
-						? "fechaEntregaSugeridaMinima=" + fechaEntregaSugeridaMinima + ", " : "")
-				+ (fechaEntregaSugeridaMaxima != null
-						? "fechaEntregaSugeridaMaxima=" + fechaEntregaSugeridaMaxima + ", " : "")
-				+ (horaEntregaSugeridaMinima != null ? "horaEntregaSugeridaMinima=" + horaEntregaSugeridaMinima + ", "
-						: "")
-				+ (horaEntregaSugeridaMaxima != null ? "horaEntregaSugeridaMaxima=" + horaEntregaSugeridaMaxima + ", "
-						: "")
-				+ "requiereConfirmacionCitaRecogida=" + requiereConfirmacionCitaRecogida + ", "
-				+ (fechaRecogidaSugeridaMinima != null
-						? "fechaRecogidaSugeridaMinima=" + fechaRecogidaSugeridaMinima + ", " : "")
-				+ (fechaRecogidaSugeridaMaxima != null
-						? "fechaRecogidaSugeridaMaxima=" + fechaRecogidaSugeridaMaxima + ", " : "")
-				+ (horaRecogidaSugeridaMinima != null
-						? "horaRecogidaSugeridaMinima=" + horaRecogidaSugeridaMinima + ", " : "")
-				+ (horaRecogidaSugeridaMaxima != null
-						? "horaRecogidaSugeridaMaxima=" + horaRecogidaSugeridaMaxima + ", " : "")
-				+ (canalCodigoAlterno != null ? "canalCodigoAlterno=" + canalCodigoAlterno + ", " : "")
-				+ (destinatarioNumeroIdentificacion != null
-						? "destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion + ", " : "")
-				+ (destinatarioNombre != null ? "destinatarioNombre=" + destinatarioNombre + ", " : "")
-				+ (destinatarioContactoNombres != null
-						? "destinatarioContactoNombres=" + destinatarioContactoNombres + ", " : "")
-				+ (destinatarioContactoEmail != null ? "destinatarioContactoEmail=" + destinatarioContactoEmail + ", "
-						: "")
-				+ (destinatarioContactoTelefonos != null
-						? "destinatarioContactoTelefonos=" + destinatarioContactoTelefonos + ", " : "")
-				+ (destinoNombre != null ? "destinoNombre=" + destinoNombre + ", " : "")
-				+ (destinoContactoNombres != null ? "destinoContactoNombres=" + destinoContactoNombres + ", " : "")
-				+ (destinoContactoEmail != null ? "destinoContactoEmail=" + destinoContactoEmail + ", " : "")
-				+ (destinoContactoTelefonos != null ? "destinoContactoTelefonos=" + destinoContactoTelefonos + ", "
-						: "")
-				+ (origenNombre != null ? "origenNombre=" + origenNombre + ", " : "")
-				+ (origenContactoNombres != null ? "origenContactoNombres=" + origenContactoNombres + ", " : "")
-				+ (origenContactoEmail != null ? "origenContactoEmail=" + origenContactoEmail + ", " : "")
-				+ (origenContactoTelefonos != null ? "origenContactoTelefonos=" + origenContactoTelefonos + ", " : "")
-				+ (requerimientosDistribucion != null
-						? "requerimientosDistribucion=" + requerimientosDistribucion + ", " : "")
-				+ (notasRequerimientosDistribucion != null
-						? "notasRequerimientosDistribucion=" + notasRequerimientosDistribucion + ", " : "")
-				+ (requerimientosAlistamiento != null
-						? "requerimientosAlistamiento=" + requerimientosAlistamiento + ", " : "")
-				+ (notasRequerimientosAlistamiento != null
-						? "notasRequerimientosAlistamiento=" + notasRequerimientosAlistamiento + ", " : "")
-				+ (valorRecaudo != null ? "valorRecaudo=" + valorRecaudo + ", " : "")
-				+ (notasConfirmacion != null ? "notasConfirmacion=" + notasConfirmacion + ", " : "")
-				+ (usuarioConfirmacion != null ? "usuarioConfirmacion=" + usuarioConfirmacion + ", " : "")
-				+ (fechaConfirmacion != null ? "fechaConfirmacion=" + fechaConfirmacion + ", " : "")
-				+ (lineas != null ? "lineas=" + lineas : "") + "]";
+		return "ETLOrdenDto [numeroOrden=" + numeroOrden + ", fechaOrden=" + fechaOrden + ", numeroOrdenCompra="
+				+ numeroOrdenCompra + ", clienteCodigo=" + clienteCodigo + ", servicioCodigo=" + servicioCodigo
+				+ ", servicioCodigoAlterno=" + servicioCodigoAlterno + ", requiereServicioDistribucion="
+				+ requiereServicioDistribucion + ", destinoCiudadNombreAlterno=" + destinoCiudadNombreAlterno
+				+ ", destinoDireccion=" + destinoDireccion + ", destinoIndicaciones=" + destinoIndicaciones
+				+ ", origenCiudadNombreAlterno=" + origenCiudadNombreAlterno + ", origenDireccion=" + origenDireccion
+				+ ", origenIndicaciones=" + origenIndicaciones + ", requiereConfirmacionCitaEntrega="
+				+ requiereConfirmacionCitaEntrega + ", fechaEntregaSugeridaMinima=" + fechaEntregaSugeridaMinima
+				+ ", fechaEntregaSugeridaMaxima=" + fechaEntregaSugeridaMaxima + ", horaEntregaSugeridaMinima="
+				+ horaEntregaSugeridaMinima + ", horaEntregaSugeridaMaxima=" + horaEntregaSugeridaMaxima
+				+ ", requiereConfirmacionCitaRecogida=" + requiereConfirmacionCitaRecogida
+				+ ", fechaRecogidaSugeridaMinima=" + fechaRecogidaSugeridaMinima + ", fechaRecogidaSugeridaMaxima="
+				+ fechaRecogidaSugeridaMaxima + ", horaRecogidaSugeridaMinima=" + horaRecogidaSugeridaMinima
+				+ ", horaRecogidaSugeridaMaxima=" + horaRecogidaSugeridaMaxima + ", canalCodigoAlterno="
+				+ canalCodigoAlterno + ", destinatarioNumeroIdentificacion=" + destinatarioNumeroIdentificacion
+				+ ", destinatarioNombre=" + destinatarioNombre + ", destinatarioContactoNombres="
+				+ destinatarioContactoNombres + ", destinatarioContactoEmail=" + destinatarioContactoEmail
+				+ ", destinatarioContactoTelefonos=" + destinatarioContactoTelefonos + ", destinoCodigo="
+				+ destinoCodigo + ", destinoNombre=" + destinoNombre + ", destinoContactoNombres="
+				+ destinoContactoNombres + ", destinoContactoEmail=" + destinoContactoEmail
+				+ ", destinoContactoTelefonos=" + destinoContactoTelefonos + ", origenCodigo=" + origenCodigo
+				+ ", origenNombre=" + origenNombre + ", origenContactoNombres=" + origenContactoNombres
+				+ ", origenContactoEmail=" + origenContactoEmail + ", origenContactoTelefonos="
+				+ origenContactoTelefonos + ", requerimientosDistribucion=" + requerimientosDistribucion
+				+ ", notasRequerimientosDistribucion=" + notasRequerimientosDistribucion
+				+ ", requerimientosAlmacenamiento=" + requerimientosAlmacenamiento
+				+ ", notasRequerimientosAlmacenamiento=" + notasRequerimientosAlmacenamiento + ", valorRecaudo="
+				+ valorRecaudo + ", notasConfirmacion=" + notasConfirmacion + ", usuarioConfirmacion="
+				+ usuarioConfirmacion + ", fechaConfirmacion=" + fechaConfirmacion + ", lineas=" + lineas + "]";
 	}
 }
