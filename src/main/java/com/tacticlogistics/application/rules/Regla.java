@@ -1,4 +1,4 @@
-package com.dicermex.services.compras.planificacion.reglas;
+package com.tacticlogistics.application.rules;
 
 import com.tacticlogistics.application.dto.common.MensajesDTO;
 

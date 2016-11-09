@@ -31,7 +31,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "Productos", catalog = "wms"
-, uniqueConstraints = {@UniqueConstraint(columnNames = { "id_cliente","codigo" }),@UniqueConstraint(columnNames = { "id_cliente","codigo_alterno" })} )
+, uniqueConstraints = {@UniqueConstraint(columnNames = { "id_cliente","codigo" })} )
 @Data
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)

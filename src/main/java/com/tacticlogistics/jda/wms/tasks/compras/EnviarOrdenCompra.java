@@ -61,7 +61,7 @@ public class EnviarOrdenCompra {
 	@Autowired
 	Dao<PurchaseOrderLine, BigInteger> purchaseOrderLineDao;
 
-	@Scheduled(fixedRate = 1000 * 60 * 1)
+	//@Scheduled(fixedRate = 1000 * 60 * 1)
 	public void enviarOrdenesWMS() {
 		try {
 
@@ -82,7 +82,7 @@ public class EnviarOrdenCompra {
 		}
 	}
 
-	@Scheduled(fixedRate = 1000 * 60 * 1)
+	//@Scheduled(fixedRate = 1000 * 60 * 1)
 	public void confirmarOrdenesCreadas() {
 		try {
 			Map<String, Object> args = new HashMap<String, Object>();
@@ -101,7 +101,7 @@ public class EnviarOrdenCompra {
 						.resultado(ResultadoAlertaType.OK).build());
 			}
 			
-			ocService.confirmarResultadoDeAlertasAlWms(resultados);
+			//ocService.confirmarResultadoDeAlertasAlWms(resultados);
 			
 			for (Control co : transactionsOK) {
 				co.setStatus(STATUS_CONFIRMED);
@@ -113,7 +113,7 @@ public class EnviarOrdenCompra {
 		}
 	}
 
-	@Scheduled(fixedRate = 1000 * 60 * 1)
+	//@Scheduled(fixedRate = 1000 * 60 * 1)
 	public void confirmarOrdenesError() {
 		try {
 			Map<String, Object> args = new HashMap<String, Object>();
@@ -132,7 +132,7 @@ public class EnviarOrdenCompra {
 						.resultado(ResultadoAlertaType.ERROR).build());
 			}
 			
-			ocService.confirmarResultadoDeAlertasAlWms(resultados);
+			//ocService.confirmarResultadoDeAlertasAlWms(resultados);
 			
 			for (Control co : transactionsOK) {
 				co.setStatus(STATUS_SENT_FAIL);
@@ -217,7 +217,7 @@ public class EnviarOrdenCompra {
 				.collect(Collectors.toList());
 		// @formatter:on
 
-		ocService.alertarOrdenesDeCompraAlWms(ordenesId);
+		//ocService.alertarOrdenesDeCompraAlWms(ordenesId);
 	}
 
 	private void writeFiles(Orden oc) throws Exception {

@@ -30,30 +30,33 @@ public class ETLApplicationService {
 	private PreProcesadorArchivosCargadosPorExcel preProcesadorArchivosCargadosPorExcel;
 
 	public void run() {
+		if(preProcesar()){
+			try {
+				procesar();
+			} catch (RuntimeException e) {
+				onProcesarError(e);
+				throw e;
+			}
+
+			try {
+				postProcesar();
+			} catch (RuntimeException e) {
+				onPostProcesarError(e);
+				throw e;
+			}
+		}
+		
+
+	}
+
+	private boolean preProcesar() {
 		try {
-			preProcesar();
+			preProcesadorArchivosCargadosPorExcel.run();
+			return true;
 		} catch (RuntimeException e) {
 			onPreProcesarError(e);
 			throw e;
 		}
-
-		try {
-			procesar();
-		} catch (RuntimeException e) {
-			onProcesarError(e);
-			throw e;
-		}
-
-		try {
-			postProcesar();
-		} catch (RuntimeException e) {
-			onPostProcesarError(e);
-			throw e;
-		}
-	}
-
-	private void preProcesar() {
-		preProcesadorArchivosCargadosPorExcel.run();
 	}
 
 	private void procesar() {

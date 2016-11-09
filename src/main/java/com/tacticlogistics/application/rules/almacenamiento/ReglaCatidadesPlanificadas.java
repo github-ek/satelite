@@ -1,10 +1,10 @@
-package com.dicermex.services.compras.planificacion.reglas.almacenamiento;
+package com.tacticlogistics.application.rules.almacenamiento;
 
-import com.dicermex.services.compras.planificacion.reglas.Regla;
 import com.tacticlogistics.application.dto.common.MensajesDTO;
+import com.tacticlogistics.application.rules.Regla;
 import com.tacticlogistics.domain.model.oms.Orden;
 
-public class ReglaBodegaDestino implements Regla<Orden> {
+public class ReglaCatidadesPlanificadas implements Regla<Orden> {
 
 	@Override
 	public MensajesDTO<?> validar(Orden object) {

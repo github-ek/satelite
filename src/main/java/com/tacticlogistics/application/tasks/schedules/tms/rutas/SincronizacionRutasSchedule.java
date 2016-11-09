@@ -45,16 +45,13 @@ public class SincronizacionRutasSchedule {
 	@Scheduled(fixedDelay = 1000 * 60 * 1)
 	public void cron() {
 		try {
-			//TODO incluir emails de la orden
+			// TODO incluir emails de la orden
 			List<RutaDto> request = getRutasPendientesPorSincronizar();
 
-			if(!request.isEmpty()){
-				ResultadosDto result = this.send(
-						request
-						.stream()
-						.filter(a -> !a.getLineas().isEmpty())
-						.collect(Collectors.toList()));
-				
+			if (!request.isEmpty()) {
+				ResultadosDto result = this
+						.send(request.stream().filter(a -> !a.getLineas().isEmpty()).collect(Collectors.toList()));
+
 				this.procesarResultados(request, result);
 				this.actualizarEstadoSincronizacion(request);
 			}
@@ -72,7 +69,8 @@ public class SincronizacionRutasSchedule {
 
 			dto.setRutaId(rs.getInt("id_ruta"));
 			dto.setEstadoRuta(EstadoRutaType.valueOf(rs.getString("id_estado_ruta")));
-			dto.setEstadoSincronizacionRuta(EstadoSincronizacionRutaType.valueOf(rs.getString("id_estado_sincronizacion_ruta")));
+			dto.setEstadoSincronizacionRuta(
+					EstadoSincronizacionRutaType.valueOf(rs.getString("id_estado_sincronizacion_ruta")));
 			dto.setIntentosSincronizacion(rs.getInt("intentos_sincronizacion"));
 			dto.setPlaca(rs.getString("placa"));
 			dto.setMovil(rs.getString("movil"));
@@ -82,7 +80,7 @@ public class SincronizacionRutasSchedule {
 
 		for (RutaDto ruta : list) {
 			Map<Integer, List<String>> suscriptores = new HashMap<>();
-			ruta.getLineas().addAll(getOrdenesPorRuta(ruta.getRutaId(),ruta.getPlaca()));
+			ruta.getLineas().addAll(getOrdenesPorRuta(ruta.getRutaId(), ruta.getPlaca()));
 
 			for (LineaRutaDto linea : ruta.getLineas()) {
 				if (!suscriptores.containsKey(linea.getClienteId())) {
@@ -113,8 +111,8 @@ public class SincronizacionRutasSchedule {
 		List<LineaRutaDto> list = namedParameterJdbcTemplate.query(sql, parameters, (rs, rowNum) -> {
 			LineaRutaDto dto = new LineaRutaDto();
 
-			LocalDateTime date = rs.getTimestamp("fecha_entrega_estimada").toLocalDateTime();
-			LocalTime time = rs.getTime("fecha_entrega_estimada").toLocalTime();
+			LocalDateTime date = (rs.getTimestamp("fecha_estimada_entrega")== null?null:rs.getTimestamp("fecha_estimada_entrega").toLocalDateTime());
+			LocalTime time = (rs.getTime("fecha_estimada_entrega")==null?null:rs.getTime("fecha_estimada_entrega").toLocalTime());
 
 			dto.setOrdenId(rs.getInt("id_orden"));
 			dto.setClienteId(rs.getInt("id_cliente"));
@@ -165,7 +163,7 @@ public class SincronizacionRutasSchedule {
 		return list;
 	}
 
-	//------------------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------------------------------
 	private ResultadosDto send(List<RutaDto> request) {
 		final String FATAL = "FATAL";
 
@@ -214,7 +212,7 @@ public class SincronizacionRutasSchedule {
 			String errorSincronizacion = "";
 
 			for (ResultadoDto dto : result.getRutas()) {
-				if(ruta.getMovil().equals(dto.getMovil())){
+				if (ruta.getMovil().equals(dto.getMovil())) {
 					found = true;
 					switch (dto.getStatus()) {
 					case "OK":
@@ -234,22 +232,21 @@ public class SincronizacionRutasSchedule {
 					break;
 				}
 			}
-			
-			if(!found){
+
+			if (!found) {
 				estadoSincronizacion = EstadoSincronizacionRutaType.REINTENTO;
 				errorSincronizacion = "Ruta Control no incluyo esta ruta en la respuesta";
 			}
-			
+
 			ruta.setEstadoSincronizacionRuta(estadoSincronizacion);
 			ruta.setErrorSincronizacion(errorSincronizacion);
-			
+
 		}
 	}
 
 	private void actualizarEstadoSincronizacion(List<RutaDto> request) {
 		SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall((JdbcTemplate) (getJdbcTemplate().getJdbcOperations()))
-				.withSchemaName("tms")
-				.withProcedureName("RutaActualizarEstadoSincronizacion");
+				.withSchemaName("tms").withProcedureName("RutaActualizarEstadoSincronizacion");
 
 		for (RutaDto ruta : request) {
 			Map<String, Object> inParamMap = new HashMap<String, Object>();
